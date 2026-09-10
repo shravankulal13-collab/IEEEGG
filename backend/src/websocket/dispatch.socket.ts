@@ -4,115 +4,21 @@
 // MODULE: Dispatch Event WebSocket Handler
 // ============================================================
 
-import { Server, Socket } from "socket.io";
+import { Server, Socket } from 'socket.io';
 
-export interface DispatchSocketPayload {
-  dispatchId: string;
-  incidentId?: string;
-  ambulanceId?: string;
-  hospitalId?: string;
-  status?: string;
-  score?: number;
-  reason?: string;
-  timestamp?: string;
-}
+export const setupDispatchSockets = (io: Server) => {
+  const dispatchNamespace = io.of('/dispatch');
 
-export function registerDispatchSocket(
-  io: Server,
-  socket: Socket,
-): void {
-  // Subscribe to a specific dispatch
-  socket.on(
-    "dispatch:subscribe",
-    (dispatchId: string) => {
-      if (!dispatchId) return;
+  dispatchNamespace.on('connection', (socket: Socket) => {
+    console.log(`Dispatcher connected: ${socket.id}`);
 
-      socket.join(`dispatch:${dispatchId}`);
-    },
-  );
+    socket.on('join-ambulance-room', (ambulanceId) => {
+      socket.join(`ambulance_${ambulanceId}`);
+    });
 
-  // Unsubscribe from a specific dispatch
-  socket.on(
-    "dispatch:unsubscribe",
-    (dispatchId: string) => {
-      if (!dispatchId) return;
-
-      socket.leave(`dispatch:${dispatchId}`);
-    },
-  );
-}
-
-export function emitDispatchCreated(
-  io: Server,
-  payload: DispatchSocketPayload,
-): void {
-  io.to(`dispatch:${payload.dispatchId}`).emit(
-    "dispatch:created",
-    {
-      ...payload,
-      timestamp:
-        payload.timestamp ??
-        new Date().toISOString(),
-    },
-  );
-}
-
-export function emitDispatchRecommendation(
-  io: Server,
-  payload: DispatchSocketPayload,
-): void {
-  io.to(`dispatch:${payload.dispatchId}`).emit(
-    "dispatch:recommendation",
-    {
-      ...payload,
-      timestamp:
-        payload.timestamp ??
-        new Date().toISOString(),
-    },
-  );
-}
-
-export function emitDispatchStatusUpdated(
-  io: Server,
-  payload: DispatchSocketPayload,
-): void {
-  io.to(`dispatch:${payload.dispatchId}`).emit(
-    "dispatch:status_updated",
-    {
-      ...payload,
-      timestamp:
-        payload.timestamp ??
-        new Date().toISOString(),
-    },
-  );
-}
-
-export function emitAmbulanceAssigned(
-  io: Server,
-  payload: DispatchSocketPayload,
-): void {
-  io.to(`dispatch:${payload.dispatchId}`).emit(
-    "dispatch:ambulance_assigned",
-    {
-      ...payload,
-      timestamp:
-        payload.timestamp ??
-        new Date().toISOString(),
-    },
-  );
-}
-
-export function emitDispatchCompleted(
-  io: Server,
-  payload: DispatchSocketPayload,
-): void {
-  io.to(`dispatch:${payload.dispatchId}`).emit(
-    "dispatch:completed",
-    {
-      ...payload,
-      timestamp:
-        payload.timestamp ??
-        new Date().toISOString(),
-    },
-  );
-}
+    socket.on('accept-dispatch', (data) => {
+      // Logic to confirm dispatch acceptance and notify engine
+      dispatchNamespace.emit('dispatch-status-updated', { dispatchId: data.dispatchId, status: 'ACCEPTED' });
+    });
+  });
+};
