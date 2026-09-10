@@ -4,151 +4,33 @@
 // MODULE: Dispatch Lifecycle & Orchestration Service
 // ============================================================
 
-import {
-  DispatchRecommendation,
-  generateDispatchRecommendation,
-} from "./dispatch.engine";
-
-import {
-  DispatchRepository,
-} from "./dispatch.repository";
-
-import {
-  DispatchRecommendationRequest,
-} from "./dispatch.validator";
+import { DispatchEngine } from './dispatch.engine';
+import { DispatchRepository } from './dispatch.repository';
+import { EmergencyRequest } from './dispatch.validator';
 
 export class DispatchService {
-  constructor(
-    private readonly repository: DispatchRepository,
-  ) {}
+  private engine: DispatchEngine;
+  private repo: DispatchRepository;
 
-  /*
-   * ----------------------------------------------------------
-   * GENERATE RECOMMENDATION
-   * ----------------------------------------------------------
-   */
+  constructor() {
+    this.repo = new DispatchRepository();
+    this.engine = new DispatchEngine(this.repo);
+  }
 
-  async generateRecommendation(
-    request: DispatchRecommendationRequest,
-  ): Promise<DispatchRecommendation> {
-    const incident =
-      await this.repository.findIncidentById(
-        request.incidentId,
-      );
-
-    if (!incident) {
-      throw new Error(
-        "Incident not found",
-      );
+  public async handleNewEmergency(request: EmergencyRequest) {
+    const match = await this.engine.findBestMatch(request);
+    
+    if (!match.recommendedAmbulance) {
+      throw new Error("No suitable ambulance available.");
     }
 
-    /*
-     * Fetch all required candidates
-     * in parallel.
-     */
-    const [
-      ambulances,
-      hospitals,
-      routes,
-    ] = await Promise.all([
-      this.repository.findAvailableAmbulances(
-        incident.latitude,
-        incident.longitude,
-      ),
+    const dispatchRecord = await this.repo.createDispatchRecord({
+      ...request,
+      assignedAmbulanceId: match.recommendedAmbulance.id,
+      targetHospitalId: match.recommendedHospital?.id,
+      status: 'PENDING_ACCEPTANCE'
+    });
 
-      this.repository.findSuitableHospitals(
-        incident.latitude,
-        incident.longitude,
-      ),
-
-      this.repository.findRoutesForIncident(
-        request.incidentId,
-      ),
-    ]);
-
-    /*
-     * Pass data to the pure decision engine.
-     */
-    return generateDispatchRecommendation(
-      {
-        ambulances,
-        hospitals,
-        routes,
-
-        request: {
-          ambulanceRequirements:
-            request.ambulanceRequirements,
-
-          hospitalRequirements:
-            request.hospitalRequirements,
-        },
-      },
-    );
-  }
-
-  /*
-   * ----------------------------------------------------------
-   * ACCEPT
-   * ----------------------------------------------------------
-   */
-
-  async acceptDispatch(
-    dispatchId: string,
-  ) {
-    return this.repository.updateDispatchStatus(
-      dispatchId,
-      "accepted",
-    );
-  }
-
-  /*
-   * ----------------------------------------------------------
-   * REJECT
-   * ----------------------------------------------------------
-   */
-
-  async rejectDispatch(
-    dispatchId: string,
-    reason: string,
-  ) {
-    return this.repository.updateDispatchStatus(
-      dispatchId,
-      "rejected",
-      reason,
-    );
-  }
-
-  /*
-   * ----------------------------------------------------------
-   * CANCEL
-   * ----------------------------------------------------------
-   */
-
-  async cancelDispatch(
-    dispatchId: string,
-    reason: string,
-  ) {
-    return this.repository.updateDispatchStatus(
-      dispatchId,
-      "cancelled",
-      reason,
-    );
-  }
-
-  /*
-   * ----------------------------------------------------------
-   * REASSIGN
-   * ----------------------------------------------------------
-   */
-
-  async reassignDispatch(
-    dispatchId: string,
-    reason: string,
-  ) {
-    return this.repository.updateDispatchStatus(
-      dispatchId,
-      "cancelled",
-      `Reassignment requested: ${reason}`,
-    );
+    return { dispatchId: dispatchRecord.insertId, match };
   }
 }

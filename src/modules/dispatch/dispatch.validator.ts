@@ -4,97 +4,56 @@
 // MODULE: Dispatch Request Validation
 // ============================================================
 
-import { z } from "zod";
+import { z } from 'zod';
 
-export const ambulanceRequirementsSchema =
-  z.object({
-    requiredEquipment: z
-      .array(
-        z.string().trim().min(1),
-      )
-      .optional(),
-  });
-
-export const hospitalRequirementsSchema =
-  z.object({
-    requiresIcu:
-      z.boolean().optional(),
-
-    requiresTraumaCare:
-      z.boolean().optional(),
-
-    requiredSpecialization:
-      z
-        .string()
-        .trim()
-        .min(1)
-        .optional(),
-
-    requiredResources:
-      z
-        .array(
-          z.string().trim().min(1),
-        )
-        .optional(),
-  });
-
-export const dispatchRecommendationSchema =
-  z.object({
-    incidentId:
-      z.string().uuid(),
-
-    ambulanceRequirements:
-      ambulanceRequirementsSchema
-        .optional(),
-
-    hospitalRequirements:
-      hospitalRequirementsSchema
-        .optional(),
-  });
-
-export const dispatchDecisionSchema =
-  z.object({
-    dispatchId:
-      z.string().uuid(),
-
-    action: z.enum([
-      "accept",
-      "reject",
-      "cancel",
-      "reassign",
-    ]),
-
-    reason:
-      z
-        .string()
-        .trim()
-        .min(1)
-        .max(500)
-        .optional(),
-  });
-
-export type DispatchRecommendationRequest =
-  z.infer<
-    typeof dispatchRecommendationSchema
-  >;
-
-export type DispatchDecisionRequest =
-  z.infer<
-    typeof dispatchDecisionSchema
-  >;
-
-export function validateDispatchRecommendation(
-  data: unknown,
-): DispatchRecommendationRequest {
-  return dispatchRecommendationSchema.parse(
-    data,
-  );
+// --- Shared Interfaces ---
+export interface Location {
+  lat: number;
+  lng: number;
 }
 
-export function validateDispatchDecision(
-  data: unknown,
-): DispatchDecisionRequest {
-  return dispatchDecisionSchema.parse(
-    data,
-  );
+export interface Ambulance {
+  id: string;
+  status: 'AVAILABLE' | 'DISPATCHED' | 'MAINTENANCE' | 'OFF_DUTY';
+  equipment: string[];
+  location?: Location;
+}
+
+export interface Hospital {
+  id: string;
+  name: string;
+  active: boolean;
+  availableICUBeds: number;
+  availableEmergencyBeds: number;
+  onCallSpecialists: string[];
+  equipment: string[];
+  location?: Location;
+}
+
+export interface EmergencyRequest {
+  id?: string;
+  location: Location;
+  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  requiresICU: boolean;
+  requiredEquipment: string[];
+  requiredSpecialists: string[];
+  assignedAmbulanceId?: string;
+  targetHospitalId?: string;
+  status?: 'PENDING_ACCEPTANCE' | 'ACCEPTED' | 'REASSIGNMENT_REQUIRED' | 'CANCELLED' | 'COMPLETED';
+  bed_held?: boolean;
+}
+// -------------------------
+
+export class DispatchValidator {
+  private static emergencySchema = z.object({
+    location: z.object({ lat: z.number(), lng: z.number() }),
+    severity: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']),
+    requiresICU: z.boolean(),
+    requiredEquipment: z.array(z.string()),
+    requiredSpecialists: z.array(z.string())
+  });
+
+  public static validateEmergencyRequest(data: any) {
+    return this.emergencySchema.parse(data);
+  }
 }
