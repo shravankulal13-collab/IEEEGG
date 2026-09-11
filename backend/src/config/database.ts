@@ -17,18 +17,20 @@ interface DatabaseHealthResult {
   error?: string;
 }
 
-let pool: pg.Pool | null = null;
-let isPostgresConnected = false;
+const connectionString = env.DATABASE_URL || env.SUPABASE_URL || process.env.DATABASE_URL || process.env.SUPABASE_URL;
 
-// Initialize PostgreSQL Pool if DATABASE_URL or default connection is provided
-if (env.DATABASE_URL) {
+export let pool: pg.Pool | null = null;
+export let isPostgresConnected = false;
+
+// Initialize PostgreSQL Pool if DATABASE_URL or SUPABASE_URL is provided
+if (connectionString) {
   try {
     pool = new Pool({
-      connectionString: env.DATABASE_URL,
+      connectionString,
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000,
-      ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      ssl: env.NODE_ENV === 'production' || process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
     });
 
     pool.on('error', (err) => {
@@ -106,5 +108,3 @@ export async function checkDatabaseHealth(): Promise<DatabaseHealthResult> {
     error: 'No database credentials configured (operating in fallback-first mode)',
   };
 }
-
-export { pool, isPostgresConnected };

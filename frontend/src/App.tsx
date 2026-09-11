@@ -1,128 +1,52 @@
-﻿// ============================================================
-// PRIMARY OWNER: SK
-// ROLE: Core Platform + Backend Integration Lead
-// MODULE: Root Application Component & Router Setup
-// NOTE: Shared dependency -- changes require team coordination.
 // ============================================================
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+// PRIMARY OWNER: SK / Saishree Santhosh Shet
+// ROLE: Core Platform + Citizen & Ambulance Module Routes
+// ============================================================
+
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+// Citizen Portal Pages
+import { EmergencyHome } from './pages/citizen/EmergencyHome';
+import { ReportEmergency } from './pages/citizen/ReportEmergency';
+import { IncidentConfirmation } from './pages/citizen/IncidentConfirmation';
+import { LiveIncidentTracking } from './pages/citizen/LiveIncidentTracking';
+import { IncidentHistory } from './pages/citizen/IncidentHistory';
+import { Profile } from './pages/citizen/Profile';
+
+// Ambulance Driver Portal Pages
+import { AmbulanceHome } from './pages/ambulance/AmbulanceHome';
+import { ActiveEmergency } from './pages/ambulance/ActiveEmergency';
+import { Navigation } from './pages/ambulance/Navigation';
+import { VehicleStatus } from './pages/ambulance/VehicleStatus';
+import { TripHistory } from './pages/ambulance/TripHistory';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <BrowserRouter>
+      <Routes>
+        {/* Default route redirect to Citizen Portal */}
+        <Route path="/" element={<Navigate to="/citizen" replace />} />
 
-      <div className="ticks"></div>
+        {/* Citizen Portal Routes */}
+        <Route path="/citizen" element={<EmergencyHome />} />
+        <Route path="/citizen/report" element={<ReportEmergency />} />
+        <Route path="/citizen/confirm" element={<IncidentConfirmation />} />
+        <Route path="/citizen/tracking" element={<LiveIncidentTracking />} />
+        <Route path="/citizen/history" element={<IncidentHistory />} />
+        <Route path="/citizen/profile" element={<Profile />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {/* Ambulance Driver Portal Routes */}
+        <Route path="/ambulance" element={<AmbulanceHome />} />
+        <Route path="/ambulance/active" element={<ActiveEmergency />} />
+        <Route path="/ambulance/navigation" element={<Navigation />} />
+        <Route path="/ambulance/status" element={<VehicleStatus />} />
+        <Route path="/ambulance/history" element={<TripHistory />} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {/* Catch-all fallback */}
+        <Route path="*" element={<Navigate to="/citizen" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

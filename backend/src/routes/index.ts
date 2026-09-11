@@ -9,6 +9,8 @@ import { Router, type Request, type Response } from 'express';
 import { checkDatabaseHealth } from '../config/database.js';
 import { env } from '../config/env.js';
 import adminRoutes from './admin.routes.js';
+import ambulanceRoutes from './ambulances.routes.js';
+import analyticsRoutes from './analytics.routes.js';
 import authRoutes from './auth.routes.js';
 import incidentRoutes from './incidents.routes.js';
 
@@ -31,6 +33,8 @@ router.get('/health', async (_req: Request, res: Response) => {
       auth: 'operational',
       incidents: 'operational',
       verification: 'operational',
+      ambulances: 'operational',
+      analytics: 'operational',
       routing: 'adapter_ready',
       realtime: 'adapter_ready',
     },
@@ -42,8 +46,11 @@ router.use('/auth', authRoutes);
 router.use('/incidents', incidentRoutes);
 router.use('/admin', adminRoutes);
 
-// Fallback handlers for modules owned by other team members
-// Once implemented, they will be mounted by their respective owners.
+// Mount operational routes owned by team members
+router.use('/ambulances', ambulanceRoutes);
+router.use('/analytics', analyticsRoutes);
+
+// Fallback handlers for modules pending operational implementation
 const placeholderModule = (moduleName: string, owner: string) => (_req: Request, res: Response) => {
   res.status(501).json({
     success: false,
@@ -54,12 +61,9 @@ const placeholderModule = (moduleName: string, owner: string) => (_req: Request,
   });
 };
 
-router.use('/ambulances', placeholderModule('Ambulance Management', 'Saishree Santhosh Shet'));
 router.use('/hospitals', placeholderModule('Hospital & Resource Operations', 'Shreevarsha V Hegde'));
 router.use('/dispatch', placeholderModule('Dispatch Automation', 'Shreevarsha V Hegde'));
 router.use('/traffic', placeholderModule('Traffic Intelligence', 'Anush KD'));
 router.use('/routes', placeholderModule('Dynamic Routing', 'Anush KD'));
-router.use('/analytics', placeholderModule('Operational Intelligence', 'khushi.shettyyy'));
 
 export default router;
-

@@ -1,16 +1,40 @@
 // ============================================================
-// PRIMARY OWNER: SK
-// ROLE: Core Platform + Backend Integration Lead
+// PRIMARY OWNER: SK / khushi.shettyyy
+// ROLE: Core Platform + Realtime Socket Server Gateway
 // MODULE: Server Lifecycle & Bootstrap
 // ============================================================
 
 import http from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 import { app } from './app.js';
 import { checkDatabaseHealth } from './config/database.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
+import { incidentEscalationJob } from './jobs/incidentEscalation.job.js';
+import { staleGpsJob } from './jobs/staleGps.job.js';
+import { setupSocketServer } from './websocket/socket.server.js';
 
 const server = http.createServer(app);
+
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: [
+      env.FRONTEND_URL,
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      '*',
+    ],
+    credentials: true,
+  },
+});
+
+// Register all Socket.IO handlers (ambulance telemetry, incident events, notifications)
+setupSocketServer(io);
+
+// Background scheduled monitoring jobs
+let staleGpsInterval: NodeJS.Timeout | null = null;
+let incidentEscalationInterval: NodeJS.Timeout | null = null;
 
 async function startServer(): Promise<void> {
   try {
@@ -19,6 +43,10 @@ async function startServer(): Promise<void> {
       { provider: dbStatus.provider, connected: dbStatus.connected },
       'Database connection verified'
     );
+
+    // Start background jobs
+    staleGpsInterval = staleGpsJob.startPeriodicCheck(30000);
+    incidentEscalationInterval = incidentEscalationJob.startPeriodicCheck(60000);
 
     server.listen(env.PORT, env.HOST, () => {
       logger.info(
@@ -35,7 +63,15 @@ async function startServer(): Promise<void> {
 
 // Graceful shutdown
 function gracefulShutdown(signal: string) {
-  logger.info({ signal }, 'Received shutdown signal. Closing HTTP server...');
+  logger.info({ signal }, 'Received shutdown signal. Closing HTTP and Socket servers...');
+
+  if (staleGpsInterval) clearInterval(staleGpsInterval);
+  if (incidentEscalationInterval) clearInterval(incidentEscalationInterval);
+
+  io.close(() => {
+    logger.info('Socket.IO gateway closed.');
+  });
+
   server.close(() => {
     logger.info('HTTP server closed successfully. Terminating process.');
     process.exit(0);
@@ -61,4 +97,4 @@ process.on('uncaughtException', (err) => {
 
 startServer();
 
-export { server };
+export { server, io };

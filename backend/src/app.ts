@@ -28,6 +28,7 @@ export function createApp(): Application {
         'http://localhost:5173',
         'http://localhost:3000',
         'http://127.0.0.1:5173',
+        '*',
       ],
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -50,7 +51,11 @@ export function createApp(): Application {
   // 6. Mount Central API
   app.use('/api', routes);
 
-  // 7. Root ping
+  // 7. Root ping & simple health route
+  app.get('/health', (_req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
   app.get('/', (_req, res) => {
     res.json({
       name: 'Emergency Response Intelligence & Coordination API',
@@ -72,3 +77,4 @@ export function createApp(): Application {
 }
 
 export const app = createApp();
+export default app;
