@@ -11,10 +11,6 @@ node_modules/
 dist/
 build/
 .next/
-backend/src/**/*.js
-backend/src/**/*.js.map
-backend/src/**/*.d.ts
-backend/src/**/*.d.ts.map
 
 # Logs
 *.log
