@@ -37,7 +37,7 @@ interface ActiveTripRow {
 }
 
 async function fetchActiveTrips(): Promise<ActiveTripRow[]> {
-  return dbQuery<ActiveTripRow>(
+  const result = await dbQuery<ActiveTripRow>(
     `
     SELECT
       d.id AS trip_id,
@@ -69,6 +69,8 @@ async function fetchActiveTrips(): Promise<ActiveTripRow[]> {
     WHERE d.status IN ('accepted', 'en_route', 'arrived', 'transporting')
     `,
   );
+
+  return result.rows;
 }
 
 async function evaluateTrip(trip: ActiveTripRow, io: SocketIOServer): Promise<void> {

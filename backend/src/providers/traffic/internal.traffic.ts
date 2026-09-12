@@ -54,7 +54,7 @@ export const internalTrafficProvider: TrafficProvider = {
     try {
       // Buckets fleet pings from the last LOOKBACK_MINUTES into coarse grid
       // cells and computes average speed per cell from the shared location history.
-      const rows = await dbQuery<PingRow>(
+      const result = await dbQuery<PingRow>(
         `
         SELECT
           round(latitude::numeric, 3) AS grid_lat,
@@ -71,6 +71,8 @@ export const internalTrafficProvider: TrafficProvider = {
         `,
         [swLat, neLat, swLng, neLng],
       );
+
+      const rows = result.rows;
 
       const segments: TrafficSegment[] = rows.map((row) => {
         const ratio = Math.min(row.avg_speed_kph / EXPECTED_URBAN_SPEED_KPH, 1.2);
