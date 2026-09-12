@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: Routing API Endpoints
@@ -77,7 +77,7 @@ router.post(
       res.status(200).json({ data: result });
     } catch (err) {
       if (err instanceof RoutingProviderError) {
-        logger.error('all routing providers exhausted for request', { error: err.message });
+        logger.error({ error: err.message }, 'all routing providers exhausted for request');
         res.status(503).json({
           error: 'routing temporarily unavailable',
           detail: err.message,

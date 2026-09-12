@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: OSRM / Offline Fallback Routing Engine
@@ -123,10 +123,10 @@ export async function resolveRoute(request: RouteRequest): Promise<ResolveRouteR
         err instanceof RoutingProviderError
           ? err
           : new RoutingProviderError(provider.name, 'unexpected failure', err);
-      logger.error(`routing provider failed, trying next in chain`, {
+      logger.error({
         provider: provider.name,
         error: routingError.message,
-      });
+      }, `routing provider failed, trying next in chain`);
       recordProviderFailure(provider.name);
       errors.push(routingError);
     }

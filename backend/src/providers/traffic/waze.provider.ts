@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: Waze Traffic & Routing Integration
@@ -119,7 +119,7 @@ export const wazeTrafficProvider: TrafficProvider = {
         confidence: 0.65,
       };
     } catch (err) {
-      logger.warn('waze traffic fetch failed', { err });
+      logger.warn({ err }, 'waze traffic fetch failed');
       throw new TrafficProviderError('waze', 'failed to fetch traffic feed', err);
     }
   },

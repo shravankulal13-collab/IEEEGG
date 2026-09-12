@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: MapmyIndia / Mappls Routing Integration
@@ -110,7 +110,7 @@ async function requestRoute(request: RouteRequest, token: string, attempt = 1): 
     return res;
   } catch (err) {
     if (attempt < 2) {
-      logger.warn('mapmyindia route request errored, retrying once', { err });
+      logger.warn({ err }, 'mapmyindia route request errored, retrying once');
       return requestRoute(request, token, attempt + 1);
     }
     throw err;

@@ -152,17 +152,17 @@ export async function getFusedTraffic(query: TrafficQuery): Promise<FusedTraffic
       sourcesUsed.push(provider.name);
       recordProviderSuccess(provider.name);
     } else {
-      logger.warn('traffic provider failed during fusion', {
+      logger.warn({
         provider: provider.name,
         reason: result.reason?.message,
-      });
+      }, 'traffic provider failed during fusion');
       sourcesFailed.push(provider.name);
       recordProviderFailure(provider.name);
     }
   });
 
   if (snapshots.length === 0) {
-    logger.error('all traffic providers failed or open — returning empty fused view');
+    logger.error({}, 'all traffic providers failed or open — returning empty fused view');
   }
 
   return {

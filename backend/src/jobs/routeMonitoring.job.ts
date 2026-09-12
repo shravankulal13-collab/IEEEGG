@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: Active Route Congestion Monitoring Job
@@ -88,14 +88,14 @@ async function evaluateTrip(trip: ActiveTripRow, io: SocketIOServer): Promise<vo
     const improvementRatio = improvementSeconds / previousDuration;
 
     if (improvementSeconds >= MIN_IMPROVEMENT_SECONDS && improvementRatio >= MIN_IMPROVEMENT_RATIO) {
-      logger.info('reroute suggested for active trip', {
+      logger.info({
         tripId: trip.trip_id,
         ambulanceId: trip.ambulance_id,
         previousDuration,
         freshDuration,
         improvementSeconds,
         degraded: fresh.degraded,
-      });
+      }, 'reroute suggested for active trip');
 
       io.to(`ambulance:${trip.ambulance_id}`).to(`trip:${trip.trip_id}`).emit('route:reroute-suggested', {
         tripId: trip.trip_id,
@@ -107,10 +107,10 @@ async function evaluateTrip(trip: ActiveTripRow, io: SocketIOServer): Promise<vo
       });
     }
   } catch (err) {
-    logger.warn('route monitoring check failed for trip', {
+    logger.warn({
       tripId: trip.trip_id,
       error: (err as Error).message,
-    });
+    }, 'route monitoring check failed for trip');
   }
 }
 
@@ -119,7 +119,7 @@ async function sweepOnce(io: SocketIOServer): Promise<void> {
   try {
     trips = await fetchActiveTrips();
   } catch (err) {
-    logger.error('route monitoring sweep failed to load active trips', { err });
+    logger.error({ err }, 'route monitoring sweep failed to load active trips');
     return;
   }
 
@@ -141,7 +141,7 @@ export function startRouteMonitoringJob(io: SocketIOServer): void {
     return;
   }
 
-  logger.info('starting route monitoring job', { intervalMs: CHECK_INTERVAL_MS });
+  logger.info({ intervalMs: CHECK_INTERVAL_MS }, 'starting route monitoring job');
   intervalHandle = setInterval(() => {
     void sweepOnce(io);
   }, CHECK_INTERVAL_MS);

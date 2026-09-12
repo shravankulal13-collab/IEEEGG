@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: Internal Traffic Condition Simulator
@@ -99,7 +99,7 @@ export const internalTrafficProvider: TrafficProvider = {
         confidence,
       };
     } catch (err) {
-      logger.error('internal traffic derivation failed', { err });
+      logger.error({ err }, 'internal traffic derivation failed');
       // Unlike external providers, we do NOT throw here — this source
       // backstops the others, so on failure we return an empty-but-valid
       // snapshot instead of contributing to a full fusion outage.
