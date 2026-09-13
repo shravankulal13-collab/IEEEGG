@@ -20,6 +20,16 @@ import { Navigation } from './pages/ambulance/Navigation';
 import { VehicleStatus } from './pages/ambulance/VehicleStatus';
 import { TripHistory } from './pages/ambulance/TripHistory';
 
+// Dispatcher Command Center Portal Pages (Khushi's Scope)
+import { AppShell } from './components/layout/AppShell';
+import { CommandCenter } from './pages/dispatcher/CommandCenter';
+import { IncidentList } from './pages/dispatcher/IncidentList';
+import { IncidentDetails } from './pages/dispatcher/IncidentDetails';
+import { AmbulanceFleet } from './pages/dispatcher/AmbulanceFleet';
+import { Analytics } from './pages/dispatcher/Analytics';
+import { AuditLogs } from './pages/dispatcher/AuditLogs';
+import { Notifications } from './pages/dispatcher/Notifications';
+
 function App() {
   return (
     <BrowserRouter>
@@ -41,6 +51,17 @@ function App() {
         <Route path="/ambulance/navigation" element={<Navigation />} />
         <Route path="/ambulance/status" element={<VehicleStatus />} />
         <Route path="/ambulance/history" element={<TripHistory />} />
+
+        {/* Dispatcher Command Center Routes (Khushi Scope) */}
+        <Route path="/dispatcher" element={<AppShell />}>
+          <Route index element={<CommandCenter />} />
+          <Route path="incidents" element={<IncidentList />} />
+          <Route path="incidents/:id" element={<IncidentDetails />} />
+          <Route path="fleet" element={<AmbulanceFleet />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="audit" element={<AuditLogs />} />
+          <Route path="notifications" element={<Notifications />} />
+        </Route>
 
         {/* Catch-all fallback */}
         <Route path="*" element={<Navigate to="/citizen" replace />} />

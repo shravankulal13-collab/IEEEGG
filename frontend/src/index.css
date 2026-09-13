@@ -1,4 +1,4 @@
-﻿/*
+/*
 ============================================================
 PRIMARY OWNER: SK
 ROLE: Core Platform + Backend Integration Lead
@@ -6,114 +6,337 @@ MODULE: Global Design Tokens & CSS Foundation
 NOTE: Shared dependency -- changes require team coordination.
 ============================================================
 */
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --font-sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-display: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --ops-bg-deep: #050B24;
+  --ops-panel: #07133A;
+  --ops-card: #0B1B4A;
+  --ops-card-elevated: #10245C;
+  --ops-border: rgba(59, 130, 246, 0.2);
+  --ops-line: #1E293B;
+  --ops-muted: #94A3B8;
+  --ops-ink: #F8FAFC;
+  --ops-accent-red: #FF1F2D;
+  --ops-accent-blue: #2563EB;
+  --ops-accent-cyan: #06B6D4;
+  --ops-ok: #10B981;
+  --ops-warn: #F59E0B;
+  --ops-shadow: 0 12px 30px rgba(5, 11, 36, 0.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
+html,
+body,
 #root {
-  width: 1126px;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: initial;
+  border: 0;
 }
 
 body {
-  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ops-ink);
+  background: var(--ops-bg-deep);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  display: block;
+  min-height: 100svh;
+  box-sizing: border-box;
 }
 
 h1,
 h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+  font-family: var(--font-display);
+  font-weight: 650;
+  color: inherit;
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
 p {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: #050B24;
+  width: 100%;
+  height: 100%;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* Leaflet Dark Popup Refinement */
+.leaflet-popup-content-wrapper {
+  padding: 0 !important;
+  border-radius: 14px !important;
+  background: #07133A !important;
+  color: #F8FAFC !important;
+  box-shadow: 0 14px 28px rgba(5, 11, 36, 0.8), 0 0 20px rgba(37, 99, 235, 0.2) !important;
+  border: 1px solid rgba(59, 130, 246, 0.35) !important;
+  overflow: hidden !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  line-height: 1.4 !important;
+  color: #F8FAFC !important;
+}
+
+.leaflet-popup-tip {
+  background: #07133A !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(59, 130, 246, 0.35) !important;
+}
+
+/* Slim Dark Emergency Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050B24;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E3A8A;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563EB;
+}
+
+/* Emergency Technology Shimmer */
+.ops-shimmer {
+  background: linear-gradient(90deg, #07133A 0%, #0E245C 50%, #07133A 100%);
+  background-size: 200% 100%;
+  animation: ops-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes ops-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Subtle glow utilities */
+.ops-glow-red {
+  box-shadow: 0 0 20px rgba(255, 31, 45, 0.35);
+}
+
+.ops-glow-blue {
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.35);
+}
+
+.ops-glow-cyan {
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
+}
+
+/* Gentle outer beacon ring for critical emergency markers */
+@keyframes ops-beacon-pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+@keyframes ops-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ops-highlight {
+  0% {
+    background-color: rgba(255, 31, 45, 0.25);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes ops-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ops-page-enter {
+  animation: ops-enter 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ops-card-lift {
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms ease, background-color 180ms ease;
+}
+
+.ops-card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(5, 11, 36, 0.8), 0 0 18px rgba(37, 99, 235, 0.18);
+  border-color: rgba(59, 130, 246, 0.45);
+}
+
+.ops-beacon-ring {
+  animation: ops-beacon-pulse 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+.ops-new-incident {
+  animation: ops-highlight 2s ease-out;
+}
+
+.ops-toast-in {
+  animation: ops-slide-in 200ms ease-out;
+}
+
+/* White Dashboard Card Lift */
+.ops-white-card-lift {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1), border-color 220ms ease;
+}
+
+.ops-white-card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 0 1px rgba(15, 23, 42, 0.08);
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+/* Moving Telemetry Signal on SVG Path */
+@keyframes ops-telemetry-signal {
+  0% {
+    stroke-dashoffset: 400;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.ops-telemetry-line {
+  stroke-dasharray: 10 10;
+  animation: ops-telemetry-signal 8s linear infinite;
+}
+
+/* Staggered Hero Entrance Animations */
+@keyframes ops-hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ops-hero-enter-1 {
+  animation: ops-hero-fade-up 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ops-hero-enter-2 {
+  animation: ops-hero-fade-up 450ms cubic-bezier(0.16, 1, 0.3, 1) 100ms forwards;
+  opacity: 0;
+}
+
+.ops-hero-enter-3 {
+  animation: ops-hero-fade-up 500ms cubic-bezier(0.16, 1, 0.3, 1) 200ms forwards;
+  opacity: 0;
+}
+
+.ops-hero-enter-4 {
+  animation: ops-hero-fade-up 550ms cubic-bezier(0.16, 1, 0.3, 1) 300ms forwards;
+  opacity: 0;
+}
+
+.ops-hero-enter-5 {
+  animation: ops-hero-fade-up 600ms cubic-bezier(0.16, 1, 0.3, 1) 400ms forwards;
+  opacity: 0;
+}
+
+/* Mouse Scroll Wheel Bobbing */
+@keyframes ops-scroll-wheel {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ops-scroll-wheel {
+  animation: ops-scroll-wheel 1.8s ease-in-out infinite;
+}
+
+/* EKG Pulse Wave */
+@keyframes ops-ekg {
+  0% {
+    stroke-dashoffset: 200;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -200;
+  }
+}
+
+.ops-ekg-line {
+  stroke-dasharray: 200;
+  animation: ops-ekg 2.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ops-shimmer,
+  .ops-beacon-ring,
+  .ops-new-incident,
+  .ops-page-enter,
+  .ops-toast-in,
+  .ops-card-lift,
+  .ops-hero-enter-1,
+  .ops-hero-enter-2,
+  .ops-hero-enter-3,
+  .ops-hero-enter-4,
+  .ops-hero-enter-5,
+  .ops-scroll-wheel,
+  .ops-ekg-line {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
 }
