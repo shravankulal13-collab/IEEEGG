@@ -15,18 +15,28 @@ export const userRoleEnum = z.enum([
   'system_admin',
 ]);
 
-export const registerSchema = z.object({
-  fullName: z.string().min(2, 'Full name must contain at least 2 characters').max(100),
-  email: z.string().email('Invalid email address format'),
-  phone: z.string().regex(/^\+?[1-9]\d{7,14}$/, 'Invalid phone number format').optional().or(z.literal('')),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters long')
-    .max(128, 'Password too long')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one digit'),
-  role: userRoleEnum.default('citizen'),
-});
+export const registerSchema = z
+  .object({
+    fullName: z.string().min(2, 'Full name must contain at least 2 characters').max(100).optional(),
+    full_name: z.string().min(2, 'Full name must contain at least 2 characters').max(100).optional(),
+    email: z.string().email('Invalid email address format'),
+    phone: z.string().regex(/^\+?[1-9]\d{7,14}$/, 'Invalid phone number format').optional().or(z.literal('')),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters long')
+      .max(128, 'Password too long')
+      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+      .regex(/[0-9]/, 'Password must contain at least one digit'),
+    role: userRoleEnum.default('citizen'),
+  })
+  .refine((data) => Boolean(data.fullName || data.full_name), {
+    message: 'Full name must contain at least 2 characters',
+    path: ['fullName'],
+  })
+  .transform((data) => ({
+    ...data,
+    fullName: (data.fullName || data.full_name || 'Emergency User').trim(),
+  }));
 
 export const loginSchema = z.object({
   email: z.string().email('Invalid email address format'),

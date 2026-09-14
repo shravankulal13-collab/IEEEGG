@@ -23,15 +23,15 @@ import type {
 
 // Valid status transitions for emergency state machine
 const ALLOWED_STATUS_TRANSITIONS: Record<IncidentStatus, IncidentStatus[]> = {
-  reported: ['verifying', 'verified', 'cancelled', 'false_report'],
-  verifying: ['verified', 'rejected' as any, 'cancelled', 'false_report'],
-  verified: ['dispatching', 'dispatched', 'cancelled'],
-  dispatching: ['dispatched', 'cancelled'],
-  dispatched: ['en_route', 'cancelled'],
-  en_route: ['arrived', 'cancelled'],
-  arrived: ['transporting', 'resolved', 'cancelled'],
-  transporting: ['resolved', 'cancelled'],
-  resolved: [], // Terminal
+  reported: ['verifying', 'verified', 'dispatching', 'dispatched', 'en_route', 'cancelled', 'false_report'],
+  verifying: ['verified', 'dispatching', 'dispatched', 'en_route', 'arrived', 'cancelled', 'false_report'],
+  verified: ['dispatching', 'dispatched', 'en_route', 'arrived', 'cancelled'],
+  dispatching: ['dispatched', 'en_route', 'arrived', 'cancelled'],
+  dispatched: ['en_route', 'arrived', 'transporting', 'cancelled'],
+  en_route: ['arrived', 'transporting', 'resolved', 'cancelled'],
+  arrived: ['transporting', 'resolved', 'cancelled', 'en_route'],
+  transporting: ['arrived', 'resolved', 'cancelled'],
+  resolved: ['reported', 'cancelled', 'transporting', 'arrived'], // Allow re-opening if needed
   cancelled: [], // Terminal
   false_report: [], // Terminal
   expired: [], // Terminal

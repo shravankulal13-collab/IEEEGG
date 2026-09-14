@@ -20,30 +20,27 @@ import trafficRouter from './traffic.routes.js';
 
 const router = Router();
 
-/**
- * Health check endpoint reporting comprehensive system availability.
- */
 router.get('/health', async (_req: Request, res: Response) => {
   const dbStatus = await checkDatabaseHealth();
-  const isHealthy = dbStatus.connected || dbStatus.provider === 'in_memory_fallback';
+  const isHealthy = dbStatus.connected === true;
 
   res.status(isHealthy ? 200 : 503).json({
-    status: isHealthy ? 'healthy' : 'degraded',
+    status: isHealthy ? 'healthy' : 'down',
     timestamp: new Date().toISOString(),
     environment: env.NODE_ENV,
     uptimeSeconds: Math.floor(process.uptime()),
     database: dbStatus,
     services: {
-      auth: 'operational',
-      incidents: 'operational',
-      verification: 'operational',
-      ambulances: 'operational',
-      hospitals: 'operational',
-      dispatch: 'operational',
-      routing: 'operational',
-      traffic: 'operational',
-      analytics: 'operational',
-      realtime: 'operational',
+      auth: isHealthy ? 'operational' : 'degraded',
+      incidents: isHealthy ? 'operational' : 'degraded',
+      verification: isHealthy ? 'operational' : 'degraded',
+      ambulances: isHealthy ? 'operational' : 'degraded',
+      hospitals: isHealthy ? 'operational' : 'degraded',
+      dispatch: isHealthy ? 'operational' : 'degraded',
+      routing: isHealthy ? 'operational' : 'degraded',
+      traffic: isHealthy ? 'operational' : 'degraded',
+      analytics: isHealthy ? 'operational' : 'degraded',
+      realtime: isHealthy ? 'operational' : 'degraded',
     },
   });
 });

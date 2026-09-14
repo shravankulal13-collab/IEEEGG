@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: Provider Health Heartbeat Job
@@ -67,7 +67,7 @@ async function probeOnce(): Promise<void> {
   const summary = getAllProviderHealth();
   const unhealthy = summary.filter((s) => s.state !== 'CLOSED');
   if (unhealthy.length > 0) {
-    logger.warn('provider health sweep found degraded providers', { unhealthy });
+    logger.debug('provider health sweep found degraded providers', { unhealthy });
   } else {
     logger.debug('provider health sweep: all providers healthy');
   }

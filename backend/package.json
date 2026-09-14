@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-     "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "db:migrate": "tsx src/scripts/migrate.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest"

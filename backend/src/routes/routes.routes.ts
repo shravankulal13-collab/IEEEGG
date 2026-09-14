@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: Routing API Endpoints
@@ -21,7 +21,7 @@ import { resolveRoute } from '../providers/routing/fallback.provider.js';
 import { RoutingProviderError } from '../providers/routing/routing.provider.js';
 import type { RouteRequest } from '../providers/routing/routing.provider.js';
 import { getAllProviderHealth } from '../providers/traffic/provider-health.service.js';
-import { authenticate } from '../middleware/auth.middleware.js'; // SK-owned, shared
+import { authenticate, optionalAuthenticate } from '../middleware/auth.middleware.js'; // SK-owned, shared
 import { logger } from '../config/logger.js';
 
 const router = Router();
@@ -47,15 +47,11 @@ function asyncHandler(fn: (req: Request, res: Response, next: NextFunction) => P
 
 /**
  * POST /api/routes/compute
- * Computes a resilient route between two (or more) points. Tries Mappls
- * first, silently falls back to OSRM on failure — callers get a
- * `degraded: true` flag rather than an error when that happens, so the
- * dispatch engine and frontend can show a "using backup routing" badge
- * instead of hard-failing an active emergency.
+ * Computes a resilient route between two (or more) points using MapMyIndia / Mappls.
  */
 router.post(
   '/compute',
-  authenticate,
+  optionalAuthenticate,
   asyncHandler(async (req, res) => {
     const parsed = computeRouteSchema.safeParse(req.body);
     if (!parsed.success) {

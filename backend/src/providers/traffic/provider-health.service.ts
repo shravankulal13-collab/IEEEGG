@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: Provider Circuit Breaker & Failover Service
@@ -67,7 +67,7 @@ export function isProviderOpen(providerName: string): boolean {
     if (elapsed >= OPEN_DURATION_MS) {
       // Cooldown elapsed — allow exactly one probe through.
       record.state = 'HALF_OPEN';
-      logger.info(`circuit breaker half-open, probing provider`, { provider: providerName });
+      logger.debug(`circuit breaker half-open, probing provider`, { provider: providerName });
       return false;
     }
     return true;
@@ -86,7 +86,7 @@ export function recordProviderSuccess(providerName: string, latencyMs?: number):
   if (latencyMs !== undefined) record.lastLatencyMs = latencyMs;
 
   if (wasOpen) {
-    logger.info(`circuit breaker closed — provider recovered`, { provider: providerName });
+    logger.debug(`circuit breaker closed — provider recovered`, { provider: providerName });
   }
 }
 
@@ -99,14 +99,14 @@ export function recordProviderFailure(providerName: string): void {
     // Probe failed — back to OPEN immediately, no need to re-count threshold.
     record.state = 'OPEN';
     record.openedAt = Date.now();
-    logger.warn(`circuit breaker re-opened — probe failed`, { provider: providerName });
+    logger.debug(`circuit breaker re-opened — probe failed`, { provider: providerName });
     return;
   }
 
   if (record.consecutiveFailures >= FAILURE_THRESHOLD && record.state === 'CLOSED') {
     record.state = 'OPEN';
     record.openedAt = Date.now();
-    logger.warn(`circuit breaker OPEN — provider tripped`, {
+    logger.debug(`circuit breaker OPEN — provider tripped`, {
       provider: providerName,
       consecutiveFailures: record.consecutiveFailures,
     });

@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: MapmyIndia / Mappls Routing Integration
@@ -54,11 +54,27 @@ async function getAccessToken(): Promise<string> {
     return tokenCache.token;
   }
 
+  // If a direct access token / key is provided without client_id, use it directly
+  const clientId = env.MAPPLS_CLIENT_ID || env.MAPMYINDIA_CLIENT_ID;
+  const apiKey = env.MAPPLS_API_KEY || env.MAPMYINDIA_CLIENT_SECRET || env.MAPMYINDIA_ACCESS_TOKEN;
+
+  if (!clientId && apiKey) {
+    tokenCache = {
+      token: apiKey,
+      expiresAt: Date.now() + 3600 * 1000,
+    };
+    return apiKey;
+  }
+
+  if (!clientId || !apiKey) {
+    throw new RoutingProviderError('mapmyindia', 'MapMyIndia credentials not configured');
+  }
+
   try {
     const body = new URLSearchParams({
       grant_type: 'client_credentials',
-      client_id: env.MAPPLS_CLIENT_ID,
-      client_secret: env.MAPPLS_API_KEY,
+      client_id: clientId,
+      client_secret: apiKey,
     });
 
     const res = await fetchWithTimeout(
@@ -83,7 +99,7 @@ async function getAccessToken(): Promise<string> {
 }
 
 function toLatLngPair(p: LatLng): string {
-  return `${p.lat},${p.lng}`;
+  return `${p.lng},${p.lat}`;
 }
 
 async function requestRoute(request: RouteRequest, token: string, attempt = 1): Promise<Response> {
@@ -103,14 +119,18 @@ async function requestRoute(request: RouteRequest, token: string, attempt = 1): 
 
   try {
     const res = await fetchWithTimeout(url, { method: 'GET' }, REQUEST_TIMEOUT_MS);
-    if (!res.ok && attempt < 2) {
-      logger.warn(`mapmyindia route request failed (status ${res.status}), retrying once`);
+    if (res.status === 401 || res.status === 403) {
+      // Direct key is not authorized for Routing API in Mappls console; don't retry, fail immediately to fallback
+      return res;
+    }
+    if (!res.ok && attempt < 2 && res.status >= 500) {
+      logger.debug(`mapmyindia route request failed (status ${res.status}), retrying once`);
       return requestRoute(request, token, attempt + 1);
     }
     return res;
   } catch (err) {
     if (attempt < 2) {
-      logger.warn('mapmyindia route request errored, retrying once', { err });
+      logger.debug('mapmyindia route request errored, retrying once', { err });
       return requestRoute(request, token, attempt + 1);
     }
     throw err;

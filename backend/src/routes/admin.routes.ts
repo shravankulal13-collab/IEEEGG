@@ -7,24 +7,26 @@
 import { Router } from 'express';
 import { checkDatabaseHealth } from '../config/database.js';
 import { env } from '../config/env.js';
-import { authenticate } from '../middleware/auth.middleware.js';
-import { requireRole } from '../middleware/role.middleware.js';
+import { optionalAuthenticate } from '../middleware/auth.middleware.js';
 import { authRepository } from '../modules/auth/auth.repository.js';
 import { incidentRepository } from '../modules/incidents/incident.repository.js';
 
 const router = Router();
 
-
-router.use(authenticate, requireRole('system_admin'));
-
-router.get('/system-status', async (_req, res, next) => {
+router.get('/system-status', optionalAuthenticate, async (_req, res, next) => {
   try {
     const dbHealth = await checkDatabaseHealth();
-    const userCount = await authRepository.count();
-    const activeIncidents = await incidentRepository.list({
-      page: 1,
-      limit: 10,
-    });
+    let userCount = 0;
+    let incidentCount = 0;
+
+    if (dbHealth.connected) {
+      userCount = await authRepository.count().catch(() => 0);
+      const activeIncidents = await incidentRepository.list({
+        page: 1,
+        limit: 1,
+      }).catch(() => ({ total: 0, items: [] }));
+      incidentCount = activeIncidents.total;
+    }
 
     res.status(200).json({
       success: true,
@@ -39,7 +41,7 @@ router.get('/system-status', async (_req, res, next) => {
         },
         counts: {
           users: userCount,
-          incidents: activeIncidents.total,
+          incidents: incidentCount,
         },
       },
     });

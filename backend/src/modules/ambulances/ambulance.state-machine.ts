@@ -25,13 +25,13 @@ export type AmbulanceUIState =
   | 'OFFLINE';
 
 const ALLOWED_TRANSITIONS: Record<AmbulanceBackendStatus, AmbulanceBackendStatus[]> = {
-  available: ['reserved', 'dispatched', 'maintenance', 'offline'],
-  reserved: ['dispatched', 'available', 'offline'],
-  dispatched: ['en_route_to_incident', 'on_scene', 'available', 'offline'],
-  en_route_to_incident: ['on_scene', 'available', 'dispatched'],
-  on_scene: ['transporting', 'at_hospital', 'available'],
-  transporting: ['at_hospital', 'on_scene', 'available'],
-  at_hospital: ['returning', 'available', 'offline'],
+  available: ['reserved', 'dispatched', 'en_route_to_incident', 'maintenance', 'offline'],
+  reserved: ['dispatched', 'en_route_to_incident', 'available', 'offline'],
+  dispatched: ['en_route_to_incident', 'on_scene', 'transporting', 'available', 'offline'],
+  en_route_to_incident: ['on_scene', 'transporting', 'at_hospital', 'available', 'dispatched'],
+  on_scene: ['transporting', 'at_hospital', 'available', 'returning', 'en_route_to_incident'],
+  transporting: ['at_hospital', 'on_scene', 'available', 'returning'],
+  at_hospital: ['returning', 'available', 'transporting', 'offline'],
   returning: ['available', 'offline'],
   maintenance: ['available', 'offline'],
   offline: ['available', 'maintenance'],

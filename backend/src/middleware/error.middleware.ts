@@ -37,6 +37,24 @@ export class NotFoundError extends AppError {
   }
 }
 
+export class DatabaseUnavailableError extends AppError {
+  constructor(
+    message = 'Database service is currently unavailable. Please try again shortly.',
+    details?: Record<string, unknown> | Array<unknown>
+  ) {
+    super(message, 503, 'DATABASE_UNAVAILABLE', details);
+  }
+}
+
+export class DatabaseQueryError extends AppError {
+  constructor(
+    message = 'Database query execution failed.',
+    details?: Record<string, unknown> | Array<unknown>
+  ) {
+    super(message, 500, 'DATABASE_QUERY_ERROR', details);
+  }
+}
+
 export class ValidationError extends AppError {
   constructor(message = 'Validation failed for request parameters', details?: Record<string, unknown> | Array<unknown>) {
     super(message, 400, 'VALIDATION_ERROR', details);

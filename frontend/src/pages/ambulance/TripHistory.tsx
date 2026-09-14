@@ -1,90 +1,112 @@
 // ============================================================
 // PRIMARY OWNER: Saishree Santhosh Shet
 // ROLE: Citizen + Ambulance Application
-// MODULE: Ambulance Completed Trip Log History
+// MODULE: Ambulance Trip Response History UI
 // ============================================================
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import { AppShell } from '../../components/layout/AppShell';
+import { PageHeader } from '../../components/layout/PageHeader';
+import { Card } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
+import { Button } from '../../components/ui/Button';
+import { ArrowLeft, ArrowRight, MapPin } from 'lucide-react';
 
 export const TripHistory: React.FC = () => {
   const navigate = useNavigate();
 
   const trips = [
     {
-      id: 'TRIP-904',
-      incidentId: 'ER-2047',
-      type: 'Medical Emergency',
-      date: '29 Aug 2026',
-      duration: '18 min',
-      distance: '4.2 km',
-      destination: 'St. Jude Memorial Hospital',
+      id: 'TRIP-8041',
+      incident: 'ER-2045',
+      type: 'Cardiac Arrest',
+      date: 'Today, 11:20 AM',
+      pickup: '45 Residency Road, Central Area',
+      hospital: 'St. Jude Trauma Center',
+      duration: '14 mins',
       status: 'COMPLETED',
     },
     {
-      id: 'TRIP-889',
-      incidentId: 'ER-2035',
-      type: 'Traffic Accident',
-      date: '15 Aug 2026',
-      duration: '24 min',
-      distance: '6.8 km',
-      destination: 'City General Hospital',
+      id: 'TRIP-8040',
+      incident: 'ER-2039',
+      type: 'Vehicle Collision (Trauma)',
+      date: 'Yesterday, 08:45 PM',
+      pickup: 'Ring Road Junction 12',
+      hospital: 'Metro General Emergency',
+      duration: '18 mins',
+      status: 'COMPLETED',
+    },
+    {
+      id: 'TRIP-8039',
+      incident: 'ER-2032',
+      type: 'Severe Respiratory Distress',
+      date: 'Yesterday, 02:15 PM',
+      pickup: '78 Palm Avenue, Sector 2',
+      hospital: 'St. Jude Trauma Center',
+      duration: '11 mins',
       status: 'COMPLETED',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white font-sans p-6">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <button
-          onClick={() => navigate('/ambulance')}
-          className="text-xs font-bold text-blue-400 hover:underline block"
-        >
-          ← Back to Driver Dashboard
-        </button>
+    <AppShell>
+      <div className="space-y-6 max-w-7xl mx-auto pb-12">
+        <PageHeader
+          title="Trip Response Logs: AMB-104"
+          subtitle="Audit logs of completed emergency responses, transport durations, and destination hospitals"
+          badge={<Badge variant="info">34 TOTAL MISSIONS</Badge>}
+          actions={
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/ambulance')}
+              className="border-slate-300 text-slate-700 hover:bg-slate-100"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Cockpit
+            </Button>
+          }
+        />
 
-        <div className="border-b border-slate-800 pb-4">
-          <h1 className="text-2xl font-black">Completed Response Log</h1>
-          <p className="text-xs text-slate-400">AMB-104 Past Emergency Dispatches</p>
-        </div>
-
-        <div className="space-y-4">
+        <div className="space-y-3">
           {trips.map((trip) => (
-            <div key={trip.id} className="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-3">
-              <div className="flex items-center justify-between border-b border-slate-700 pb-3">
-                <div>
-                  <span className="text-base font-bold text-white">{trip.type}</span>
-                  <span className="ml-2 text-xs text-slate-400 font-mono">({trip.incidentId})</span>
+            <Card
+              key={trip.id}
+              className="p-5 border border-slate-200 bg-white hover:border-blue-400 shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-black font-mono text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200">
+                    {trip.incident}
+                  </span>
+                  <h3 className="text-sm font-black text-slate-900">{trip.type}</h3>
+                  <Badge variant="success">COMPLETED</Badge>
                 </div>
-                <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-bold">
-                  {trip.status}
-                </span>
+
+                <p className="text-xs text-slate-600 flex items-center gap-1.5 mt-1">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <span>Pickup: {trip.pickup}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 shrink-0 inline" />
+                  <span className="font-bold text-slate-800">{trip.hospital}</span>
+                </p>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-xs text-slate-300">
-                <div>
-                  <span className="text-slate-400 block">Date</span>
-                  <span className="font-bold">{trip.date}</span>
+              <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 border-t sm:border-t-0 pt-3 sm:pt-0">
+                <div className="text-right">
+                  <span className="block text-[10px] text-slate-400 font-bold uppercase">RESPONSE TIME</span>
+                  <span className="font-mono text-emerald-600 font-extrabold">{trip.duration}</span>
                 </div>
-                <div>
-                  <span className="text-slate-400 block">Response Time</span>
-                  <span className="font-bold text-blue-400">{trip.duration}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">Distance</span>
-                  <span className="font-bold">{trip.distance}</span>
+                <div className="text-right">
+                  <span className="block text-[10px] text-slate-400 font-bold uppercase">DATE & TIME</span>
+                  <span className="text-slate-800 font-medium">{trip.date}</span>
                 </div>
               </div>
-
-              <div className="flex items-center gap-1.5 text-xs text-slate-400 pt-1">
-                <MapPin className="w-3.5 h-3.5 text-red-400 shrink-0" />
-                <span>Hospital Drop-off: {trip.destination}</span>
-              </div>
-            </div>
+            </Card>
           ))}
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 };
+
+export default TripHistory;

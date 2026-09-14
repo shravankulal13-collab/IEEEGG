@@ -8,14 +8,14 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { z } from 'zod';
 
-// Load .env file from backend root or current directory
+// Load .env configuration from backend root directory
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(5000),
   HOST: z.string().default('0.0.0.0'),
-  DATABASE_URL: z.string().default('postgresql://localhost:5432/emergency_response'),
+  DATABASE_URL: z.string().optional().or(z.literal('')),
   SUPABASE_URL: z.string().url().optional().or(z.literal('')),
   SUPABASE_SECRET_KEY: z.string().optional().or(z.literal('')),
   JWT_SECRET: z.string().min(8).default('emergency_response_jwt_secret_dev_key_2026!'),
@@ -43,7 +43,7 @@ const rawEnv = parsed.success
       NODE_ENV: 'development' as const,
       PORT: Number(process.env.PORT) || 5000,
       HOST: '0.0.0.0',
-      DATABASE_URL: process.env.DATABASE_URL || 'postgresql://localhost:5432/emergency_response',
+      DATABASE_URL: process.env.DATABASE_URL || '',
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
       JWT_SECRET: process.env.JWT_SECRET || 'emergency_response_jwt_secret_dev_key_2026!',
