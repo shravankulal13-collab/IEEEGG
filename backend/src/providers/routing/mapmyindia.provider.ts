@@ -130,8 +130,8 @@ export const mapmyIndiaRoutingProvider: RoutingProvider = {
         throw new Error(`route_eta endpoint returned ${res.status}`);
       }
 
-      const raw = await res.json();
-      return normalizeMapmyIndiaRoute(raw);
+      const raw = (await res.json()) as Partial<{ routes?: Array<{ distance: number }> }>;
+      return normalizeMapmyIndiaRoute(raw as Parameters<typeof normalizeMapmyIndiaRoute>[0]);
     } catch (err) {
       if (err instanceof RoutingProviderError) throw err;
       throw new RoutingProviderError('mapmyindia', 'route computation failed', err);

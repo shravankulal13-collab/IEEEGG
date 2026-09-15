@@ -61,11 +61,11 @@ export const osrmRoutingProvider: RoutingProvider = {
       if (!res.ok) {
         throw new Error(`OSRM returned ${res.status}`);
       }
-      const raw = await res.json();
+      const raw = (await res.json()) as Partial<{ code?: string; routes?: Array<{ distance: number }> }>;
       if (raw.code !== 'Ok' || !raw.routes?.length) {
-        throw new Error(`OSRM returned no route (code: ${raw.code})`);
+        throw new Error(`OSRM returned no route (code: ${raw.code ?? 'unknown'})`);
       }
-      return normalizeOsrmRoute(raw);
+      return normalizeOsrmRoute(raw as Parameters<typeof normalizeOsrmRoute>[0]);
     } catch (err) {
       throw new RoutingProviderError('osrm', 'route computation failed', err);
     }
