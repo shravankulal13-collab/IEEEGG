@@ -6,17 +6,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { 
+import {
   AlertTriangle,
-  MapPin, 
-  Clock, 
-  HeartPulse, 
-  ShieldAlert, 
-  Building2, 
-  CheckCircle2, 
-  XCircle, 
-  Radio, 
-  ArrowRight, 
+  MapPin,
+  Clock,
+  HeartPulse,
+  ShieldAlert,
+  Building2,
+  CheckCircle2,
+  XCircle,
+  Radio,
+  ArrowRight,
   Phone,
   ShieldCheck,
 } from 'lucide-react';
@@ -25,7 +25,7 @@ export const DispatchRequest: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const incidentId = searchParams.get('incidentId') || 'ER-2048';
-  
+
   const [timeLeft, setTimeLeft] = useState(30);
   const [status, setStatus] = useState<'pending' | 'accepted' | 'declined'>('pending');
 
@@ -70,9 +70,6 @@ export const DispatchRequest: React.FC = () => {
         {/* Top Header: Badge + Countdown Timer */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-600/40 animate-pulse">
-              <ShieldAlert className="w-6 h-6" />
-            </div>
             <div>
               <span className="px-2.5 py-0.5 rounded-full bg-red-600/30 text-red-400 text-[10px] font-black tracking-wider uppercase border border-red-500/40">
                 CRITICAL DISPATCH INVITATION
@@ -95,7 +92,6 @@ export const DispatchRequest: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold text-red-400 uppercase tracking-wider">
-              <HeartPulse className="w-4 h-4" />
               Category & Severity
             </div>
             <p className="text-base font-extrabold text-white">Medical emergency / Cardiac Arrest</p>
@@ -106,12 +102,11 @@ export const DispatchRequest: React.FC = () => {
 
           <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-2">
             <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wider">
-              <MapPin className="w-4 h-4" />
               Pickup Location
             </div>
             <p className="text-base font-extrabold text-white truncate">123 Medical Drive, Sector 4</p>
             <p className="text-xs text-slate-400 flex items-center gap-2">
-              <span className="text-emerald-400 font-bold">1.8 km away</span> | 
+              <span className="text-emerald-400 font-bold">1.8 km away</span> |
               <span className="text-slate-300">Est. Arrival: 4-6 min</span>
             </p>
           </div>
@@ -120,9 +115,7 @@ export const DispatchRequest: React.FC = () => {
         {/* Destination Hospital & Pre-emption Corridor */}
         <div className="bg-gradient-to-r from-blue-950/60 to-slate-900/80 border border-blue-900/40 rounded-2xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-500/40 flex items-center justify-center text-blue-400">
-              <Building2 className="w-5 h-5" />
-            </div>
+
             <div>
               <p className="text-xs text-blue-300 font-bold uppercase tracking-wider">Pre-Assigned Destination</p>
               <h4 className="text-sm font-extrabold text-white">St. Jude Medical Center (Level 1)</h4>
@@ -131,7 +124,7 @@ export const DispatchRequest: React.FC = () => {
           </div>
           <div className="hidden sm:flex flex-col items-end">
             <span className="flex items-center gap-1 text-[11px] text-emerald-400 font-extrabold">
-              <Radio className="w-3.5 h-3.5 animate-pulse" /> Green Wave Active
+              Green Wave Active
             </span>
             <span className="text-[10px] text-slate-400">3 Signals Preempted</span>
           </div>
@@ -144,7 +137,7 @@ export const DispatchRequest: React.FC = () => {
               onClick={handleDecline}
               className="w-full sm:w-1/3 py-3.5 px-4 bg-slate-800/90 hover:bg-slate-700 text-slate-300 font-extrabold text-xs rounded-2xl border border-slate-700 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer"
             >
-              <XCircle className="w-4 h-4 text-red-400" />
+
               DECLINE (PASS)
             </button>
 
@@ -152,18 +145,15 @@ export const DispatchRequest: React.FC = () => {
               onClick={handleAccept}
               className="w-full sm:flex-1 py-3.5 px-6 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-extrabold text-sm rounded-2xl shadow-[0_10px_25px_rgba(229,9,20,0.5)] flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer"
             >
-              <CheckCircle2 className="w-5 h-5" />
+
               ACCEPT & COMMENCE ROUTING
-              <ArrowRight className="w-4 h-4 ml-1" />
             </button>
           </div>
         )}
 
         {status === 'accepted' && (
           <div className="p-4 bg-emerald-950/80 border border-emerald-500/50 rounded-2xl text-center space-y-2 animate-fade-in">
-            <div className="w-10 h-10 mx-auto rounded-full bg-emerald-600 flex items-center justify-center text-white font-black text-xl">
-              <ShieldCheck className="w-6 h-6 text-white" />
-            </div>
+
             <h3 className="text-base font-black text-emerald-300">Dispatch Accepted</h3>
             <p className="text-xs text-emerald-200">Initializing GPS telemetry and green wave corridors...</p>
           </div>
@@ -171,9 +161,7 @@ export const DispatchRequest: React.FC = () => {
 
         {status === 'declined' && (
           <div className="p-4 bg-red-950/80 border border-red-500/50 rounded-2xl text-center space-y-2 animate-fade-in">
-            <div className="w-10 h-10 mx-auto rounded-full bg-red-600 flex items-center justify-center text-white font-black text-xl">
-              <XCircle className="w-6 h-6 text-white" />
-            </div>
+
             <h3 className="text-base font-black text-red-300">Dispatch Passed</h3>
             <p className="text-xs text-red-200">Rerouting request to next nearest available ambulance unit...</p>
           </div>
@@ -182,13 +170,13 @@ export const DispatchRequest: React.FC = () => {
         {/* Quick Contact Dispatcher Note */}
         <div className="flex items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-800/80">
           <span className="flex items-center gap-1">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" /> Dispatcher Command: Sarah Jenkins (Console #4)
+            Dispatcher Command: Sarah Jenkins
           </span>
-          <button 
+          <button
             onClick={() => alert("Calling Dispatch Console (+1 800 555-EMRG)...")}
             className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1"
           >
-            <Phone className="w-3 h-3" /> Call Dispatch
+            Call Dispatch
           </button>
         </div>
       </div>

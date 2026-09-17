@@ -17,15 +17,15 @@ export const Analytics: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <PageHeader
-        pillTag="Operations Telemetry & SLA Benchmarks"
+
         title="Platform Operational Analytics & SLA"
         subtitle="Historical response latency, dispatch accuracy, survival index, and fleet efficiency"
-        badge={<Badge variant="success">99.4% SLA Compliance</Badge>}
+
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/dispatcher')}>
-            <RefreshCw className="w-4 h-4 mr-1.5" />
+
             Command Center
           </Button>
         }
@@ -35,7 +35,7 @@ export const Analytics: React.FC = () => {
         <Card>
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase">Average Response Time</span>
-            <Clock className="w-5 h-5 text-blue-600" />
+
           </div>
           <span className="text-3xl font-black text-slate-900">7.2 min</span>
           <p className="text-xs text-emerald-600 font-bold mt-1">1.4 min faster than baseline (Optimized)</p>
@@ -44,7 +44,7 @@ export const Analytics: React.FC = () => {
         <Card>
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase">Sub-Second Dispatch</span>
-            <Activity className="w-5 h-5 text-purple-600" />
+
           </div>
           <span className="text-3xl font-black text-slate-900">328 ms</span>
           <p className="text-xs text-purple-600 font-bold mt-1">Multi-Criteria Proximity Engine</p>
@@ -53,7 +53,7 @@ export const Analytics: React.FC = () => {
         <Card>
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase">Cardiac Survival Index</span>
-            <HeartPulse className="w-5 h-5 text-red-600" />
+
           </div>
           <span className="text-3xl font-black text-slate-900">92.4%</span>
           <p className="text-xs text-emerald-600 font-bold mt-1">+8.6% improvement with pre-triage</p>
@@ -62,7 +62,7 @@ export const Analytics: React.FC = () => {
         <Card>
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase">Anti-Hoax Accuracy</span>
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+
           </div>
           <span className="text-3xl font-black text-slate-900">99.8%</span>
           <p className="text-xs text-slate-500 font-bold mt-1">Validated across 1,400+ runs</p>

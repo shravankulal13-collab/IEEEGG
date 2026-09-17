@@ -14,7 +14,6 @@ import { ambulanceService } from '../../services/ambulance.service';
 import { AppShell } from '../../components/layout/AppShell';
 import { HeroSection } from '../../components/layout/HeroSection';
 import { Card } from '../../components/ui/Card';
-import { Spinner } from '../../components/ui/Spinner';
 import {
   MapPin,
   HeartPulse,
@@ -108,7 +107,7 @@ export const EmergencyHome: React.FC = () => {
   };
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <div className="max-w-5xl mx-auto space-y-8 pb-12">
         {/* Animated Royal Blue Flagship Hero Section */}
         <HeroSection
@@ -137,7 +136,7 @@ export const EmergencyHome: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-              <MapPin className="w-5 h-5 animate-bounce" />
+              <Radio className="w-5 h-5 animate-pulse" />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-800">
@@ -175,11 +174,7 @@ export const EmergencyHome: React.FC = () => {
             }}
             className="btn-pulse-glow hover:scale-105 active:scale-95 group shadow-2xl disabled:opacity-75"
           >
-            {isTriggeringSos ? (
-              <Spinner size="lg" className="text-white mb-2" />
-            ) : (
-              <Radio className="w-10 h-10 mb-2 group-hover:scale-110 transition-transform animate-pulse" />
-            )}
+            <Radio className="w-10 h-10 mb-2 animate-bounce" />
             <span className="text-xl font-black tracking-wider leading-tight">
               {isTriggeringSos ? 'DISPATCHING...' : 'SEND\nEMERGENCY\nSOS'}
             </span>
@@ -204,7 +199,7 @@ export const EmergencyHome: React.FC = () => {
                 className="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:border-red-500 hover:shadow-xl transition-all cursor-pointer group hover-lift flex flex-col justify-between"
               >
                 <div className="flex items-start gap-3">
-                  <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-red-50 transition-colors">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 shrink-0">
                     {cat.icon}
                   </div>
                   <div>
@@ -216,7 +211,7 @@ export const EmergencyHome: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 text-xs font-bold text-slate-400 group-hover:text-red-600">
                   <span>Fast Track Dispatch</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             ))}
@@ -227,7 +222,7 @@ export const EmergencyHome: React.FC = () => {
               className="p-5 bg-gradient-to-br from-[#0B1B4F] to-[#0A192F] text-white rounded-2xl shadow-lg flex flex-col justify-between hover-lift cursor-pointer"
             >
               <div className="flex items-start gap-3">
-                <div className="p-3 bg-red-600/20 rounded-xl text-red-400">
+                <div className="p-2.5 rounded-xl bg-white/10 text-emerald-400 shrink-0">
                   <PhoneCall className="w-5 h-5" />
                 </div>
                 <div>
@@ -237,7 +232,7 @@ export const EmergencyHome: React.FC = () => {
               </div>
               <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/10 text-xs font-bold text-emerald-400">
                 <span>Direct Voice Call</span>
-                <PhoneCall className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4" />
               </div>
             </a>
           </div>

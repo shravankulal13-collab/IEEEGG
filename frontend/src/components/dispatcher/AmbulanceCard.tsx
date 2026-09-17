@@ -53,16 +53,15 @@ export const AmbulanceCard: React.FC<AmbulanceCardProps> = ({
   return (
     <div
       onClick={onSelect}
-      className={`p-4 rounded-2xl border transition-all cursor-pointer ${
-        selected
+      className={`p-4 rounded-2xl border transition-all cursor-pointer ${selected
           ? 'bg-blue-50/70 border-blue-500 shadow-md ring-2 ring-blue-500/20'
           : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
-      }`}
+        }`}
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
-            <Ambulance className="w-4 h-4" />
+
           </div>
           <div>
             <h4 className="text-xs font-black text-slate-900">{unitCode}</h4>
@@ -79,7 +78,7 @@ export const AmbulanceCard: React.FC<AmbulanceCardProps> = ({
         </div>
         <div className="flex items-center justify-between">
           <span className="text-slate-400 font-semibold flex items-center gap-1">
-            <MapPin className="w-3 h-3 text-slate-400" /> Location:
+            Location:
           </span>
           <span className="truncate max-w-[140px] text-slate-700">{location}</span>
         </div>
@@ -88,7 +87,7 @@ export const AmbulanceCard: React.FC<AmbulanceCardProps> = ({
           <span>O2: {oxygen}</span>
           {speedKmH > 0 && (
             <span className="text-blue-600 font-bold flex items-center gap-0.5">
-              <Gauge className="w-3 h-3" /> {speedKmH} km/h
+              {speedKmH} km/h
             </span>
           )}
         </div>

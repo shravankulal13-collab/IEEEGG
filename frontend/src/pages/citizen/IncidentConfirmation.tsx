@@ -37,7 +37,7 @@ export const IncidentConfirmation: React.FC = () => {
           const fallback = useIncidentStore.getState().incidents[0] || null;
           setIncident(fallback);
           setIsLoading(false);
-        }).catch((err) => {
+        }).catch((err: any) => {
           setError(err.message || 'Failed to load incident record.');
           setIsLoading(false);
         });

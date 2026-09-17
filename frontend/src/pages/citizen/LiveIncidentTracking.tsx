@@ -19,9 +19,9 @@ import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { EmergencyMap } from '../../components/maps/EmergencyMap';
-import { 
-  PhoneCall, 
-  Navigation, 
+import {
+  PhoneCall,
+  Navigation,
   Ambulance,
   Building2,
   User,
@@ -108,7 +108,7 @@ export const LiveIncidentTracking: React.FC = () => {
 
   if (isLoading && !incident) {
     return (
-      <AppShell>
+      <AppShell sidebarVariant='top'>
         <div className="max-w-7xl mx-auto py-24 flex flex-col items-center justify-center">
           <Spinner size="lg" />
           <p className="text-xs font-bold text-slate-600 mt-4">Connecting to Live PostGIS Navigation Stream...</p>
@@ -119,7 +119,7 @@ export const LiveIncidentTracking: React.FC = () => {
 
   if (error && !incident) {
     return (
-      <AppShell>
+      <AppShell sidebarVariant='top'>
         <div className="max-w-3xl mx-auto py-12">
           <ErrorState message={error} onRetry={loadData} />
         </div>
@@ -204,46 +204,46 @@ export const LiveIncidentTracking: React.FC = () => {
               incidents={
                 incident
                   ? [
-                      {
-                        id: incident.id,
-                        incidentNumber: String(incident.incident_number || incident.id),
-                        type: (incident.emergency_type as any) || 'medical',
-                        severity: (typeof incident.severity === 'string' ? incident.severity : 'critical') as any,
-                        lat: incident.latitude || 12.9716,
-                        lng: incident.longitude || 77.5946,
-                        address: incident.address || 'Reported Incident Coordinates',
-                      },
-                    ]
+                    {
+                      id: incident.id,
+                      incidentNumber: String(incident.incident_number || incident.id),
+                      type: (incident.emergency_type as any) || 'medical',
+                      severity: (typeof incident.severity === 'string' ? incident.severity : 'critical') as any,
+                      lat: incident.latitude || 12.9716,
+                      lng: incident.longitude || 77.5946,
+                      address: incident.address || 'Reported Incident Coordinates',
+                    },
+                  ]
                   : []
               }
               ambulances={
                 ambulance
                   ? [
-                      {
-                        id: ambulance.id,
-                        unitCode: ambulance.ambulance_number,
-                        type: (ambulance.ambulance_type as any) || 'ALS',
-                        status: (ambulance.status as any) || 'en_route',
-                        speedKmH: ambulance.current_speed_kmh || 45,
-                        heading: ambulance.current_heading || 90,
-                        lat: ambulance.current_latitude || 12.9716,
-                        lng: ambulance.current_longitude || 77.5946,
-                      },
-                    ]
+                    {
+                      id: ambulance.id,
+                      unitCode: ambulance.ambulance_number,
+                      type: (ambulance.ambulance_type as any) || 'ALS',
+                      status: (ambulance.status as any) || 'en_route',
+                      speedKmH: ambulance.current_speed_kmh || 45,
+                      heading: ambulance.current_heading || 90,
+                      lat: ambulance.current_latitude || 12.9716,
+                      lng: ambulance.current_longitude || 77.5946,
+                    },
+                  ]
                   : []
               }
               hospitals={
                 hospital
                   ? [
-                      {
-                        id: hospital.id,
-                        name: hospital.name,
-                        traumaLevel: hospital.trauma_level || 'Level 1',
-                        icuBedsAvailable: hospitalIcuBeds,
-                        lat: hospital.latitude,
-                        lng: hospital.longitude,
-                      },
-                    ]
+                    {
+                      id: hospital.id,
+                      name: hospital.name,
+                      traumaLevel: hospital.trauma_level || 'Level 1',
+                      icuBedsAvailable: hospitalIcuBeds,
+                      lat: hospital.latitude,
+                      lng: hospital.longitude,
+                    },
+                  ]
                   : []
               }
               showGreenCorridor={true}

@@ -81,7 +81,7 @@ function App() {
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/showcase" element={<LandingPage />} />
 
-        {/* Authentication & User Management Routes */}
+        {/* Authentication & User Management Routes — public */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -98,11 +98,11 @@ function App() {
         />
         <Route path="/public" element={<PublicReports />} />
 
-        {/* 1. Citizen Portal Routes */}
+        {/* 1. Citizen Portal Routes — accessible by all authenticated users */}
         <Route
           path="/citizen"
           element={
-            <RoleGuard allowedRoles={['citizen', 'system_admin']}>
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'hospital_staff', 'system_admin']}>
               <EmergencyHome />
             </RoleGuard>
           }
@@ -110,7 +110,7 @@ function App() {
         <Route
           path="/citizen/report"
           element={
-            <RoleGuard allowedRoles={['citizen', 'system_admin']}>
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'hospital_staff', 'system_admin']}>
               <ReportEmergency />
             </RoleGuard>
           }
@@ -118,7 +118,7 @@ function App() {
         <Route
           path="/citizen/confirm"
           element={
-            <RoleGuard allowedRoles={['citizen', 'system_admin']}>
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'hospital_staff', 'system_admin']}>
               <IncidentConfirmation />
             </RoleGuard>
           }
@@ -126,7 +126,7 @@ function App() {
         <Route
           path="/citizen/tracking"
           element={
-            <RoleGuard allowedRoles={['citizen', 'dispatcher', 'system_admin']}>
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'hospital_staff', 'system_admin']}>
               <LiveIncidentTracking />
             </RoleGuard>
           }
@@ -134,7 +134,7 @@ function App() {
         <Route
           path="/citizen/history"
           element={
-            <RoleGuard allowedRoles={['citizen', 'system_admin']}>
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'hospital_staff', 'system_admin']}>
               <IncidentHistory />
             </RoleGuard>
           }

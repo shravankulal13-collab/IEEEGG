@@ -128,6 +128,7 @@ export const Topbar: React.FC = () => {
       { label: 'Report Emergency', path: '/citizen/report', icon: <Zap className="w-4 h-4" /> },
       { label: 'Live Tracking', path: '/citizen/tracking', icon: <MapPin className="w-4 h-4" /> },
       { label: 'History', path: '/citizen/history', icon: <History className="w-4 h-4" /> },
+      { label: 'Public Reports', path: '/public', icon: <FileText className="w-4 h-4" /> },
     ];
   };
 
@@ -170,6 +171,7 @@ export const Topbar: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-[#E50914] inline-block" />
             <span className="w-2 h-2 rounded-full bg-white inline-block" />
           </div>
+
           <div className="flex items-center gap-1">
             <span className="font-black text-xl tracking-tight text-white">ResQ</span>
             <span className="font-black text-xl text-[#E50914]">Grid</span>
@@ -401,3 +403,5 @@ export const Topbar: React.FC = () => {
     </header>
   );
 };
+
+export default Topbar;

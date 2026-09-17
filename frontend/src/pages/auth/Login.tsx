@@ -45,15 +45,14 @@ export const Login: React.FC = () => {
     e.preventDefault();
     try {
       await login({ email, password });
-      const currentUser = useAuthStore.getState().user;
-      const targetRole = currentUser?.role || selectedRole;
-      const dest = getDefaultRolePath(targetRole);
-      
       const from = (location.state as any)?.from?.pathname;
       if (from && from !== '/login' && from !== '/') {
         navigate(from, { replace: true });
         return;
       }
+      const currentUser = useAuthStore.getState().user;
+      const targetRole = currentUser?.role || selectedRole;
+      const dest = getDefaultRolePath(targetRole);
       navigate(dest, { replace: true });
     } catch {
       // Error handled by zustand store

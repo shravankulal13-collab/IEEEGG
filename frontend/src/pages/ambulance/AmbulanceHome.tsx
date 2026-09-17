@@ -10,12 +10,12 @@ import { AppShell } from '../../components/layout/AppShell';
 import { HeroSection } from '../../components/layout/HeroSection';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
-import { 
-  Navigation, 
-  Gauge, 
-  History, 
-  ShieldAlert, 
-  MapPin, 
+import {
+  Navigation,
+  Gauge,
+  History,
+  ShieldAlert,
+  MapPin,
   Zap,
   ArrowRight
 } from 'lucide-react';
@@ -26,11 +26,11 @@ export const AmbulanceHome: React.FC = () => {
   const [hasAssignment] = useState(false);
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <div className="space-y-6 max-w-7xl mx-auto pb-12">
         {/* Animated Flagship Cockpit Hero */}
         <HeroSection
-          badgeText="ALS Paramedic Fleet Telemetry & Rapid Dispatch"
+          badgeText=""
           headingPrefix="Navigate Fast"
           typewriterPhrases={[
             'Green Signal Corridors',
@@ -81,7 +81,7 @@ export const AmbulanceHome: React.FC = () => {
 
                 <p className="text-sm text-slate-300 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>Live incident location and route will appear after dispatch</span>
+                  <span>123 Medical Drive, Sector 4 | Distance: 1.8 km</span>
                 </p>
               </div>
 
@@ -90,9 +90,7 @@ export const AmbulanceHome: React.FC = () => {
                   <span className="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">ESTIMATED ARRIVAL</span>
                   <span className="text-3xl sm:text-4xl font-black text-red-400 font-mono">04 min</span>
                 </div>
-                <div className="w-12 h-12 rounded-2xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400">
-                  <Navigation className="w-6 h-6 animate-pulse" />
-                </div>
+
               </div>
             </div>
 
@@ -101,16 +99,14 @@ export const AmbulanceHome: React.FC = () => {
                 onClick={() => navigate('/ambulance/active')}
                 className="w-full sm:flex-1 py-3.5 px-6 bg-gradient-to-r from-red-600 to-[#B80710] hover:from-red-500 hover:to-red-600 text-white font-extrabold text-sm rounded-2xl shadow-xl shadow-red-600/40 flex items-center justify-center gap-2 transition active:scale-95"
               >
-                <Zap className="w-4 h-4" />
                 ACCEPT & RESPOND NOW
-                <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
                 onClick={() => navigate('/ambulance/navigation')}
                 className="w-full sm:w-auto px-6 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs rounded-2xl border border-slate-700 flex items-center justify-center gap-2 transition"
               >
-                <Navigation className="w-4 h-4 text-blue-400" />
+
                 View Turn-by-Turn GPS
               </button>
 
@@ -118,7 +114,7 @@ export const AmbulanceHome: React.FC = () => {
                 onClick={() => navigate('/ambulance/dispatch')}
                 className="w-full sm:w-auto px-6 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs rounded-2xl border border-slate-700 flex items-center justify-center gap-2 transition"
               >
-                <ShieldAlert className="w-4 h-4 text-amber-400" />
+
                 Dispatch Dossier
               </button>
             </div>
@@ -132,7 +128,7 @@ export const AmbulanceHome: React.FC = () => {
             className="cursor-pointer hover-lift p-5 border border-slate-200 shadow-md bg-white space-y-3 group"
           >
             <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <ShieldAlert className="w-5 h-5" />
+
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-slate-900 group-hover:text-red-600 transition-colors">
@@ -142,7 +138,7 @@ export const AmbulanceHome: React.FC = () => {
             </div>
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-400 group-hover:text-red-600">
               <span>Open Triage</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+
             </div>
           </Card>
 
@@ -151,7 +147,7 @@ export const AmbulanceHome: React.FC = () => {
             className="cursor-pointer hover-lift p-5 border border-slate-200 shadow-md bg-white space-y-3 group"
           >
             <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Navigation className="w-5 h-5" />
+
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors">
@@ -161,7 +157,7 @@ export const AmbulanceHome: React.FC = () => {
             </div>
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-400 group-hover:text-blue-600">
               <span>Launch Navigation</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+
             </div>
           </Card>
 
@@ -170,7 +166,7 @@ export const AmbulanceHome: React.FC = () => {
             className="cursor-pointer hover-lift p-5 border border-slate-200 shadow-md bg-white space-y-3 group"
           >
             <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Gauge className="w-5 h-5" />
+
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-slate-900 group-hover:text-emerald-600 transition-colors">
@@ -180,7 +176,7 @@ export const AmbulanceHome: React.FC = () => {
             </div>
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-400 group-hover:text-emerald-600">
               <span>Check Equipment</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+
             </div>
           </Card>
 
@@ -189,7 +185,7 @@ export const AmbulanceHome: React.FC = () => {
             className="cursor-pointer hover-lift p-5 border border-slate-200 shadow-md bg-white space-y-3 group"
           >
             <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <History className="w-5 h-5" />
+
             </div>
             <div>
               <h3 className="text-sm font-extrabold text-slate-900 group-hover:text-purple-600 transition-colors">
@@ -199,7 +195,7 @@ export const AmbulanceHome: React.FC = () => {
             </div>
             <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-400 group-hover:text-purple-600">
               <span>View Logs</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+
             </div>
           </Card>
         </div>

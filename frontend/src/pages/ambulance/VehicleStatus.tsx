@@ -11,9 +11,9 @@ import { PageHeader } from '../../components/layout/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { 
-  Radio, 
-  BatteryCharging, 
+import {
+  Radio,
+  BatteryCharging,
   ArrowLeft
 } from 'lucide-react';
 
@@ -21,12 +21,12 @@ export const VehicleStatus: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <div className="space-y-6 max-w-7xl mx-auto pb-12">
         <PageHeader
           title="Vehicle Diagnostics & Readiness: AMB-104"
           subtitle="Real-time sensor telemetry, medical oxygen capacity, and cardiac life support readiness"
-          badge={<Badge variant="success">SYSTEMS NOMINAL</Badge>}
+
           actions={
             <Button
               variant="outline"
@@ -34,7 +34,7 @@ export const VehicleStatus: React.FC = () => {
               onClick={() => navigate('/ambulance')}
               className="border-slate-300 text-slate-700 hover:bg-slate-100"
             >
-              <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Cockpit
+              Back to Cockpit
             </Button>
           }
         />
@@ -45,7 +45,7 @@ export const VehicleStatus: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2 text-blue-600 font-black text-sm uppercase">
                 <Radio className="w-5 h-5" />
-                TomTom GPS & Network
+                Live GPS & Telemetry Network
               </div>
               <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-xs font-bold">
                 CONNECTED
@@ -76,7 +76,7 @@ export const VehicleStatus: React.FC = () => {
           <Card className="p-6 border border-slate-200 bg-white shadow-xl space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2 text-emerald-600 font-black text-sm uppercase">
-                <BatteryCharging className="w-5 h-5" />
+
                 Medical Life Support Equipment
               </div>
               <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-bold">

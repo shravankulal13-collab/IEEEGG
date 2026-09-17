@@ -50,7 +50,7 @@ export const Register: React.FC = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link to="/" className="inline-flex items-center gap-2 mb-4 group">
           <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-600/30 group-hover:scale-105 transition-transform">
-            <ShieldAlert className="w-6 h-6" />
+
           </div>
           <div className="text-left">
             <span className="text-xl font-extrabold text-[#0B1B4F] tracking-tight">ResQ</span>
@@ -67,7 +67,7 @@ export const Register: React.FC = () => {
         <div className="bg-white py-8 px-6 shadow-[0_10px_30px_rgba(0,0,0,0.06)] border border-slate-200/80 rounded-3xl sm:px-10">
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2 text-xs font-semibold text-red-700">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+
               <span>{error}</span>
             </div>
           )}
@@ -77,7 +77,7 @@ export const Register: React.FC = () => {
               <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
               <div className="relative rounded-xl shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
+
                 </div>
                 <input
                   type="text"
@@ -97,7 +97,7 @@ export const Register: React.FC = () => {
               <label className="block text-xs font-bold text-slate-700 mb-1">Email address</label>
               <div className="relative rounded-xl shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
+
                 </div>
                 <input
                   type="email"
@@ -117,7 +117,7 @@ export const Register: React.FC = () => {
               <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
               <div className="relative rounded-xl shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Phone className="w-4 h-4" />
+
                 </div>
                 <input
                   type="tel"
@@ -137,7 +137,7 @@ export const Register: React.FC = () => {
               <label className="block text-xs font-bold text-slate-700 mb-1">Password</label>
               <div className="relative rounded-xl shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4" />
+
                 </div>
                 <input
                   type="password"
@@ -177,7 +177,7 @@ export const Register: React.FC = () => {
               ) : (
                 <>
                   <span>Create Account</span>
-                  <ArrowRight className="w-4 h-4" />
+
                 </>
               )}
             </button>

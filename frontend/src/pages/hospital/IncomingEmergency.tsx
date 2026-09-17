@@ -23,12 +23,11 @@ export const IncomingEmergency: React.FC = () => {
   const [cathLabReady, setCathLabReady] = useState(true);
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <PageHeader
         pillTag="DEMO / SIMULATION Medical Inbound Stream"
         title="Live Inbound Patient Telemetry [SIMULATION]"
         subtitle="Simulated cardiac waveform, oxygen saturation, and paramedic telemetry stream"
-        badge={<Badge variant="danger">Simulation Inbound</Badge>}
         actions={
           <Button
             variant="outline"
@@ -36,7 +35,8 @@ export const IncomingEmergency: React.FC = () => {
             onClick={() => navigate('/hospital')}
             className="border-slate-300 text-slate-700 hover:bg-slate-100"
           >
-            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Intake Dashboard
+            <ArrowLeft className="w-4 h-4 mr-1.5" />
+            Back to Intake Dashboard
           </Button>
         }
       />
@@ -46,9 +46,6 @@ export const IncomingEmergency: React.FC = () => {
         <div className="lg:col-span-8 bg-slate-950 text-white rounded-3xl p-6 border border-slate-800 shadow-2xl space-y-6">
           <div className="flex items-center justify-between border-b border-slate-800 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-red-600/20 text-red-500 flex items-center justify-center font-bold">
-                <HeartPulse className="w-6 h-6 animate-pulse" />
-              </div>
               <div>
                 <h3 className="text-base font-extrabold text-white">Live Onboard ECG & Biometrics</h3>
                 <p className="text-xs text-slate-400">Streamed from AMB-104 via Socket.IO Real-time Mesh</p>
@@ -129,7 +126,7 @@ export const IncomingEmergency: React.FC = () => {
                 size="sm"
                 onClick={() => setCathLabReady(!cathLabReady)}
               >
-                <ShieldCheck className="w-4 h-4 mr-1.5" />
+
                 {cathLabReady ? 'Cath-Lab Team Standing By (Confirmed)' : 'Confirm Team Ready'}
               </Button>
 
@@ -139,7 +136,7 @@ export const IncomingEmergency: React.FC = () => {
                 size="sm"
                 onClick={() => alert('Audio patch established with AMB-104 Paramedic Unit.')}
               >
-                <Phone className="w-4 h-4 mr-1.5" />
+
                 Patch Paramedic Audio Call
               </Button>
             </div>

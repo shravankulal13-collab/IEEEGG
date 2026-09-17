@@ -11,6 +11,7 @@ import { Topbar } from './Topbar';
 export interface AppShellProps {
   children: React.ReactNode;
   showSidebar?: boolean; // Maintained for backward compatibility
+  sidebarVariant?: string;
 }
 
 export const AppShell: React.FC<AppShellProps> = ({ children }) => {
@@ -25,3 +26,5 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     </div>
   );
 };
+
+export default AppShell;

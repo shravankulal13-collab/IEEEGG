@@ -51,11 +51,11 @@ export const AuditLogs: React.FC = () => {
   ];
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <PageHeader
         title="Security & System Audit Forensics"
         subtitle="Cryptographically sealed timestamped event logs for regulatory and compliance oversight"
-        badge={<Badge variant="success">Audit Trail Intact</Badge>}
+
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/dispatcher')}>
             <RefreshCw className="w-4 h-4 mr-1.5" />
@@ -81,7 +81,7 @@ export const AuditLogs: React.FC = () => {
               {logs.map((log) => (
                 <tr key={log.id} className="hover:bg-slate-50 transition-colors">
                   <td className="py-3.5 px-4 font-mono font-bold text-slate-900 flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+
                     <span>{log.id}</span>
                   </td>
                   <td className="py-3.5 px-4 font-bold text-blue-600">{log.action}</td>

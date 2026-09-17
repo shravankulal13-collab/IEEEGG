@@ -58,7 +58,7 @@ export const HospitalDashboard: React.FC = () => {
   const ventilatorsAvailable = activeHospital?.available_ventilators ?? 0;
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <HeroSection
         badgeText={`${activeHospital?.name || 'Medical Emergency'} Intake Center`}
         headingPrefix="Coordinate Rapid"
@@ -101,7 +101,7 @@ export const HospitalDashboard: React.FC = () => {
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase">Emergency Beds</span>
-            <HeartPulse className="w-5 h-5 text-blue-600" />
+            <Activity className="w-5 h-5 text-blue-600" />
           </div>
           <span className="text-3xl font-black text-slate-900">{emergencyAvailable} Free</span>
           <p className="text-xs text-blue-600 font-bold mt-1">Available for triage</p>
@@ -119,7 +119,7 @@ export const HospitalDashboard: React.FC = () => {
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-500 uppercase">Inbound In Triage</span>
-            <Radio className="w-5 h-5 text-red-600 animate-pulse" />
+            <HeartPulse className="w-5 h-5 text-red-600 animate-pulse" />
           </div>
           <span className="text-3xl font-black text-red-600">{incomingPatients.length} Inbound</span>
           <p className="text-xs text-slate-500 font-bold mt-1">Live Telemetry Queue</p>
@@ -181,7 +181,7 @@ export const HospitalDashboard: React.FC = () => {
                       </p>
                       {patient.vitals && (
                         <div className="mt-2 flex items-center gap-2 text-xs font-mono font-bold text-red-700 bg-red-50 px-2.5 py-1 rounded-lg border border-red-200">
-                          <Activity className="w-3.5 h-3.5 animate-pulse" />
+                          <HeartPulse className="w-3.5 h-3.5 shrink-0" />
                           <span>HR: {patient.vitals.heart_rate || '--'} bpm | SpO2: {patient.vitals.spo2 || '--'}% | BP: {patient.vitals.bp || '--'}</span>
                         </div>
                       )}
@@ -211,14 +211,13 @@ export const HospitalDashboard: React.FC = () => {
       )}
 
       {/* Quick Navigation Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-6 lg:px-8">
         <Card
           onClick={() => navigate('/hospital/resources')}
           className="cursor-pointer hover-lift flex items-center gap-3 p-5"
         >
-          <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
-            <Building2 className="w-6 h-6" />
-          </div>
+
+
           <div>
             <h4 className="text-sm font-bold text-slate-900">Bed & ICU Resources</h4>
             <p className="text-xs text-slate-500">Manage ventilators, ward allocation</p>
@@ -229,9 +228,6 @@ export const HospitalDashboard: React.FC = () => {
           onClick={() => navigate('/hospital/doctors')}
           className="cursor-pointer hover-lift flex items-center gap-3 p-5"
         >
-          <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
-            <Users className="w-6 h-6" />
-          </div>
           <div>
             <h4 className="text-sm font-bold text-slate-900">Doctors On-Call</h4>
             <p className="text-xs text-slate-500">Medical specialist roster</p>
@@ -242,9 +238,7 @@ export const HospitalDashboard: React.FC = () => {
           onClick={() => navigate('/hospital/history')}
           className="cursor-pointer hover-lift flex items-center gap-3 p-5"
         >
-          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
-            <Activity className="w-6 h-6" />
-          </div>
+
           <div>
             <h4 className="text-sm font-bold text-slate-900">Emergency History</h4>
             <p className="text-xs text-slate-500">Admissions & outcome logs</p>

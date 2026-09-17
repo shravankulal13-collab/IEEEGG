@@ -38,7 +38,7 @@ export const CommandCenter: React.FC = () => {
 
     const interval = setInterval(() => {
       fetchIncidents();
-      ambulanceService.getAllAmbulances().then(setAmbulances).catch(() => {});
+      ambulanceService.getAllAmbulances().then(setAmbulances).catch(() => { });
     }, 10000);
 
     return () => clearInterval(interval);
@@ -65,10 +65,10 @@ export const CommandCenter: React.FC = () => {
       : safeIncidents.filter((inc) => String(inc.severity) === filter || String(inc.status) === filter);
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <HeroSection
-        badgeText="Emergency Dispatch Command Center & Live Matrix"
-        headingPrefix="Orchestrate Sub-Second"
+        badgeText=""
+        headingPrefix="Coordinate Faster"
         typewriterPhrases={[
           'Emergency Medical Corridors',
           'PostGIS Fleet Dispatches',
@@ -76,7 +76,7 @@ export const CommandCenter: React.FC = () => {
           'Hospital ICU Capacity'
         ]}
         headingSuffix="with ResQGrid"
-        subtitle="Sub-second incident triaging, PostGIS fleet telemetry, dynamic traffic clearance corridors, and automated hospital ICU bed matching."
+        subtitle="Coordinate incidents, ambulances, traffic clearance, and hospital availability from one emergency operations center."
         primaryCta={{
           label: "View Fleet Telemetry",
           onClick: () => navigate('/dispatcher/fleet'),
@@ -185,7 +185,7 @@ export const CommandCenter: React.FC = () => {
               fullWidth
               onClick={() => navigate('/citizen/report')}
             >
-              <Radio className="w-4 h-4 mr-1.5" />
+
               Manual Emergency Intake
             </Button>
           </div>
@@ -204,25 +204,22 @@ export const CommandCenter: React.FC = () => {
             <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold">
               <button
                 onClick={() => setFilter('all')}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  filter === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
-                }`}
+                className={`px-3 py-1.5 rounded-lg transition-all ${filter === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
+                  }`}
               >
                 All ({incidents.length})
               </button>
               <button
                 onClick={() => setFilter('critical')}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  filter === 'critical' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
-                }`}
+                className={`px-3 py-1.5 rounded-lg transition-all ${filter === 'critical' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
+                  }`}
               >
                 Critical
               </button>
               <button
                 onClick={() => setFilter('en_route')}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
-                  filter === 'en_route' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
-                }`}
+                className={`px-3 py-1.5 rounded-lg transition-all ${filter === 'en_route' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
+                  }`}
               >
                 En Route
               </button>
@@ -275,20 +272,19 @@ export const CommandCenter: React.FC = () => {
                     <td className="py-3.5 px-4 font-bold capitalize">{inc.emergency_type || 'Medical'}</td>
                     <td className="py-3.5 px-4">
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          String(inc.severity) === '5' || String(inc.severity).toLowerCase() === 'critical'
-                            ? 'bg-red-100 text-red-700 border border-red-200'
-                            : 'bg-amber-100 text-amber-700 border border-amber-200'
-                        }`}
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${String(inc.severity) === '5' || String(inc.severity).toLowerCase() === 'critical'
+                          ? 'bg-red-100 text-red-700 border border-red-200'
+                          : 'bg-amber-100 text-amber-700 border border-amber-200'
+                          }`}
                       >
                         {String(
                           inc.severity === 5 || String(inc.severity).toLowerCase() === 'critical'
                             ? 'CRITICAL'
                             : inc.severity === 4 || String(inc.severity).toLowerCase() === 'high'
-                            ? 'HIGH'
-                            : inc.severity === 3 || String(inc.severity).toLowerCase() === 'medium' || String(inc.severity).toLowerCase() === 'moderate'
-                            ? 'MEDIUM'
-                            : inc.severity || 'HIGH'
+                              ? 'HIGH'
+                              : inc.severity === 3 || String(inc.severity).toLowerCase() === 'medium' || String(inc.severity).toLowerCase() === 'moderate'
+                                ? 'MEDIUM'
+                                : inc.severity || 'HIGH'
                         ).toUpperCase()}
                       </span>
                     </td>

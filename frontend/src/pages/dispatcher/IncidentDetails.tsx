@@ -54,18 +54,18 @@ export const IncidentDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <AppShell>
-        <div className="py-24 flex flex-col items-center justify-center">
+      <AppShell sidebarVariant="top">
+        < div className="py-24 flex flex-col items-center justify-center" >
           <Spinner size="lg" />
           <p className="text-xs font-bold text-slate-500 mt-3">Loading incident dossier from database...</p>
-        </div>
-      </AppShell>
+        </div >
+      </AppShell >
     );
   }
 
   if (error || !incident) {
     return (
-      <AppShell>
+      <AppShell sidebarVariant="top">
         <div className="max-w-3xl mx-auto py-12">
           <ErrorState message={`Incident Error: ${error || 'Incident not found'}`} onRetry={() => navigate('/dispatcher')} />
         </div>
@@ -102,10 +102,10 @@ export const IncidentDetails: React.FC = () => {
                     incident.severity === 5 || String(incident.severity).toLowerCase() === 'critical'
                       ? 'CRITICAL'
                       : incident.severity === 4 || String(incident.severity).toLowerCase() === 'high'
-                      ? 'HIGH'
-                      : incident.severity === 3 || String(incident.severity).toLowerCase() === 'medium' || String(incident.severity).toLowerCase() === 'moderate'
-                      ? 'MEDIUM'
-                      : incident.severity || 'HIGH'
+                        ? 'HIGH'
+                        : incident.severity === 3 || String(incident.severity).toLowerCase() === 'medium' || String(incident.severity).toLowerCase() === 'moderate'
+                          ? 'MEDIUM'
+                          : incident.severity || 'HIGH'
                   ).toUpperCase()} PRIORITY
                 </span>
                 <h2 className="text-xl font-black text-slate-900 mt-0.5 capitalize">

@@ -33,7 +33,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       }}
     >
       {/* Ambient background particles & grid glow */}
-      <div 
+      <div
         className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
           backgroundImage: `radial-gradient(rgba(56, 189, 248, 0.4) 1px, transparent 1px)`,

@@ -17,12 +17,12 @@ export const RouteIntelligence: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <PageHeader
         pillTag="Real-time TomTom & Traffic Fusion Engine"
         title="Traffic Routing Engine & Signal Preemption"
         subtitle="Dynamic congestion evasion, distance calculation, and emergency green-wave traffic signals"
-        badge={<Badge variant="success">Engine Active</Badge>}
+
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/dispatcher')}>
             <RefreshCw className="w-4 h-4 mr-1.5" />
@@ -55,7 +55,7 @@ export const RouteIntelligence: React.FC = () => {
           />
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-2 bg-emerald-950/80 px-3 py-1.5 rounded-full border border-emerald-500/40 text-emerald-400 text-xs font-bold">
-              <Zap className="w-3.5 h-3.5" />
+
               <span>Route 9 Green Corridor Cleared</span>
             </div>
             <span className="text-xs text-slate-300 font-mono font-bold">ETA: 04 min (Saved: 3.8 min)</span>
@@ -103,7 +103,7 @@ export const RouteIntelligence: React.FC = () => {
             fullWidth
             onClick={() => navigate('/dispatcher/traffic')}
           >
-            <Navigation className="w-4 h-4 mr-1.5" />
+
             Inspect Traffic Bottlenecks
           </Button>
         </div>
