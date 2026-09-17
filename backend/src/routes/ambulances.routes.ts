@@ -10,15 +10,15 @@ import { trackingService } from '../modules/tracking/tracking.service';
 
 const router = Router();
 
-router.get('/', ambulanceController.getAllAmbulances.bind(ambulanceController));
-router.post('/', ambulanceController.create.bind(ambulanceController));
-router.get('/driver/:driverId', ambulanceController.getDriverAmbulance.bind(ambulanceController));
-router.get('/incident/:incidentId', ambulanceController.getIncidentAmbulance.bind(ambulanceController));
-router.get('/:id', ambulanceController.getAmbulanceById.bind(ambulanceController));
-router.patch('/:id/status', ambulanceController.updateStatus.bind(ambulanceController));
-router.post('/:id/location', ambulanceController.updateLocation.bind(ambulanceController));
+router.get('/', (req, res, next) => ambulanceController.getAllAmbulances(req, res, next));
+router.post('/', (req, res, next) => ambulanceController.create(req, res, next));
+router.get('/driver/:driverId', (req, res, next) => ambulanceController.getDriverAmbulance(req, res, next));
+router.get('/incident/:incidentId', (req, res, next) => ambulanceController.getIncidentAmbulance(req, res, next));
+router.get('/:id', (req, res, next) => ambulanceController.getAmbulanceById(req, res, next));
+router.patch('/:id/status', (req, res, next) => ambulanceController.updateStatus(req, res, next));
+router.post('/:id/location', (req, res, next) => ambulanceController.updateLocation(req, res, next));
 
-router.get('/:id/tracking', async (req, res) => {
+router.get('/:id/tracking', async (req, res, next) => {
   try {
     const { id } = req.params;
     const targetLat = req.query.targetLat ? Number(req.query.targetLat) : undefined;
@@ -31,7 +31,7 @@ router.get('/:id/tracking', async (req, res) => {
     }
     res.json({ success: true, data: tracking });
   } catch (error: any) {
-    res.status(500).json({ success: false, error: error.message });
+    next(error);
   }
 });
 

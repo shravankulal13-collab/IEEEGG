@@ -4,13 +4,13 @@
 // MODULE: Ambulance HTTP API Controllers
 // ============================================================
 
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { ambulanceService } from './ambulance.service';
 import { updateAmbulanceStatusSchema, updateAmbulanceLocationSchema, createAmbulanceSchema } from './ambulance.validator';
 import { mapBackendStatusToUIState } from './ambulance.state-machine';
 
 export class AmbulanceController {
-  async getAllAmbulances(req: Request, res: Response): Promise<void> {
+  async getAllAmbulances(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ambulances = await ambulanceService.getAllAmbulances();
       const enriched = ambulances.map((amb) => ({
@@ -19,11 +19,11 @@ export class AmbulanceController {
       }));
       res.json({ success: true, data: enriched });
     } catch (error: any) {
-      res.status(500).json({ success: false, error: error.message });
+      next(error);
     }
   }
 
-  async getAmbulanceById(req: Request, res: Response): Promise<void> {
+  async getAmbulanceById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
       if (!id) {
@@ -39,11 +39,11 @@ export class AmbulanceController {
         },
       });
     } catch (error: any) {
-      res.status(404).json({ success: false, error: error.message });
+      next(error);
     }
   }
 
-  async getDriverAmbulance(req: Request, res: Response): Promise<void> {
+  async getDriverAmbulance(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const rawDriverId = req.params.driverId || (req as any).user?.id;
       const driverId = Array.isArray(rawDriverId) ? rawDriverId[0] : rawDriverId;
@@ -64,11 +64,11 @@ export class AmbulanceController {
         },
       });
     } catch (error: any) {
-      res.status(500).json({ success: false, error: error.message });
+      next(error);
     }
   }
 
-  async getIncidentAmbulance(req: Request, res: Response): Promise<void> {
+  async getIncidentAmbulance(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const rawIncidentId = req.params.incidentId;
       const incidentId = Array.isArray(rawIncidentId) ? rawIncidentId[0] : rawIncidentId;
@@ -89,11 +89,11 @@ export class AmbulanceController {
         },
       });
     } catch (error: any) {
-      res.status(500).json({ success: false, error: error.message });
+      next(error);
     }
   }
 
-  async updateStatus(req: Request, res: Response): Promise<void> {
+  async updateStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const rawId = req.params.id;
       const id = Array.isArray(rawId) ? rawId[0] : rawId;
@@ -121,11 +121,11 @@ export class AmbulanceController {
         },
       });
     } catch (error: any) {
-      res.status(400).json({ success: false, error: error.message });
+      next(error);
     }
   }
 
-  async updateLocation(req: Request, res: Response): Promise<void> {
+  async updateLocation(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const rawId = req.params.id;
       const id = Array.isArray(rawId) ? rawId[0] : rawId;
@@ -155,11 +155,11 @@ export class AmbulanceController {
         },
       });
     } catch (error: any) {
-      res.status(400).json({ success: false, error: error.message });
+      next(error);
     }
   }
 
-  async create(req: Request, res: Response): Promise<void> {
+  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const parseResult = createAmbulanceSchema.safeParse(req.body);
       if (!parseResult.success) {
@@ -169,7 +169,7 @@ export class AmbulanceController {
       const created = await ambulanceService.createAmbulance(parseResult.data);
       res.status(201).json({ success: true, data: created });
     } catch (error: any) {
-      res.status(500).json({ success: false, error: error.message });
+      next(error);
     }
   }
 }

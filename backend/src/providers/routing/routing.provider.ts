@@ -8,7 +8,7 @@
  * routing.provider.ts (SHARED)
  * Owner: Anush KD — Routing + Traffic + Resilience Engineer
  *
- * Provider-agnostic contract that every routing engine (Mappls, Waze, OSRM)
+ * Provider-agnostic contract that every routing engine (TomTom, Waze, OSRM)
  * must satisfy. Nothing in the rest of the codebase should import a concrete
  * provider directly — always depend on this interface so providers can be
  * swapped, mocked in tests, or reordered in the fallback chain without
@@ -52,7 +52,7 @@ export interface RouteResult {
   computedAt: string; // ISO timestamp
 }
 
-export type RoutingProviderName = 'mapmyindia' | 'waze' | 'osrm';
+export type RoutingProviderName = 'tomtom' | 'waze' | 'osrm';
 
 export interface RouteRequest {
   origin: LatLng;

@@ -44,7 +44,7 @@ Audit Logs & Operational Analytics
 - **Database & Spatial**: Supabase / PostgreSQL, PostGIS spatial indexing & geography queries
 - **Realtime**: Socket.IO, Supabase Realtime pub/sub
 - **Caching**: Redis with resilient in-memory local cache fallback
-- **Routing**: MapmyIndia (Mappls) integration adapter with internal heuristic fallback routing
+- **Routing**: TomTom integration adapter with internal heuristic fallback routing
 
 ---
 

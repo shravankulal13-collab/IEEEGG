@@ -9,14 +9,14 @@
  *
  * Every routing provider returns a structurally different JSON payload.
  * This module is the ONLY place that shape-shifts a raw provider response
- * into our shared RouteResult contract — keeping mapmyindia.provider.ts and
+ * into our shared RouteResult contract — keeping the routing adapter and
  * fallback.provider.ts thin, and giving us one place to fix parsing bugs.
  */
 
 import type { RouteGeometry, RouteResult, RouteStep } from './routing.provider.js';
 
 // ---------------------------------------------------------------------------
-// Mappls (MapmyIndia) route_eta response
+// Legacy route_eta response shape
 // ---------------------------------------------------------------------------
 
 interface MapplsLeg {
@@ -43,7 +43,7 @@ interface MapplsResponse {
 export function normalizeMapmyIndiaRoute(raw: MapplsResponse): RouteResult {
   const route = raw.routes?.[0];
   if (!route) {
-    throw new Error('mapmyindia response contained no routes');
+    throw new Error('legacy route response contained no routes');
   }
 
   const steps: RouteStep[] = route.legs.flatMap((leg) =>
@@ -66,7 +66,7 @@ export function normalizeMapmyIndiaRoute(raw: MapplsResponse): RouteResult {
   };
 
   const result: RouteResult = {
-    provider: 'mapmyindia',
+    provider: 'tomtom',
     distanceMeters: route.distance,
     durationSeconds: route.duration,
     geometry,

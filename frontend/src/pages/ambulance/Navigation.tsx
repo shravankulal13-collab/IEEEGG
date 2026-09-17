@@ -1,93 +1,281 @@
 // ============================================================
 // PRIMARY OWNER: Saishree Santhosh Shet
 // ROLE: Citizen + Ambulance Application
-// MODULE: Ambulance Turn-by-Turn Navigation UI
+// MODULE: Ambulance Turn-by-Turn Navigation UI (ResQGrid Cockpit)
 // ============================================================
 
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Phone } from 'lucide-react';
+import { useIncidentStore } from '../../store/incidentStore';
+import { hospitalService, type HospitalData } from '../../services/hospital.service';
+import { ambulanceService, type AmbulanceData } from '../../services/ambulance.service';
+import { routeService, type CalculatedRoute } from '../../services/route.service';
+import { type IncidentRecord } from '../../services/incident.service';
+import { EmergencyMap } from '../../components/maps/EmergencyMap';
+import { Spinner } from '../../components/ui/Spinner';
+import { 
+  Phone, 
+  ArrowRight, 
+  ShieldCheck, 
+  ArrowLeft,
+  Building2,
+} from 'lucide-react';
 
 export const Navigation: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const incidentId = searchParams.get('incidentId') || 'ER-2048';
+  const incidentId = searchParams.get('incidentId');
+  const { fetchIncidentById } = useIncidentStore();
+
+  const [incident, setIncident] = useState<IncidentRecord | null>(null);
+  const [ambulance, setAmbulance] = useState<AmbulanceData | null>(null);
+  const [hospital, setHospital] = useState<HospitalData | null>(null);
+  const [route, setRoute] = useState<CalculatedRoute | null>(null);
+  const [speed, setSpeed] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      let activeInc: IncidentRecord | null = null;
+      if (incidentId) {
+        activeInc = await fetchIncidentById(incidentId);
+      }
+
+      const hospitals = await hospitalService.getAllHospitals();
+      const ambulances = await ambulanceService.getAllAmbulances();
+      const targetAmb = activeInc?.assigned_ambulance_id
+        ? ambulances.find((a) => a.id === activeInc?.assigned_ambulance_id) || ambulances[0]
+        : ambulances[0];
+      setAmbulance(targetAmb || null);
+
+      if (!activeInc && targetAmb?.current_incident_id) {
+        try {
+          activeInc = await fetchIncidentById(targetAmb.current_incident_id);
+        } catch {
+          activeInc = null;
+        }
+      }
+      setIncident(activeInc);
+
+      const isActiveStatus = ['dispatching', 'dispatched', 'en_route', 'on_scene', 'arrived', 'transporting'].includes(activeInc?.status || '');
+      const isAssigned = Boolean(activeInc && targetAmb && activeInc.assigned_ambulance_id === targetAmb.id);
+      const hasAmbulanceLocation = Boolean(
+        targetAmb &&
+        typeof targetAmb.current_latitude === 'number' &&
+        typeof targetAmb.current_longitude === 'number',
+      );
+      const hasActiveAssignment = isActiveStatus && isAssigned && hasAmbulanceLocation;
+      const targetHosp = hasActiveAssignment && activeInc?.assigned_hospital_id
+        ? hospitals.find((h) => h.id === activeInc.assigned_hospital_id) || null
+        : null;
+      setHospital(targetHosp);
+      setSpeed(targetAmb?.current_speed_kmh ?? null);
+
+      if (hasActiveAssignment && targetAmb && targetHosp && activeInc) {
+        const originLat = targetAmb.current_latitude as number;
+        const originLng = targetAmb.current_longitude as number;
+        const destLat = targetHosp.latitude;
+        const destLng = targetHosp.longitude;
+
+        const calculated = await routeService.computeRoute({
+          origin: { lat: originLat, lng: originLng },
+          destination: { lat: destLat, lng: destLng },
+          profile: 'emergency',
+        });
+        setRoute(calculated);
+      } else {
+        setRoute(null);
+      }
+
+      setIsLoading(false);
+    } catch {
+      setIsLoading(false);
+    }
+  }, [incidentId, fetchIncidentById]);
+
+  useEffect(() => {
+    loadData();
+
+    return undefined;
+  }, [loadData]);
+
+  if (isLoading && !incident) {
+    return (
+      <div className="h-screen bg-[#070F1E] flex flex-col items-center justify-center text-white">
+        <Spinner size="lg" />
+        <p className="text-xs font-bold text-slate-400 mt-4">Initializing TomTom Routing HUD...</p>
+      </div>
+    );
+  }
+
+  const patientAddress = incident?.address || 'Reported Incident GPS Coordinates';
+  const hospitalName = hospital?.name || incident?.assigned_hospital_name || 'Assigned Medical Center (Pending)';
+  const callerName = incident?.reporter_name || 'Emergency Caller';
+  const hasActiveAssignment = Boolean(
+    incident &&
+    ambulance &&
+    typeof ambulance.current_latitude === 'number' &&
+    typeof ambulance.current_longitude === 'number' &&
+    ['dispatching', 'dispatched', 'en_route', 'on_scene', 'arrived', 'transporting'].includes(incident.status) &&
+    incident.assigned_ambulance_id === ambulance.id,
+  );
+  const etaMinutes = route ? Math.ceil(route.duration_seconds / 60) : 0;
+  const distanceKm = route ? (route.distance_meters / 1000).toFixed(1) : '0.0';
+  const nextStep = hasActiveAssignment
+    ? route?.steps[0]?.instruction || 'Proceed along designated emergency green corridor'
+    : 'No active emergency assignment';
+  const mapRoute = route
+    ? {
+        routeId: `navigation-${route.provider}`,
+        provider: route.provider === 'osrm' ? 'osrm' as const : 'tomtom' as const,
+        distanceKm: route.distance_meters / 1000,
+        durationMinutes: route.duration_seconds / 60,
+        polyline: route.geometry,
+        steps: [],
+        greenWaveSignals: [],
+        trafficLevel: 'moderate' as const,
+      }
+    : null;
 
   return (
-    <div className="h-screen bg-slate-900 text-white font-sans flex flex-col overflow-hidden">
-      {/* Top Banner Navigation Instructions */}
-      <div className="bg-blue-700 px-6 py-4 flex items-center justify-between shadow-xl z-20">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-white text-blue-700 flex items-center justify-center font-black text-2xl shadow">
-            ➔
+    <div className="h-screen bg-[#070F1E] text-white font-sans flex flex-col overflow-hidden">
+      {/* Top Banner Navigation Instructions (ResQGrid Deep Navy) */}
+      <div className="bg-[#0B1B4F] border-b-2 border-emerald-500/40 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 shadow-2xl z-20">
+        <div className="min-w-0 flex flex-1 items-center gap-2 sm:gap-4">
+          <button
+            onClick={() => navigate('/ambulance')}
+            className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition cursor-pointer"
+            title="Back to Cockpit"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+
+          <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black text-2xl shadow-lg border border-emerald-400">
+            <ArrowRight className="w-6 h-6" />
           </div>
-          <div>
-            <span className="text-[10px] font-bold text-blue-200 uppercase tracking-widest">NEXT TURN IN 200m</span>
-            <h1 className="text-xl font-black text-white">Turn Right onto Medical Drive</h1>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${hasActiveAssignment ? 'text-emerald-400 bg-emerald-950 border-emerald-600/40' : 'text-slate-400 bg-slate-900 border-slate-700'}`}>
+                {hasActiveAssignment ? 'TOMTOM LIVE ROUTING' : 'TOMTOM ROUTING READY'}
+              </span>
+              <span className="text-xs text-slate-400 font-mono font-bold">Caller: {callerName}</span>
+            </div>
+            <h1 className="text-sm sm:text-xl leading-tight font-black text-white mt-0.5">
+              {nextStep}
+            </h1>
           </div>
         </div>
 
-        <div className="text-right">
-          <span className="text-2xl font-black text-white">06 min</span>
-          <span className="text-xs text-blue-200 block">2.4 km remaining</span>
+        <div className="flex items-center gap-6">
+          <div className="hidden sm:block text-right">
+            <span className="text-[10px] text-slate-400 font-bold uppercase block">SPEED</span>
+            <span className="text-xl font-black text-amber-400 font-mono">{speed === null ? '--' : `${speed} km/h`}</span>
+          </div>
+
+          <div className="text-right border-l border-slate-700 pl-4 sm:pl-6">
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl sm:text-3xl font-black text-white font-mono">{String(etaMinutes).padStart(2, '0')}</span>
+              <span className="text-xs font-bold text-slate-400">min</span>
+            </div>
+            <span className="text-[11px] text-emerald-400 font-bold block">{distanceKm} km remaining</span>
+          </div>
         </div>
       </div>
 
-      {/* Main Turn-by-Turn Map Canvas */}
-      <div className="flex-1 relative bg-slate-800">
-        <img
-          src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1400&q=80"
-          alt="Driver Navigation Map"
-          className="w-full h-full object-cover filter contrast-125 brightness-90"
+      {/* Main Interactive Map Canvas */}
+      <div className="flex-1 relative">
+        <EmergencyMap
+          center={
+            ambulance &&
+            typeof ambulance.current_latitude === 'number' &&
+            typeof ambulance.current_longitude === 'number'
+              ? { lat: ambulance.current_latitude, lng: ambulance.current_longitude }
+              : undefined
+          }
+          incidents={
+            hasActiveAssignment && incident
+              ? [
+                  {
+                    id: incident.id,
+                    incidentNumber: String(incident.incident_number || incident.id),
+                    type: (incident.emergency_type as any) || 'medical',
+                    severity: 'critical',
+                    lat: incident.latitude || 12.9716,
+                    lng: incident.longitude || 77.5946,
+                    address: patientAddress,
+                  },
+                ]
+              : []
+          }
+          ambulances={
+            ambulance
+              ? [
+                  {
+                    id: ambulance.id,
+                    unitCode: ambulance.ambulance_number,
+                    type: (ambulance.ambulance_type as any) || 'ALS',
+                    status: (ambulance.status as any) || 'en_route',
+                    speedKmH: speed ?? undefined,
+                    heading: ambulance.current_heading || 90,
+                    lat: ambulance.current_latitude || 12.9716,
+                    lng: ambulance.current_longitude || 77.5946,
+                  },
+                ]
+              : []
+          }
+          hospitals={
+            hospital
+              ? [
+                  {
+                    id: hospital.id,
+                    name: hospital.name,
+                    traumaLevel: hospital.trauma_level || 'Level 1',
+                    icuBedsAvailable: hospital.available_icu_beds || hospital.availableICUBeds || 4,
+                    lat: hospital.latitude,
+                    lng: hospital.longitude,
+                  },
+                ]
+              : []
+          }
+          showGreenCorridor={hasActiveAssignment}
+          activeRoute={hasActiveAssignment ? mapRoute : null}
+          className="h-full rounded-none border-none"
         />
-
-        {/* Route Overlay SVG */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-          <path
-            d="M 300 700 L 480 400 L 700 220"
-            stroke="#3b82f6"
-            strokeWidth="6"
-            fill="none"
-          />
-        </svg>
-
-        {/* Current Ambulance Marker */}
-        <div className="absolute top-[400px] left-[480px] -translate-x-1/2 -translate-y-1/2 z-10 animate-pulse">
-          <div className="w-10 h-10 rounded-full bg-red-600 border-4 border-white flex items-center justify-center shadow-2xl">
-            🚑
-          </div>
-        </div>
-
-        {/* Destination Marker */}
-        <div className="absolute top-[220px] left-[700px] -translate-x-1/2 -translate-y-1/2 z-10">
-          <div className="w-8 h-8 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center shadow-lg">
-            <MapPin className="w-4 h-4 text-white" />
-          </div>
-        </div>
       </div>
 
       {/* Bottom Operational Action Bar */}
-      <div className="bg-slate-900 border-t border-slate-800 p-4 px-6 flex items-center justify-between z-20">
-        <div>
-          <span className="text-[10px] text-slate-400 font-bold block">DESTINATION</span>
-          <span className="text-sm font-bold text-white">123 Medical Drive ({incidentId})</span>
+      <div className="bg-[#0B1B4F] border-t border-blue-900/60 p-4 px-6 flex items-center justify-between z-20">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
+            <Building2 className="w-5 h-5" />
+          </div>
+          <div>
+            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">DESTINATION MEDICAL FACILITY</span>
+            <span className="text-sm font-extrabold text-white">{hospitalName}</span>
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => alert('Calling dispatch center...')}
-            className="p-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-slate-700"
+            onClick={() => window.open('tel:108')}
+            className="p-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-slate-700 transition cursor-pointer"
+            title="Call Dispatch"
           >
             <Phone className="w-5 h-5 text-blue-400" />
           </button>
           <button
-            onClick={() => navigate(`/ambulance/active?incidentId=${incidentId}`)}
-            className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition-colors"
+            onClick={() => navigate(`/ambulance/active?incidentId=${incident?.id || incidentId}`)}
+            className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-extrabold text-xs rounded-xl shadow-[0_10px_25px_rgba(229,9,20,0.5)] flex items-center gap-2 transition active:scale-95 cursor-pointer"
           >
-            Update Operational Status
+            <ShieldCheck className="w-4 h-4" />
+            UPDATE PATIENT TRIAGE
+            <ArrowRight className="w-4 h-4 ml-1" />
           </button>
         </div>
       </div>
     </div>
   );
 };
+
+export default Navigation;

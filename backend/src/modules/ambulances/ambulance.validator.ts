@@ -20,9 +20,20 @@ export const ambulanceStatusEnum = z.enum([
 ]);
 
 export const updateAmbulanceStatusSchema = z.object({
-  status: ambulanceStatusEnum,
-  incident_id: z.string().uuid().optional().nullable(),
-  hospital_id: z.string().uuid().optional().nullable(),
+  status: z
+    .string()
+    .transform((val) => {
+      const lower = val.toLowerCase().trim();
+      const aliasMap: Record<string, string> = {
+        en_route: 'en_route_to_incident',
+        completed: 'available',
+        arrived: 'on_scene',
+      };
+      return aliasMap[lower] || lower;
+    })
+    .pipe(ambulanceStatusEnum),
+  incident_id: z.string().optional().nullable(),
+  hospital_id: z.string().optional().nullable(),
 });
 
 export const updateAmbulanceLocationSchema = z.object({

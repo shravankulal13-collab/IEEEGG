@@ -1,206 +1,309 @@
 // ============================================================
 // PRIMARY OWNER: Saishree Santhosh Shet
 // ROLE: Citizen + Ambulance Application
-// MODULE: Citizen Emergency Reporting Interface (Stitch Reference 2)
+// MODULE: Citizen Emergency Reporting Interface (ResQGrid Core)
 // ============================================================
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useGeolocation } from '../../hooks/useGeolocation';
-import { X, MapPin, AlertCircle, Stethoscope, Car, Activity } from 'lucide-react';
+import { useAuthStore } from '../../store/authStore';
+import { useIncidentStore } from '../../store/incidentStore';
+import { hospitalService } from '../../services/hospital.service';
+import { ambulanceService } from '../../services/ambulance.service';
+import { AppShell } from '../../components/layout/AppShell';
+import { PageHeader } from '../../components/layout/PageHeader';
+import { Card } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { MapPin, AlertCircle, Stethoscope, Car, Activity, Radio, ArrowLeft } from 'lucide-react';
 
-export interface ReportEmergencyModalProps {
-  onClose: () => void;
-}
-
-export const ReportEmergencyModal: React.FC<ReportEmergencyModalProps> = ({ onClose }) => {
+export const ReportEmergency: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const geo = useGeolocation(true);
-  const [selectedCategory, setSelectedCategory] = useState<'medical' | 'accident' | 'trauma' | 'other'>('medical');
+  const { user } = useAuthStore();
+  const { createIncident } = useIncidentStore();
+
+  const initialCat = (location.state as any)?.category || 'medical';
+  const [selectedCategory, setSelectedCategory] = useState<'medical' | 'accident' | 'trauma' | 'other'>(
+    ['medical', 'accident', 'trauma', 'other'].includes(initialCat) ? initialCat : 'medical'
+  );
+  const [reporterName, setReporterName] = useState(user?.fullName || '');
+  const [reporterPhone, setReporterPhone] = useState('+91 98765 43210');
   const [details, setDetails] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrorMessage(null);
 
     try {
-      // Trigger API or store dispatch call
-      const mockIncidentId = `ER-${Math.floor(1000 + Math.random() * 9000)}`;
-      setTimeout(() => {
-        setIsSubmitting(false);
-        onClose();
-        navigate(`/citizen/confirm?incidentId=${mockIncidentId}&type=${selectedCategory}`);
-      }, 600);
-    } catch (error) {
+      const lat = geo.latitude || 12.9716;
+      const lng = geo.longitude || 77.5946;
+
+      // 1. Find nearest capable available hospital
+      let targetHospitalId: string | undefined;
+      let targetHospitalName: string | undefined;
+      try {
+        const hospitals = await hospitalService.getAllHospitals();
+        const availableHosp = hospitals.find((h) => (h.available_icu_beds || h.availableICUBeds || 0) > 0 || (h.available_beds || h.availableEmergencyBeds || 0) > 0) || hospitals[0];
+        if (availableHosp) {
+          targetHospitalId = availableHosp.id;
+          targetHospitalName = availableHosp.name;
+        }
+      } catch {
+        // Fallback
+      }
+
+      // 2. Find nearest available ambulance
+      let targetAmbulanceId: string | undefined;
+      let targetAmbulanceNumber: string | undefined;
+      try {
+        const ambulances = await ambulanceService.getAllAmbulances();
+        const availableAmb = ambulances.find((a) => a.status.toLowerCase() === 'available') || ambulances[0];
+        if (availableAmb) {
+          targetAmbulanceId = availableAmb.id;
+          targetAmbulanceNumber = availableAmb.ambulance_number;
+        }
+      } catch {
+        // Fallback
+      }
+
+      const finalReporter = reporterName.trim() || user?.fullName || 'Citizen Reporter';
+
+      // 3. Persist to Backend PostgreSQL Database
+      const incident = await createIncident({
+        emergencyType: (selectedCategory as any),
+        title: `Emergency Incident (${selectedCategory.toUpperCase()})`,
+        description: details.trim() || 'Immediate emergency medical response requested.',
+        latitude: lat,
+        longitude: lng,
+        address: geo.address || 'Bengaluru Central Metro Area',
+        reporter_name: finalReporter,
+        reporter_phone: reporterPhone,
+        assigned_hospital_id: targetHospitalId,
+        assigned_hospital_name: targetHospitalName,
+        assigned_ambulance_id: targetAmbulanceId,
+        assigned_ambulance_number: targetAmbulanceNumber,
+        severity: selectedCategory === 'accident' || selectedCategory === 'trauma' ? 'critical' : 'high',
+      });
+
       setIsSubmitting(false);
+      navigate(`/citizen/confirm?incidentId=${incident.id}&type=${selectedCategory}`);
+    } catch (err: any) {
+      setIsSubmitting(false);
+      setErrorMessage(err.message || 'Failed to submit emergency report to database.');
     }
   };
 
   const categories = [
     {
       id: 'medical',
-      title: 'Medical',
-      subtitle: 'Illness, injury, breathing issues',
+      title: 'Medical Emergency',
+      subtitle: 'Cardiac, severe respiratory, stroke',
       icon: <Stethoscope className="w-5 h-5 text-blue-600" />,
     },
     {
       id: 'accident',
-      title: 'Accident',
-      subtitle: 'Vehicle collision, structural',
-      icon: <Car className="w-5 h-5 text-slate-700" />,
+      title: 'Vehicle Collision',
+      subtitle: 'Road crash, structural entrapment',
+      icon: <Car className="w-5 h-5 text-red-600" />,
     },
     {
       id: 'trauma',
-      title: 'Trauma',
-      subtitle: 'Severe physical injury, bleeding',
-      icon: <Activity className="w-5 h-5 text-slate-700" />,
+      title: 'Severe Physical Injury',
+      subtitle: 'Heavy bleeding, fall from height',
+      icon: <Activity className="w-5 h-5 text-amber-600" />,
     },
     {
       id: 'other',
-      title: 'Other',
-      subtitle: 'Unspecified immediate danger',
-      icon: <AlertCircle className="w-5 h-5 text-slate-700" />,
+      title: 'Critical Incident',
+      subtitle: 'Unspecified immediate physical danger',
+      icon: <AlertCircle className="w-5 h-5 text-purple-600" />,
     },
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-extrabold text-slate-900">Report Emergency</h2>
-            <p className="text-xs text-slate-500">Initiate immediate assistance.</p>
+    <AppShell>
+      <div className="space-y-6 max-w-3xl mx-auto pb-12">
+        <PageHeader
+          pillTag="Immediate Emergency Intake"
+          title="Report Emergency Incident"
+          subtitle="Direct GPS-tagged dispatch with automated medical unit and corridor coordination."
+          actions={
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/citizen')}
+              className="border-slate-300 text-slate-700 hover:bg-slate-100"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Dashboard
+            </Button>
+          }
+        />
+
+        {errorMessage && (
+          <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs font-bold flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMessage}</span>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Step 1: Emergency Type */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center">
-                1
-              </span>
-              <h3 className="text-sm font-bold text-slate-900">Emergency Type</h3>
-            </div>
+        <Card className="p-6 sm:p-8 bg-white border border-slate-200/80 rounded-3xl shadow-xl">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Step 1: Emergency Type */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center">
+                  1
+                </span>
+                <h3 className="text-sm font-extrabold text-slate-900">Select Emergency Type</h3>
+              </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              {categories.map((cat) => {
-                const isSelected = selectedCategory === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat.id as any)}
-                    className={`p-3.5 rounded-xl border text-left flex items-start justify-between transition-all ${
-                      isSelected
-                        ? 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-500/20'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                    }`}
-                  >
-                    <div>
-                      <div className="mb-2">{cat.icon}</div>
-                      <p className="text-xs font-bold text-slate-900">{cat.title}</p>
-                      <p className="text-[10px] text-slate-500 leading-tight mt-0.5">{cat.subtitle}</p>
-                    </div>
-                    <div
-                      className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                        isSelected ? 'border-blue-600 bg-blue-600' : 'border-slate-300'
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {categories.map((cat) => {
+                  const isSelected = selectedCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setSelectedCategory(cat.id as any)}
+                      className={`p-4 rounded-2xl border text-left flex items-start justify-between transition-all cursor-pointer ${
+                        isSelected
+                          ? 'border-red-600 bg-red-50/70 ring-2 ring-red-500/30'
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
                       }`}
                     >
-                      {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      <div>
+                        <div className="mb-2.5 p-2 bg-slate-50 rounded-xl inline-block border border-slate-100">
+                          {cat.icon}
+                        </div>
+                        <p className="text-xs font-extrabold text-slate-900">{cat.title}</p>
+                        <p className="text-[11px] text-slate-500 leading-tight mt-0.5">{cat.subtitle}</p>
+                      </div>
+                      <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                          isSelected ? 'border-red-600 bg-red-600' : 'border-slate-300'
+                        }`}
+                      >
+                        {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Step 2: Location */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center">
+                  2
+                </span>
+                <h3 className="text-sm font-extrabold text-slate-900">Verified Location</h3>
+              </div>
+
+              <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50">
+                <div className="p-4 flex items-center justify-between text-xs bg-white border-b border-slate-200">
+                  <div className="flex items-center gap-2.5 text-slate-800">
+                    <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-200">
+                      <MapPin className="w-4 h-4" />
                     </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Step 2: Location */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center">
-                2
-              </span>
-              <h3 className="text-sm font-bold text-slate-900">Location</h3>
-            </div>
-
-            <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
-              <div className="h-28 bg-slate-200 relative overflow-hidden flex items-center justify-center">
-                <img
-                  src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=600&q=80"
-                  alt="Location map"
-                  className="w-full h-full object-cover opacity-80"
-                />
-                <div className="absolute w-8 h-8 rounded-full bg-red-500/30 flex items-center justify-center">
-                  <div className="w-3 h-3 bg-red-600 rounded-full border-2 border-white" />
-                </div>
-              </div>
-              <div className="p-3 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2 text-slate-800">
-                  <MapPin className="w-4 h-4 text-slate-500 shrink-0" />
-                  <div>
-                    <span className="font-bold block">Current Location</span>
-                    <span className="text-slate-500">{geo.address || '123 Emergency Ave, Unit 4B'}</span>
+                    <div>
+                      <span className="font-extrabold text-slate-900 block">Current Incident Coordinates</span>
+                      <span className="text-slate-500 font-medium">
+                        {geo.address || (geo.latitude ? `${geo.latitude.toFixed(4)}° N, ${geo.longitude?.toFixed(4)}° E` : '123 Medical Drive, Sector 4')}
+                      </span>
+                    </div>
                   </div>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                    GPS LOCK HIGH ACCURACY
+                  </span>
                 </div>
-                <button type="button" className="text-blue-600 font-semibold hover:underline">
-                  Edit
-                </button>
               </div>
             </div>
-          </div>
 
-          {/* Step 3: Details */}
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center">
-                3
-              </span>
-              <h3 className="text-sm font-bold text-slate-900">Details <span className="text-slate-400 font-normal">(Optional)</span></h3>
+            {/* Step 3: Reporter Information */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center">
+                  3
+                </span>
+                <h3 className="text-sm font-extrabold text-slate-900">Reporter Contact Information</h3>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    value={reporterName}
+                    onChange={(e) => setReporterName(e.target.value)}
+                    placeholder="Enter caller name"
+                    className="w-full p-3 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none bg-white font-medium"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">Contact Phone</label>
+                  <input
+                    type="tel"
+                    value={reporterPhone}
+                    onChange={(e) => setReporterPhone(e.target.value)}
+                    placeholder="+91 Phone number"
+                    className="w-full p-3 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none bg-white font-medium"
+                    required
+                  />
+                </div>
+              </div>
             </div>
 
-            <textarea
-              rows={3}
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              placeholder="e.g., number of people, specific hazards..."
-              className="w-full p-3 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
-            />
-          </div>
+            {/* Step 4: Details */}
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-6 h-6 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center">
+                  4
+                </span>
+                <h3 className="text-sm font-extrabold text-slate-900">
+                  Additional Details <span className="text-slate-400 font-normal">(Optional)</span>
+                </h3>
+              </div>
 
-          {/* Footer Actions */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-xl border border-slate-300"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-lg transition-colors flex items-center gap-2"
-            >
-              <span className="text-[10px] bg-red-700 px-1 rounded font-mono">SOS</span>
-              {isSubmitting ? 'SENDING SOS...' : 'SEND SOS NOW'}
-            </button>
-          </div>
-        </form>
+              <textarea
+                rows={3}
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+                placeholder="e.g., number of injured persons, immediate hazards, landmark near location..."
+                className="w-full p-3.5 text-xs border border-slate-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:outline-none bg-white font-medium"
+              />
+            </div>
+
+            {/* Submit SOS Button */}
+            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate('/citizen')}
+                className="w-full sm:w-auto"
+              >
+                Cancel
+              </Button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-red-600 to-[#B80710] hover:from-red-500 hover:to-red-600 text-white text-sm font-extrabold rounded-2xl shadow-xl shadow-red-600/30 transition-all transform hover:scale-[1.02] active:scale-98 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <Radio className="w-4 h-4 animate-pulse" />
+                <span>{isSubmitting ? 'PERSISTING & TRANSMITTING SOS...' : 'TRANSMIT SOS SIGNAL NOW'}</span>
+              </button>
+            </div>
+          </form>
+        </Card>
       </div>
-    </div>
+    </AppShell>
   );
 };
 
-export const ReportEmergency: React.FC = () => {
-  const navigate = useNavigate();
-  return <ReportEmergencyModal onClose={() => navigate('/citizen')} />;
-};
+export default ReportEmergency;

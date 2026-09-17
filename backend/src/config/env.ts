@@ -23,6 +23,7 @@ const envSchema = z.object({
   FRONTEND_URL: z.string().url().default('http://localhost:5173'),
   MAPPLS_CLIENT_ID: z.string().optional(),
   MAPPLS_API_KEY: z.string().optional(),
+  TOMTOM_API_KEY: z.string().optional(),
   MAPMYINDIA_CLIENT_ID: z.string().optional(),
   MAPMYINDIA_CLIENT_SECRET: z.string().optional(),
   MAPMYINDIA_ACCESS_TOKEN: z.string().optional(),
@@ -67,6 +68,7 @@ export const env = parsed.success
         process.env.MAPMYINDIA_CLIENT_SECRET ||
         process.env.MAPMYINDIA_ACCESS_TOKEN ||
         '',
+      TOMTOM_API_KEY: process.env.TOMTOM_API_KEY || '',
       MAPMYINDIA_CLIENT_ID: process.env.MAPMYINDIA_CLIENT_ID,
       MAPMYINDIA_CLIENT_SECRET: process.env.MAPMYINDIA_CLIENT_SECRET,
       MAPMYINDIA_ACCESS_TOKEN: process.env.MAPMYINDIA_ACCESS_TOKEN,

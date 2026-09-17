@@ -10,7 +10,7 @@
  * Two responsibilities live here on purpose (they're tightly coupled):
  *
  *  1. OsrmRoutingProvider — a free, self-hostable/public OSRM instance used
- *     as the LAST-RESORT routing engine when Mappls is unreachable. No API
+ *     as the LAST-RESORT routing engine when TomTom is unreachable. No API
  *     key required, so it can never fail on auth and is a safe bottom rung.
  *
  *  2. resolveRoute() — the resilience orchestrator that walks the provider
@@ -29,7 +29,7 @@ import type {
   RoutingProvider,
 } from './routing.provider.js';
 import { normalizeOsrmRoute } from './route.normalizer.js';
-import { mapmyIndiaRoutingProvider } from './mapmyindia.provider.js';
+import { tomTomRoutingProvider } from './mapmyindia.provider.js';
 import { recordProviderFailure, recordProviderSuccess } from '../traffic/provider-health.service.js';
 
 const OSRM_BASE_URL = process.env.OSRM_BASE_URL ?? 'https://router.project-osrm.org';
@@ -86,14 +86,14 @@ export const osrmRoutingProvider: RoutingProvider = {
 /**
  * Ordered fallback chain. Waze is intentionally NOT a routing source (it's
  * traffic-only in this system, see providers/traffic/waze.provider.ts) —
- * the routing chain is Mappls -> OSRM, per the architecture doc.
+ * the routing chain is TomTom -> OSRM.
  */
-const CHAIN: RoutingProvider[] = [mapmyIndiaRoutingProvider, osrmRoutingProvider].sort(
+const CHAIN: RoutingProvider[] = [tomTomRoutingProvider, osrmRoutingProvider].sort(
   (a, b) => a.priority - b.priority,
 );
 
 export interface ResolveRouteResult extends RouteResult {
-  /** True if we had to fall back away from the primary (Mappls) provider. */
+  /** True if OSRM was used instead of TomTom. */
   degraded: boolean;
   attemptedProviders: string[];
 }

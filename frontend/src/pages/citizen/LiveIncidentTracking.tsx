@@ -1,211 +1,305 @@
 // ============================================================
 // PRIMARY OWNER: Saishree Santhosh Shet
 // ROLE: Citizen + Ambulance Application
-// MODULE: Live Incident Tracking Screen (Stitch Reference 4)
+// MODULE: Live Incident Tracking Screen (ResQGrid Map HUD)
 // ============================================================
 
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ShieldAlert, LayoutDashboard, Activity, Radio, FileText, Settings, HelpCircle, User, Compass, Plus, Minus } from 'lucide-react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useIncidentStore } from '../../store/incidentStore';
+import { ambulanceService, type AmbulanceData } from '../../services/ambulance.service';
+import { hospitalService, type HospitalData } from '../../services/hospital.service';
+import { routeService, type CalculatedRoute } from '../../services/route.service';
+import { type IncidentRecord } from '../../services/incident.service';
+import { AppShell } from '../../components/layout/AppShell';
+import { PageHeader } from '../../components/layout/PageHeader';
+import { Card } from '../../components/ui/Card';
+import { Badge } from '../../components/ui/Badge';
+import { Button } from '../../components/ui/Button';
+import { Spinner } from '../../components/ui/Spinner';
+import { ErrorState } from '../../components/ui/ErrorState';
+import { EmergencyMap } from '../../components/maps/EmergencyMap';
+import { 
+  PhoneCall, 
+  Navigation, 
+  Ambulance,
+  Building2,
+  User,
+} from 'lucide-react';
 
 export const LiveIncidentTracking: React.FC = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const incidentId = searchParams.get('incidentId') || 'ER-2048';
+  const incidentId = searchParams.get('incidentId');
+  const { fetchIncidentById } = useIncidentStore();
 
-  const [eta, setEta] = useState(6);
-  const [distance, setDistance] = useState(2.4);
+  const [incident, setIncident] = useState<IncidentRecord | null>(null);
+  const [ambulance, setAmbulance] = useState<AmbulanceData | null>(null);
+  const [hospital, setHospital] = useState<HospitalData | null>(null);
+  const [calculatedRoute, setCalculatedRoute] = useState<CalculatedRoute | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Simulated live telemetry movement update
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      let activeInc: IncidentRecord | null = null;
+      if (incidentId) {
+        try {
+          activeInc = await fetchIncidentById(incidentId);
+        } catch {
+          // If the specific incident ID does not exist in the database, load latest active incident
+          await useIncidentStore.getState().fetchIncidents();
+          activeInc = useIncidentStore.getState().incidents[0] || null;
+        }
+      } else {
+        await useIncidentStore.getState().fetchIncidents();
+        activeInc = useIncidentStore.getState().incidents[0] || null;
+      }
+
+      setIncident(activeInc);
+
+      // Load hospitals
+      const hospitals = await hospitalService.getAllHospitals();
+      const targetHosp = activeInc?.assigned_hospital_id
+        ? hospitals.find((h) => h.id === activeInc?.assigned_hospital_id) || hospitals[0]
+        : hospitals[0];
+      setHospital(targetHosp || null);
+
+      // Load ambulances
+      const ambulances = await ambulanceService.getAllAmbulances();
+      const targetAmb = activeInc?.assigned_ambulance_id
+        ? ambulances.find((a) => a.id === activeInc?.assigned_ambulance_id) || ambulances[0]
+        : ambulances[0];
+      setAmbulance(targetAmb || null);
+
+      // Calculate Real Driving Route via TomTom API
+      if (activeInc && (targetAmb || targetHosp)) {
+        const originLat = targetAmb?.current_latitude || activeInc.latitude || 12.9716;
+        const originLng = targetAmb?.current_longitude || activeInc.longitude || 77.5946;
+        const destLat = targetHosp?.latitude || activeInc.latitude || 12.8953;
+        const destLng = targetHosp?.longitude || activeInc.longitude || 77.5986;
+
+        const route = await routeService.computeRoute({
+          origin: { lat: originLat, lng: originLng },
+          destination: { lat: destLat, lng: destLng },
+          profile: 'emergency',
+        });
+        setCalculatedRoute(route);
+      }
+
+      setIsLoading(false);
+    } catch (err: any) {
+      setError(err.message || 'Failed to load live tracking telemetry.');
+      setIsLoading(false);
+    }
+  }, [incidentId, fetchIncidentById]);
+
   useEffect(() => {
+    loadData();
+
+    // Auto-refresh telemetry every 10 seconds
     const interval = setInterval(() => {
-      setEta((prev) => (prev > 1 ? prev - 1 : 1));
-      setDistance((prev) => (prev > 0.3 ? Number((prev - 0.2).toFixed(1)) : 0.2));
-    }, 12000);
+      loadData();
+    }, 10000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [loadData]);
+
+  if (isLoading && !incident) {
+    return (
+      <AppShell>
+        <div className="max-w-7xl mx-auto py-24 flex flex-col items-center justify-center">
+          <Spinner size="lg" />
+          <p className="text-xs font-bold text-slate-600 mt-4">Connecting to Live PostGIS Navigation Stream...</p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (error && !incident) {
+    return (
+      <AppShell>
+        <div className="max-w-3xl mx-auto py-12">
+          <ErrorState message={error} onRetry={loadData} />
+        </div>
+      </AppShell>
+    );
+  }
+
+  const reporterName = incident?.reporter_name || 'Citizen Caller';
+  const reporterPhone = incident?.reporter_phone || 'Emergency Contact';
+  const assignedAmbNumber = ambulance?.ambulance_number || incident?.assigned_ambulance_number || (incident?.assigned_ambulance_id ? `Unit ${incident.assigned_ambulance_id}` : 'Pending Unit Assignment');
+  const assignedHospitalName = hospital?.name || incident?.assigned_hospital_name || 'Pending Hospital Assignment';
+  const hospitalIcuBeds = hospital ? (hospital.available_icu_beds ?? hospital.availableICUBeds ?? 0) : 0;
+  const hospitalEmergencyBeds = hospital ? (hospital.available_beds ?? hospital.availableEmergencyBeds ?? 0) : 0;
+
+  const etaDisplay = calculatedRoute?.formatted_duration || (incident?.assigned_ambulance_id ? 'Calculating...' : 'Pending Assignment');
+  const distanceDisplay = calculatedRoute?.formatted_distance || (incident?.assigned_ambulance_id ? 'Computing...' : 'Standby');
 
   return (
-    <div className="flex h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden">
-      {/* Left Navigation Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between p-4 shrink-0">
-        <div>
-          <div className="flex items-center gap-2 mb-6 px-2">
-            <ShieldAlert className="w-6 h-6 text-blue-600" />
-            <h1 className="text-base font-bold tracking-tight text-slate-900">Emergency Intelligence</h1>
-          </div>
-
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm">
-                742
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Unit 742</p>
-                <p className="text-xs text-slate-500">Active Duty</p>
-              </div>
+    <AppShell>
+      <div className="space-y-6 max-w-7xl mx-auto pb-12">
+        {/* Page Header */}
+        <PageHeader
+          pillTag="Live Map HUD"
+          title={`Tracking Incident: ${incident?.id || incidentId || 'LIVE'}`}
+          subtitle={`Caller: ${reporterName} (${reporterPhone}) • Destination: ${assignedHospitalName}`}
+          actions={
+            <div className="flex items-center gap-2">
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => window.open('tel:108')}
+                className="btn-pulse-glow"
+              >
+                <PhoneCall className="w-3.5 h-3.5 mr-1" />
+                <span>Call Emergency 108</span>
+              </Button>
             </div>
-            <button className="w-full mt-3 py-1.5 px-3 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-xs font-semibold transition-colors">
-              Go Offline
-            </button>
+          }
+        />
+
+        {/* 3 Top Real-Time Status Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-[#0B1B4F] border border-blue-500/30 rounded-2xl p-4 shadow-xl flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">ESTIMATED TIME OF ARRIVAL</span>
+              <p className="text-2xl font-black text-emerald-400 mt-1">{etaDisplay}</p>
+              <span className="text-[10px] text-slate-300">Distance: {distanceDisplay} (TomTom Engine)</span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
+              <Navigation className="w-5 h-5 animate-pulse" />
+            </div>
           </div>
 
-          <nav className="space-y-1">
-            <button onClick={() => navigate('/citizen')} className="w-full flex items-center gap-3 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium">
-              <LayoutDashboard className="w-4 h-4" />
-              Dashboard
-            </button>
-            <button onClick={() => navigate('/citizen/history')} className="w-full flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors">
-              <Activity className="w-4 h-4" />
-              Incidents
-            </button>
-            <button onClick={() => navigate('/ambulance')} className="w-full flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors">
-              <Radio className="w-4 h-4" />
-              Fleet
-            </button>
-            <button className="w-full flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors">
-              <FileText className="w-4 h-4" />
-              Reports
-            </button>
-          </nav>
+          <div className="bg-[#0B1B4F] border border-blue-500/30 rounded-2xl p-4 shadow-xl flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">DESTINATION MEDICAL CENTER</span>
+              <p className="text-base font-black text-white mt-1 truncate max-w-[200px]">{assignedHospitalName}</p>
+              <span className="text-[10px] text-emerald-300 font-bold">{hospitalIcuBeds} ICU / {hospitalEmergencyBeds} Emergency Beds Free</span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+              <Building2 className="w-5 h-5" />
+            </div>
+          </div>
+
+          <div className="bg-[#0B1B4F] border border-blue-500/30 rounded-2xl p-4 shadow-xl flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">ASSIGNED AMBULANCE</span>
+              <p className="text-base font-black text-white mt-1">{assignedAmbNumber} ({ambulance?.ambulance_type || 'ALS'})</p>
+              <span className="text-[10px] text-slate-300">Driver: {ambulance?.driver_name || 'Paramedic Unit'}</span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white">
+              <Ambulance className="w-5 h-5 text-red-400" />
+            </div>
+          </div>
         </div>
 
-        <div className="space-y-1 border-t border-slate-200 pt-3">
-          <button onClick={() => navigate('/citizen/profile')} className="w-full flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors">
-            <Settings className="w-4 h-4" />
-            Settings
-          </button>
-          <button className="w-full flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-medium transition-colors">
-            <HelpCircle className="w-4 h-4" />
-            Support
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Tracking Area: Map + Right Panel */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* Live Map Area */}
-        <div className="flex-1 relative bg-slate-200 overflow-hidden">
-          {/* Map Image Background */}
-          <img
-            src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1400&q=80"
-            alt="Live Tracking Map"
-            className="w-full h-full object-cover filter contrast-105 brightness-95"
-          />
-
-          {/* Top Live Pill Overlay */}
-          <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200 shadow-md flex items-center gap-2 text-xs font-bold text-slate-900 z-10">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-            <span>{incidentId} | Live</span>
-          </div>
-
-          {/* Map Controls */}
-          <div className="absolute bottom-6 right-6 flex flex-col gap-2 z-10">
-            <button className="w-9 h-9 bg-white border border-slate-200 rounded-lg shadow-md flex items-center justify-center text-slate-700 hover:bg-slate-50">
-              <Plus className="w-4 h-4" />
-            </button>
-            <button className="w-9 h-9 bg-white border border-slate-200 rounded-lg shadow-md flex items-center justify-center text-slate-700 hover:bg-slate-50">
-              <Minus className="w-4 h-4" />
-            </button>
-            <button className="w-9 h-9 bg-white border border-slate-200 rounded-lg shadow-md flex items-center justify-center text-blue-600 hover:bg-slate-50">
-              <Compass className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Simulated Route Line SVG */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-            <path
-              d="M 620 180 L 450 350 L 320 580"
-              stroke="#2563eb"
-              strokeWidth="4"
-              strokeDasharray="8 6"
-              fill="none"
+        {/* Main Content: Map + Status Timeline */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Interactive Map (Takes 2 Columns) */}
+          <div className="lg:col-span-2 h-[520px]">
+            <EmergencyMap
+              incidents={
+                incident
+                  ? [
+                      {
+                        id: incident.id,
+                        incidentNumber: String(incident.incident_number || incident.id),
+                        type: (incident.emergency_type as any) || 'medical',
+                        severity: (typeof incident.severity === 'string' ? incident.severity : 'critical') as any,
+                        lat: incident.latitude || 12.9716,
+                        lng: incident.longitude || 77.5946,
+                        address: incident.address || 'Reported Incident Coordinates',
+                      },
+                    ]
+                  : []
+              }
+              ambulances={
+                ambulance
+                  ? [
+                      {
+                        id: ambulance.id,
+                        unitCode: ambulance.ambulance_number,
+                        type: (ambulance.ambulance_type as any) || 'ALS',
+                        status: (ambulance.status as any) || 'en_route',
+                        speedKmH: ambulance.current_speed_kmh || 45,
+                        heading: ambulance.current_heading || 90,
+                        lat: ambulance.current_latitude || 12.9716,
+                        lng: ambulance.current_longitude || 77.5946,
+                      },
+                    ]
+                  : []
+              }
+              hospitals={
+                hospital
+                  ? [
+                      {
+                        id: hospital.id,
+                        name: hospital.name,
+                        traumaLevel: hospital.trauma_level || 'Level 1',
+                        icuBedsAvailable: hospitalIcuBeds,
+                        lat: hospital.latitude,
+                        lng: hospital.longitude,
+                      },
+                    ]
+                  : []
+              }
+              showGreenCorridor={true}
+              className="h-full"
             />
-          </svg>
-
-          {/* Citizen Location Marker */}
-          <div className="absolute top-[180px] left-[620px] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10">
-            <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg border-2 border-white">
-              <User className="w-4 h-4" />
-            </div>
-            <span className="text-[10px] font-bold bg-white/90 px-1.5 py-0.5 rounded shadow text-slate-800 mt-1">Citizen</span>
           </div>
 
-          {/* Ambulance Location Marker */}
-          <div className="absolute top-[350px] left-[450px] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-10 animate-bounce">
-            <div className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center shadow-xl border-2 border-white">
-              <Radio className="w-5 h-5" />
-            </div>
-            <span className="text-[10px] font-extrabold bg-red-600 text-white px-2 py-0.5 rounded shadow mt-1">AMB-104</span>
+          {/* Right Information & Triage Timeline (Takes 1 Column) */}
+          <div className="space-y-4">
+            {/* Caller & Incident Details */}
+            <Card className="p-5 border border-slate-200 shadow-xl bg-white space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">CALLER INFORMATION</span>
+                <Badge variant="danger">{String(incident?.emergency_type || 'MEDICAL').toUpperCase()}</Badge>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 shrink-0">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-black text-slate-900">{reporterName}</h4>
+                  <p className="text-[11px] text-slate-500 font-medium">{reporterPhone}</p>
+                </div>
+              </div>
+
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                <span className="font-bold text-slate-700 block text-[11px]">Location Pinpoint:</span>
+                <span className="text-slate-600 font-medium">{incident?.address || 'GPS Telemetry Point'}</span>
+              </div>
+            </Card>
+
+            {/* Destination Hospital Card */}
+            <Card className="p-5 border border-emerald-500/30 bg-gradient-to-br from-[#0B1B4F] to-[#0A192F] text-white shadow-xl space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-black tracking-wider text-emerald-400">
+                  ALLOCATED MEDICAL CENTER
+                </span>
+                <Badge variant="success">{hospital?.trauma_level || 'LEVEL 1'}</Badge>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-extrabold text-white">{assignedHospitalName}</h4>
+                        <p className="text-xs text-slate-300 mt-0.5">{hospital?.address || 'Emergency Medical Facility'}</p>
+              </div>
+
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
+                <span className="text-slate-300">Live ICU Capacity:</span>
+                <span className="text-emerald-400 font-bold">{hospitalIcuBeds} Beds Ready</span>
+              </div>
+            </Card>
           </div>
         </div>
-
-        {/* Right Information Panel */}
-        <aside className="w-80 bg-white border-l border-slate-200 p-6 flex flex-col justify-between overflow-y-auto shrink-0">
-          <div>
-            {/* Header / Vehicle Info */}
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <h2 className="text-xl font-extrabold text-slate-900 leading-tight">Ambulance<br />AMB-104</h2>
-                <p className="text-xs text-slate-500 mt-1">Driver: Raj</p>
-              </div>
-              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-extrabold tracking-wide uppercase border border-blue-200">
-                EN ROUTE
-              </span>
-            </div>
-
-            {/* Metrics Boxes (ETA & Distance) */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
-                <span className="text-[10px] font-bold text-slate-400 block tracking-wider">ETA</span>
-                <span className="text-3xl font-extrabold text-blue-600">{String(eta).padStart(2, '0')}</span>
-                <span className="text-xs font-bold text-slate-700 ml-1">min</span>
-              </div>
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center">
-                <span className="text-[10px] font-bold text-slate-400 block tracking-wider">DISTANCE</span>
-                <span className="text-3xl font-extrabold text-slate-900">{distance}</span>
-                <span className="text-xs font-bold text-slate-700 ml-1">km</span>
-              </div>
-            </div>
-
-            {/* Mission Status Card */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <h3 className="text-xs font-extrabold text-slate-400 tracking-wider uppercase mb-4">MISSION STATUS</h3>
-              <div className="space-y-4 relative pl-5 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-                <div className="relative flex items-center gap-2 text-xs font-bold text-slate-900">
-                  <div className="absolute -left-5 w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[8px]">
-                    ✓
-                  </div>
-                  Dispatched
-                </div>
-
-                <div className="relative flex items-center gap-2 text-xs font-bold text-blue-600">
-                  <div className="absolute -left-5 w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[8px]">
-                    •
-                  </div>
-                  En Route
-                </div>
-
-                <div className="relative flex items-center gap-2 text-xs font-bold text-slate-300">
-                  <div className="absolute -left-5 w-4 h-4 rounded-full bg-white border-2 border-slate-300" />
-                  Arrived
-                </div>
-
-                <div className="relative flex items-center gap-2 text-xs font-bold text-slate-300">
-                  <div className="absolute -left-5 w-4 h-4 rounded-full bg-white border-2 border-slate-300" />
-                  Completed
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Live indicator */}
-          <div className="pt-4 border-t border-slate-200 flex items-center justify-center gap-2 text-xs font-semibold text-emerald-600">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            Live updating now
-          </div>
-        </aside>
       </div>
-    </div>
+    </AppShell>
   );
 };
+
+export default LiveIncidentTracking;
