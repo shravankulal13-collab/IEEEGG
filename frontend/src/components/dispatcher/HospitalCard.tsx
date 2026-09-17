@@ -1,7 +1,7 @@
 // ============================================================
 // PRIMARY OWNER: Shreevarsha V Hegde
 // ROLE: Hospital + Dispatch Operations
-// MODULE: Hospital Trauma Unit Card Component
+// MODULE: Hospital Medical Unit Card Component
 // ============================================================
 
 import React from 'react';
@@ -23,7 +23,7 @@ export interface HospitalCardProps {
 
 export const HospitalCard: React.FC<HospitalCardProps> = ({
   name,
-  tier = 'Level 1 Trauma',
+  tier = 'Level 1 Medical',
   address,
   icuBeds,
   otAvailable = 2,

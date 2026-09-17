@@ -44,8 +44,8 @@ export const Doctors: React.FC = () => {
   return (
     <AppShell>
       <PageHeader
-        title="On-Call Trauma Surgeons & Specialists"
-        subtitle={`Live roster of active emergency room physicians and specialists for ${activeHospital?.name || 'Trauma Network'}`}
+        title="On-Call Medical Specialists"
+        subtitle={`Live roster of active emergency room physicians and specialists for ${activeHospital?.name || 'Medical Network'}`}
         badge={
           error ? (
             <Badge variant="danger">Database Offline</Badge>

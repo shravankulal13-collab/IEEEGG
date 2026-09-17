@@ -45,3 +45,112 @@ NOTE: Shared dependency -- changes require team coordination.
   height: 5px;
   border-radius: 9999px;
 }
+
+.landing-page {
+  overflow-x: hidden;
+}
+
+.landing-page button,
+.landing-page a {
+  max-width: 100%;
+}
+
+.landing-page img {
+  max-width: 100%;
+}
+
+@media (min-width: 1200px) {
+  .landing-hero-inner {
+    width: min(calc(100% - 64px), 1600px);
+    max-width: 1600px !important;
+  }
+
+  .landing-page > section:not(:first-child) {
+    width: min(calc(100% - 64px), 1600px);
+    max-width: 1600px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .landing-page section {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  .landing-hero-inner {
+    width: 100%;
+  }
+
+  .landing-header {
+    align-items: flex-start !important;
+    gap: 18px;
+    padding-bottom: 22px !important;
+  }
+
+  .landing-header-actions {
+    flex-shrink: 0;
+  }
+
+  .landing-header-cta {
+    padding: 9px 12px !important;
+    font-size: 12px !important;
+  }
+
+  .landing-header-cta span {
+    display: none;
+  }
+
+  .landing-hero-copy {
+    padding-top: 42px !important;
+  }
+
+  .landing-eyebrow {
+    max-width: 100%;
+    text-align: left;
+    font-size: 11px !important;
+    line-height: 1.4;
+  }
+
+  .landing-hero-copy h1 {
+    font-size: clamp(30px, 11vw, 46px) !important;
+    letter-spacing: -0.8px !important;
+    overflow-wrap: anywhere;
+  }
+
+  .landing-hero-copy p {
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+  }
+
+  .landing-hero-actions {
+    align-items: stretch !important;
+    flex-direction: column;
+    width: min(100%, 320px);
+    margin: 0 auto;
+  }
+
+  .landing-hero-actions button {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .landing-responsive-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 30px !important;
+  }
+
+  .landing-section {
+    padding-top: 52px !important;
+    padding-bottom: 52px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .landing-header {
+    gap: 16px;
+  }
+
+  .landing-header-actions {
+    flex-shrink: 0;
+  }
+}

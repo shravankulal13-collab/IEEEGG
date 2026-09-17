@@ -71,7 +71,7 @@ export const ResourceManagement: React.FC = () => {
     <AppShell>
       <PageHeader
         title="Hospital Capacity & Resource Management"
-        subtitle={`Live capacity controls and resource management for ${activeHospital?.name || 'Trauma Network'}`}
+        subtitle={`Live capacity controls and resource management for ${activeHospital?.name || 'Medical Network'}`}
         badge={
           error ? (
             <Badge variant="danger">Database Offline</Badge>
@@ -129,7 +129,7 @@ export const ResourceManagement: React.FC = () => {
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-red-600" />
-                  <span>Trauma ICU Beds</span>
+                  <span>Medical ICU Beds</span>
                 </h3>
                 <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[11px] font-bold">
                   High Priority
@@ -222,7 +222,7 @@ export const ResourceManagement: React.FC = () => {
                 <span className="text-2xl font-black text-slate-900">{activeHospital.available_oxygen_units ?? 0} Ready</span>
               </div>
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center">
-                <span className="text-xs font-bold text-slate-700 block">TRAUMA LEVEL</span>
+                <span className="text-xs font-bold text-slate-700 block">MEDICAL LEVEL</span>
                 <span className="text-2xl font-black text-slate-900">{activeHospital.trauma_level || 'LEVEL_1'}</span>
               </div>
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center">

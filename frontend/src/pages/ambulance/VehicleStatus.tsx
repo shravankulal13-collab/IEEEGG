@@ -45,7 +45,7 @@ export const VehicleStatus: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2 text-blue-600 font-black text-sm uppercase">
                 <Radio className="w-5 h-5" />
-                MapMyIndia GPS & Network
+                TomTom GPS & Network
               </div>
               <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-xs font-bold">
                 CONNECTED
@@ -58,7 +58,7 @@ export const VehicleStatus: React.FC = () => {
                 <span className="font-extrabold text-emerald-600">-65 dBm (5G Ultra)</span>
               </div>
               <div className="flex justify-between border-b border-slate-100 pb-2">
-                <span className="text-slate-500 font-semibold">MapMyIndia GPS Accuracy:</span>
+                <span className="text-slate-500 font-semibold">TomTom GPS Accuracy:</span>
                 <span className="font-extrabold text-slate-900">3.2 meters</span>
               </div>
               <div className="flex justify-between border-b border-slate-100 pb-2">

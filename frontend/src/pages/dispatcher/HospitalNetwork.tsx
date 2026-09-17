@@ -1,7 +1,7 @@
 // ============================================================
 // PRIMARY OWNER: Shreevarsha V Hegde
 // ROLE: Hospital + Dispatch Operations
-// MODULE: Hospital Trauma Network Directory
+// MODULE: Hospital Medical Network Directory
 // ============================================================
 
 import React, { useEffect } from 'react';
@@ -32,7 +32,7 @@ export const HospitalNetwork: React.FC = () => {
   return (
     <AppShell>
       <PageHeader
-        title="Trauma Hospital Network"
+        title="Medical Hospital Network"
         subtitle="Real-time ICU capacity, surgical theater availability, and specialist rosters"
         badge={
           error ? (
@@ -99,7 +99,7 @@ export const HospitalNetwork: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="text-base font-extrabold text-slate-900">{hosp.name}</h3>
-                    <span className="text-[11px] font-bold text-blue-600">{hosp.trauma_level?.replace('_', ' ') || 'Level 1 Trauma'}</span>
+                    <span className="text-[11px] font-bold text-blue-600">{hosp.trauma_level?.replace('_', ' ') || 'Level 1 Medical'}</span>
                   </div>
                 </div>
                 <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-bold border border-emerald-200">

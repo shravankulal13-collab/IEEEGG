@@ -31,7 +31,7 @@ export const Navigation: React.FC = () => {
   const [ambulance, setAmbulance] = useState<AmbulanceData | null>(null);
   const [hospital, setHospital] = useState<HospitalData | null>(null);
   const [route, setRoute] = useState<CalculatedRoute | null>(null);
-  const [speed, setSpeed] = useState(62);
+  const [speed, setSpeed] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadData = useCallback(async () => {
@@ -40,30 +40,43 @@ export const Navigation: React.FC = () => {
       let activeInc: IncidentRecord | null = null;
       if (incidentId) {
         activeInc = await fetchIncidentById(incidentId);
-      } else {
-        const list = useIncidentStore.getState().incidents;
-        activeInc = list[0] || null;
       }
-      setIncident(activeInc);
 
       const hospitals = await hospitalService.getAllHospitals();
-      const targetHosp = activeInc?.assigned_hospital_id
-        ? hospitals.find((h) => h.id === activeInc?.assigned_hospital_id) || hospitals[0]
-        : hospitals[0];
-      setHospital(targetHosp || null);
-
       const ambulances = await ambulanceService.getAllAmbulances();
       const targetAmb = activeInc?.assigned_ambulance_id
         ? ambulances.find((a) => a.id === activeInc?.assigned_ambulance_id) || ambulances[0]
         : ambulances[0];
       setAmbulance(targetAmb || null);
 
-      // Compute Real Routing via MapMyIndia Mappls
-      if (activeInc && (targetAmb || targetHosp)) {
-        const originLat = targetAmb?.current_latitude || activeInc.latitude || 12.9716;
-        const originLng = targetAmb?.current_longitude || activeInc.longitude || 77.5946;
-        const destLat = targetHosp?.latitude || activeInc.latitude || 12.8953;
-        const destLng = targetHosp?.longitude || activeInc.longitude || 77.5986;
+      if (!activeInc && targetAmb?.current_incident_id) {
+        try {
+          activeInc = await fetchIncidentById(targetAmb.current_incident_id);
+        } catch {
+          activeInc = null;
+        }
+      }
+      setIncident(activeInc);
+
+      const isActiveStatus = ['dispatching', 'dispatched', 'en_route', 'on_scene', 'arrived', 'transporting'].includes(activeInc?.status || '');
+      const isAssigned = Boolean(activeInc && targetAmb && activeInc.assigned_ambulance_id === targetAmb.id);
+      const hasAmbulanceLocation = Boolean(
+        targetAmb &&
+        typeof targetAmb.current_latitude === 'number' &&
+        typeof targetAmb.current_longitude === 'number',
+      );
+      const hasActiveAssignment = isActiveStatus && isAssigned && hasAmbulanceLocation;
+      const targetHosp = hasActiveAssignment && activeInc?.assigned_hospital_id
+        ? hospitals.find((h) => h.id === activeInc.assigned_hospital_id) || null
+        : null;
+      setHospital(targetHosp);
+      setSpeed(targetAmb?.current_speed_kmh ?? null);
+
+      if (hasActiveAssignment && targetAmb && targetHosp && activeInc) {
+        const originLat = targetAmb.current_latitude as number;
+        const originLng = targetAmb.current_longitude as number;
+        const destLat = targetHosp.latitude;
+        const destLng = targetHosp.longitude;
 
         const calculated = await routeService.computeRoute({
           origin: { lat: originLat, lng: originLng },
@@ -71,6 +84,8 @@ export const Navigation: React.FC = () => {
           profile: 'emergency',
         });
         setRoute(calculated);
+      } else {
+        setRoute(null);
       }
 
       setIsLoading(false);
@@ -82,34 +97,52 @@ export const Navigation: React.FC = () => {
   useEffect(() => {
     loadData();
 
-    const speedInterval = setInterval(() => {
-      setSpeed(Math.floor(58 + Math.random() * 18));
-    }, 4000);
-
-    return () => clearInterval(speedInterval);
+    return undefined;
   }, [loadData]);
 
   if (isLoading && !incident) {
     return (
       <div className="h-screen bg-[#070F1E] flex flex-col items-center justify-center text-white">
         <Spinner size="lg" />
-        <p className="text-xs font-bold text-slate-400 mt-4">Initializing MapMyIndia Mappls Routing HUD...</p>
+        <p className="text-xs font-bold text-slate-400 mt-4">Initializing TomTom Routing HUD...</p>
       </div>
     );
   }
 
   const patientAddress = incident?.address || 'Reported Incident GPS Coordinates';
-  const hospitalName = hospital?.name || incident?.assigned_hospital_name || 'Assigned Trauma Center (Pending)';
+  const hospitalName = hospital?.name || incident?.assigned_hospital_name || 'Assigned Medical Center (Pending)';
   const callerName = incident?.reporter_name || 'Emergency Caller';
+  const hasActiveAssignment = Boolean(
+    incident &&
+    ambulance &&
+    typeof ambulance.current_latitude === 'number' &&
+    typeof ambulance.current_longitude === 'number' &&
+    ['dispatching', 'dispatched', 'en_route', 'on_scene', 'arrived', 'transporting'].includes(incident.status) &&
+    incident.assigned_ambulance_id === ambulance.id,
+  );
   const etaMinutes = route ? Math.ceil(route.duration_seconds / 60) : 0;
   const distanceKm = route ? (route.distance_meters / 1000).toFixed(1) : '0.0';
-  const nextStep = route?.steps[0]?.instruction || 'Proceed along designated emergency green corridor';
+  const nextStep = hasActiveAssignment
+    ? route?.steps[0]?.instruction || 'Proceed along designated emergency green corridor'
+    : 'No active emergency assignment';
+  const mapRoute = route
+    ? {
+        routeId: `navigation-${route.provider}`,
+        provider: route.provider === 'osrm' ? 'osrm' as const : 'tomtom' as const,
+        distanceKm: route.distance_meters / 1000,
+        durationMinutes: route.duration_seconds / 60,
+        polyline: route.geometry,
+        steps: [],
+        greenWaveSignals: [],
+        trafficLevel: 'moderate' as const,
+      }
+    : null;
 
   return (
     <div className="h-screen bg-[#070F1E] text-white font-sans flex flex-col overflow-hidden">
       {/* Top Banner Navigation Instructions (ResQGrid Deep Navy) */}
-      <div className="bg-[#0B1B4F] border-b-2 border-emerald-500/40 px-6 py-4 flex items-center justify-between shadow-2xl z-20">
-        <div className="flex items-center gap-4">
+      <div className="bg-[#0B1B4F] border-b-2 border-emerald-500/40 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 shadow-2xl z-20">
+        <div className="min-w-0 flex flex-1 items-center gap-2 sm:gap-4">
           <button
             onClick={() => navigate('/ambulance')}
             className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition cursor-pointer"
@@ -121,14 +154,14 @@ export const Navigation: React.FC = () => {
           <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black text-2xl shadow-lg border border-emerald-400">
             <ArrowRight className="w-6 h-6" />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-950 px-2 py-0.5 rounded border border-emerald-600/40">
-                MAPPLS LIVE ROUTING
+              <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${hasActiveAssignment ? 'text-emerald-400 bg-emerald-950 border-emerald-600/40' : 'text-slate-400 bg-slate-900 border-slate-700'}`}>
+                {hasActiveAssignment ? 'TOMTOM LIVE ROUTING' : 'TOMTOM ROUTING READY'}
               </span>
               <span className="text-xs text-slate-400 font-mono font-bold">Caller: {callerName}</span>
             </div>
-            <h1 className="text-lg sm:text-xl font-black text-white mt-0.5">
+            <h1 className="text-sm sm:text-xl leading-tight font-black text-white mt-0.5">
               {nextStep}
             </h1>
           </div>
@@ -137,7 +170,7 @@ export const Navigation: React.FC = () => {
         <div className="flex items-center gap-6">
           <div className="hidden sm:block text-right">
             <span className="text-[10px] text-slate-400 font-bold uppercase block">SPEED</span>
-            <span className="text-xl font-black text-amber-400 font-mono">{speed} km/h</span>
+            <span className="text-xl font-black text-amber-400 font-mono">{speed === null ? '--' : `${speed} km/h`}</span>
           </div>
 
           <div className="text-right border-l border-slate-700 pl-4 sm:pl-6">
@@ -153,8 +186,15 @@ export const Navigation: React.FC = () => {
       {/* Main Interactive Map Canvas */}
       <div className="flex-1 relative">
         <EmergencyMap
+          center={
+            ambulance &&
+            typeof ambulance.current_latitude === 'number' &&
+            typeof ambulance.current_longitude === 'number'
+              ? { lat: ambulance.current_latitude, lng: ambulance.current_longitude }
+              : undefined
+          }
           incidents={
-            incident
+            hasActiveAssignment && incident
               ? [
                   {
                     id: incident.id,
@@ -176,7 +216,7 @@ export const Navigation: React.FC = () => {
                     unitCode: ambulance.ambulance_number,
                     type: (ambulance.ambulance_type as any) || 'ALS',
                     status: (ambulance.status as any) || 'en_route',
-                    speedKmH: speed,
+                    speedKmH: speed ?? undefined,
                     heading: ambulance.current_heading || 90,
                     lat: ambulance.current_latitude || 12.9716,
                     lng: ambulance.current_longitude || 77.5946,
@@ -198,7 +238,8 @@ export const Navigation: React.FC = () => {
                 ]
               : []
           }
-          showGreenCorridor={true}
+          showGreenCorridor={hasActiveAssignment}
+          activeRoute={hasActiveAssignment ? mapRoute : null}
           className="h-full rounded-none border-none"
         />
       </div>
@@ -210,7 +251,7 @@ export const Navigation: React.FC = () => {
             <Building2 className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">DESTINATION TRAUMA FACILITY</span>
+            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">DESTINATION MEDICAL FACILITY</span>
             <span className="text-sm font-extrabold text-white">{hospitalName}</span>
           </div>
         </div>

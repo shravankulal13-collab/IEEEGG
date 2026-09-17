@@ -47,7 +47,7 @@ function asyncHandler(fn: (req: Request, res: Response, next: NextFunction) => P
 
 /**
  * POST /api/routes/compute
- * Computes a resilient route between two (or more) points using MapMyIndia / Mappls.
+ * Computes a resilient route between two (or more) points using TomTom.
  */
 router.post(
   '/compute',
@@ -73,7 +73,7 @@ router.post(
       res.status(200).json({ data: result });
     } catch (err) {
       if (err instanceof RoutingProviderError) {
-        logger.error('all routing providers exhausted for request', { error: err.message });
+        logger.error({ error: err.message }, 'all routing providers exhausted for request');
         res.status(503).json({
           error: 'routing temporarily unavailable',
           detail: err.message,

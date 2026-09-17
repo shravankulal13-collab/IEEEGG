@@ -85,7 +85,7 @@ export const Analytics: React.FC = () => {
 
             <div>
               <div className="flex justify-between font-bold mb-1">
-                <span>Trauma & Collisions</span>
+                <span>Medical Emergencies & Collisions</span>
                 <span className="text-amber-600 font-extrabold">29%</span>
               </div>
               <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">

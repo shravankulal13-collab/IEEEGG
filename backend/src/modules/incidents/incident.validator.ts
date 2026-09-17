@@ -57,19 +57,7 @@ export const createIncidentSchema = z.object({
 });
 
 export const updateIncidentStatusSchema = z.object({
-  status: z
-    .string()
-    .transform((val) => {
-      const lower = val.toLowerCase().trim();
-      const aliasMap: Record<string, string> = {
-        on_scene: 'arrived',
-        completed: 'resolved',
-        en_route_to_incident: 'en_route',
-        at_hospital: 'transporting',
-      };
-      return aliasMap[lower] || lower;
-    })
-    .pipe(incidentStatusEnum),
+  status: incidentStatusEnum,
   reason: z.string().max(500).optional(),
   notes: z.string().max(1000).optional(),
 });
@@ -105,7 +93,7 @@ export const listIncidentsQuerySchema = z.object({
 });
 
 export type CreateIncidentInput = z.input<typeof createIncidentSchema>;
-export type UpdateIncidentStatusInput = z.infer<typeof updateIncidentStatusSchema>;
+export type UpdateIncidentStatusInput = z.input<typeof updateIncidentStatusSchema>;
 export type VerifyIncidentInput = z.input<typeof verifyIncidentSchema>;
 export type CancelIncidentInput = z.input<typeof cancelIncidentSchema>;
 export type RecordLocationInput = z.input<typeof recordLocationSchema>;

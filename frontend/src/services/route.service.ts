@@ -40,7 +40,7 @@ export interface SignalPreemptionNode {
 }
 
 export interface CalculatedRoute {
-  provider: 'mapmyindia' | 'osrm' | 'waze' | 'fallback_straight';
+  provider: 'tomtom' | 'osrm' | 'waze' | 'fallback_straight';
   distance_meters: number;
   duration_seconds: number;
   formatted_distance: string;
@@ -68,15 +68,17 @@ export class RouteService {
     });
 
     const raw = res.data;
-    const geometry: [number, number][] = raw.geometry || [
+    const geometry: [number, number][] = raw.geometry?.coordinates?.map(
+      ([lng, lat]: [number, number]) => [lat, lng],
+    ) || raw.geometry || [
       [request.origin.lat, request.origin.lng],
       [request.destination.lat, request.destination.lng],
     ];
-    const dist = raw.distance_meters || raw.distance || 0;
-    const dur = raw.duration_seconds || raw.duration || 0;
+    const dist = raw.distanceMeters ?? raw.distance_meters ?? raw.distance ?? 0;
+    const dur = raw.durationSeconds ?? raw.duration_seconds ?? raw.duration ?? 0;
 
     return {
-      provider: raw.provider || 'mapmyindia',
+      provider: raw.provider || 'tomtom',
       distance_meters: dist,
       duration_seconds: dur,
       formatted_distance: `${(dist / 1000).toFixed(1)} km`,

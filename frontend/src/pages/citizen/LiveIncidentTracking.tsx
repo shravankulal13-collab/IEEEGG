@@ -73,7 +73,7 @@ export const LiveIncidentTracking: React.FC = () => {
         : ambulances[0];
       setAmbulance(targetAmb || null);
 
-      // Calculate Real Driving Route via Mappls / MapMyIndia API
+      // Calculate Real Driving Route via TomTom API
       if (activeInc && (targetAmb || targetHosp)) {
         const originLat = targetAmb?.current_latitude || activeInc.latitude || 12.9716;
         const originLng = targetAmb?.current_longitude || activeInc.longitude || 77.5946;
@@ -166,7 +166,7 @@ export const LiveIncidentTracking: React.FC = () => {
             <div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">ESTIMATED TIME OF ARRIVAL</span>
               <p className="text-2xl font-black text-emerald-400 mt-1">{etaDisplay}</p>
-              <span className="text-[10px] text-slate-300">Distance: {distanceDisplay} (Mappls Engine)</span>
+              <span className="text-[10px] text-slate-300">Distance: {distanceDisplay} (TomTom Engine)</span>
             </div>
             <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
               <Navigation className="w-5 h-5 animate-pulse" />
@@ -175,7 +175,7 @@ export const LiveIncidentTracking: React.FC = () => {
 
           <div className="bg-[#0B1B4F] border border-blue-500/30 rounded-2xl p-4 shadow-xl flex items-center justify-between">
             <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">DESTINATION TRAUMA CENTER</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">DESTINATION MEDICAL CENTER</span>
               <p className="text-base font-black text-white mt-1 truncate max-w-[200px]">{assignedHospitalName}</p>
               <span className="text-[10px] text-emerald-300 font-bold">{hospitalIcuBeds} ICU / {hospitalEmergencyBeds} Emergency Beds Free</span>
             </div>
@@ -280,14 +280,14 @@ export const LiveIncidentTracking: React.FC = () => {
             <Card className="p-5 border border-emerald-500/30 bg-gradient-to-br from-[#0B1B4F] to-[#0A192F] text-white shadow-xl space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-black tracking-wider text-emerald-400">
-                  ALLOCATED TRAUMA CENTER
+                  ALLOCATED MEDICAL CENTER
                 </span>
                 <Badge variant="success">{hospital?.trauma_level || 'LEVEL 1'}</Badge>
               </div>
 
               <div>
                 <h4 className="text-sm font-extrabold text-white">{assignedHospitalName}</h4>
-                <p className="text-xs text-slate-300 mt-0.5">{hospital?.address || 'Emergency Trauma Facility'}</p>
+                        <p className="text-xs text-slate-300 mt-0.5">{hospital?.address || 'Emergency Medical Facility'}</p>
               </div>
 
               <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs">

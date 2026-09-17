@@ -15,7 +15,7 @@ export interface ProviderStatusProps {
 }
 
 export const ProviderStatus: React.FC<ProviderStatusProps> = ({
-  providerName = 'MapMyIndia Mappls',
+  providerName = 'TomTom Routing',
   isOnline = true,
   latencyMs = 18,
   className = '',

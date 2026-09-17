@@ -1,7 +1,7 @@
 // ============================================================
 // PRIMARY OWNER: Anush KD / khushi.shettyyy
 // ROLE: Routing & Traffic Congestion
-// MODULE: Live MapMyIndia Traffic Congestion Overlay
+// MODULE: Live TomTom Traffic Congestion Overlay
 // ============================================================
 
 import React from 'react';

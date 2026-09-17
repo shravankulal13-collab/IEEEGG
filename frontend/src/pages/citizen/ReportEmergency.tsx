@@ -113,7 +113,7 @@ export const ReportEmergency: React.FC = () => {
     },
     {
       id: 'trauma',
-      title: 'Severe Physical Trauma',
+      title: 'Severe Physical Injury',
       subtitle: 'Heavy bleeding, fall from height',
       icon: <Activity className="w-5 h-5 text-amber-600" />,
     },
@@ -131,7 +131,7 @@ export const ReportEmergency: React.FC = () => {
         <PageHeader
           pillTag="Immediate Emergency Intake"
           title="Report Emergency Incident"
-          subtitle="Direct GPS-tagged dispatch with automated trauma unit and corridor coordination."
+          subtitle="Direct GPS-tagged dispatch with automated medical unit and corridor coordination."
           actions={
             <Button
               variant="outline"

@@ -78,7 +78,7 @@ export const IncidentDetails: React.FC = () => {
       <PageHeader
         pillTag="Tactical Incident Dossier"
         title={`Incident Dossier: ${incident.incident_number ? `ER-${incident.incident_number}` : incident.id}`}
-        subtitle="Full immutable lifecycle audit, telemetry timestamps, assigned responder unit, and destination trauma center."
+        subtitle="Full immutable lifecycle audit, telemetry timestamps, assigned responder unit, and destination medical center."
         actions={
           <div className="flex items-center gap-2">
             <Button variant="secondary" onClick={() => navigate('/dispatcher')}>
@@ -181,7 +181,7 @@ export const IncidentDetails: React.FC = () => {
                   GeoAgent Decision Support & Multi-Criteria Ranking
                 </h3>
                 <p className="text-[11px] text-slate-500">
-                  Algorithmic telemetry evaluation (Road Distance, ETA, ICU Bed Headroom, Trauma Level)
+                  Algorithmic telemetry evaluation (Road Distance, ETA, ICU Bed Headroom, Medical Level)
                 </p>
               </div>
               <Badge variant="warning">AI Decision Engine</Badge>
@@ -194,8 +194,8 @@ export const IncidentDetails: React.FC = () => {
               </span>
               <p className="text-xs text-purple-950 font-medium leading-relaxed">
                 {incident.assigned_hospital_name
-                  ? `GeoAgent selected ${incident.assigned_hospital_name} based on real-time road proximity, critical trauma capability, and live ICU headroom.`
-                  : 'GeoAgent evaluated candidate fleet units and allocated the optimal proximity responder with Level-1 trauma reception capability.'}
+                  ? `GeoAgent selected ${incident.assigned_hospital_name} based on real-time road proximity, critical medical capability, and live ICU headroom.`
+                  : 'GeoAgent evaluated candidate fleet units and allocated the optimal proximity responder with Level-1 medical reception capability.'}
               </p>
             </div>
 
@@ -210,7 +210,7 @@ export const IncidentDetails: React.FC = () => {
                 </span>
               </div>
               <p className="text-[11px] text-slate-300 mb-3">
-                Simulate peak hour traffic spikes (+50% delay) and emergency trauma diversions without altering production database records.
+                Simulate peak hour traffic spikes (+50% delay) and emergency medical diversions without altering production database records.
               </p>
               <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
                 <div className="bg-slate-800/80 p-2.5 rounded-xl border border-slate-700">

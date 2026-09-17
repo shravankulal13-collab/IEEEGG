@@ -98,7 +98,7 @@ export const DispatchRequest: React.FC = () => {
               <HeartPulse className="w-4 h-4" />
               Category & Severity
             </div>
-            <p className="text-base font-extrabold text-white">Trauma / Cardiac Arrest</p>
+            <p className="text-base font-extrabold text-white">Medical emergency / Cardiac Arrest</p>
             <p className="text-xs text-slate-400">
               Male, 54 y/o | Loss of consciousness, severe chest pain reported by bystander.
             </p>
@@ -125,7 +125,7 @@ export const DispatchRequest: React.FC = () => {
             </div>
             <div>
               <p className="text-xs text-blue-300 font-bold uppercase tracking-wider">Pre-Assigned Destination</p>
-              <h4 className="text-sm font-extrabold text-white">St. Jude Trauma Center (Level 1)</h4>
+              <h4 className="text-sm font-extrabold text-white">St. Jude Medical Center (Level 1)</h4>
               <p className="text-[11px] text-slate-400">ICU Bed & Resuscitation Bay Reserved</p>
             </div>
           </div>

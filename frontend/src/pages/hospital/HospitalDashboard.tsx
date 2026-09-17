@@ -60,13 +60,13 @@ export const HospitalDashboard: React.FC = () => {
   return (
     <AppShell>
       <HeroSection
-        badgeText={`${activeHospital?.name || 'Trauma Emergency'} Intake Center`}
+        badgeText={`${activeHospital?.name || 'Medical Emergency'} Intake Center`}
         headingPrefix="Coordinate Rapid"
         typewriterPhrases={[
           'ICU Bed Allocations',
           'Cath-Lab Prep Teams',
           'Paramedic ECG Telemetries',
-          'Trauma Resuscitation'
+          'Emergency Resuscitation'
         ]}
         headingSuffix="with ResQGrid"
         subtitle="Live pre-arrival ambulance vitals, ICU bed availability, surgical team orchestration, and direct cath-lab alerts."
@@ -129,7 +129,7 @@ export const HospitalDashboard: React.FC = () => {
       {isLoading && (
         <div className="py-12 flex flex-col items-center justify-center">
           <Spinner size="lg" />
-          <p className="text-xs font-bold text-slate-500 mt-3">Loading trauma center dashboard from database...</p>
+          <p className="text-xs font-bold text-slate-500 mt-3">Loading medical center dashboard from database...</p>
         </div>
       )}
 
@@ -234,7 +234,7 @@ export const HospitalDashboard: React.FC = () => {
           </div>
           <div>
             <h4 className="text-sm font-bold text-slate-900">Doctors On-Call</h4>
-            <p className="text-xs text-slate-500">Trauma surgeon roster</p>
+            <p className="text-xs text-slate-500">Medical specialist roster</p>
           </div>
         </Card>
 

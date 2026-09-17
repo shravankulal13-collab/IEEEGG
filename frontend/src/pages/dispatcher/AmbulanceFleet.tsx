@@ -4,7 +4,7 @@
 // MODULE: Central Ambulance Fleet Telemetry Management
 // ============================================================
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ambulanceService, type AmbulanceData } from '../../services/ambulance.service';
 import { AppShell } from '../../components/layout/AppShell';
 import { PageHeader } from '../../components/layout/PageHeader';

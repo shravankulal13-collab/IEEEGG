@@ -56,7 +56,7 @@ const DEFAULT_TICKER: TickerItem[] = [
 ];
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
-  badgeText = 'Emergency Response & Trauma Coordination Platform',
+  badgeText = 'Emergency medical response grid',
   badgeDotColor = '#E50914',
   headingPrefix = 'Emergency Coordination &',
   typewriterPhrases = DEFAULT_PHRASES,

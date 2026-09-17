@@ -23,14 +23,14 @@ export const TripHistory: React.FC = () => {
       type: 'Cardiac Arrest',
       date: 'Today, 11:20 AM',
       pickup: '45 Residency Road, Central Area',
-      hospital: 'St. Jude Trauma Center',
+      hospital: 'St. Jude Medical Center',
       duration: '14 mins',
       status: 'COMPLETED',
     },
     {
       id: 'TRIP-8040',
       incident: 'ER-2039',
-      type: 'Vehicle Collision (Trauma)',
+      type: 'Vehicle Collision (Medical)',
       date: 'Yesterday, 08:45 PM',
       pickup: 'Ring Road Junction 12',
       hospital: 'Metro General Emergency',
@@ -43,7 +43,7 @@ export const TripHistory: React.FC = () => {
       type: 'Severe Respiratory Distress',
       date: 'Yesterday, 02:15 PM',
       pickup: '78 Palm Avenue, Sector 2',
-      hospital: 'St. Jude Trauma Center',
+      hospital: 'St. Jude Medical Center',
       duration: '11 mins',
       status: 'COMPLETED',
     },
@@ -54,7 +54,7 @@ export const TripHistory: React.FC = () => {
       <div className="space-y-6 max-w-7xl mx-auto pb-12">
         <PageHeader
           title="Trip Response Logs: AMB-104"
-          subtitle="Audit logs of completed emergency responses, transport durations, and destination hospitals"
+          subtitle="Audit logs of completed medical responses, transport durations, and destination hospitals"
           badge={<Badge variant="info">34 TOTAL MISSIONS</Badge>}
           actions={
             <Button

@@ -7,6 +7,11 @@
 
 /**
  * Canonical Socket.IO event name constants for the incident lifecycle.
+ *
+ * All emitters and consumers MUST use these constants.
+ * Do NOT use raw string literals for incident event names elsewhere in
+ * the codebase — this ensures a single point of truth and prevents
+ * typo-driven mismatches between producers and consumers.
  */
 export const INCIDENT_EVENTS = {
   CREATED: 'incident:created',
@@ -23,6 +28,7 @@ export type IncidentEventName = (typeof INCIDENT_EVENTS)[keyof typeof INCIDENT_E
 
 // ============================================================
 // Typed Payload Interfaces
+// Every event emission must conform to the shape defined here.
 // ============================================================
 
 /** Emitted when a new incident is first reported. */

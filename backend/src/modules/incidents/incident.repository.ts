@@ -1,7 +1,7 @@
 // ============================================================
 // PRIMARY OWNER: SK
 // ROLE: Core Platform + Backend Integration Lead
-// MODULE: Incident Data Access & Persistence Repository
+// MODULE: Incident Spatial & State Data Access Repository
 // ============================================================
 
 import { v4 as uuidv4 } from 'uuid';
@@ -19,8 +19,7 @@ import type { ListIncidentsQuery } from './incident.validator.js';
 const fallbackIncidents = new Map<string, IncidentRecord>();
 const fallbackVerifications = new Map<string, IncidentVerificationRecord[]>();
 const fallbackLocations = new Map<string, IncidentLocationUpdateRecord[]>();
-
-let incidentCounter = 1000;
+let fallbackIncidentSequence = 1000;
 
 export class IncidentRepository {
   async create(data: {
@@ -41,23 +40,18 @@ export class IncidentRepository {
     metadata?: Record<string, unknown>;
   }): Promise<IncidentRecord> {
     const id = uuidv4();
-    const incidentNumber = ++incidentCounter;
     const now = new Date();
 
     if (pool && isPostgresConnected) {
       try {
         const res = await query<IncidentRecord>(
           `INSERT INTO incidents (
-            id, incident_number, reported_by, emergency_type, title, description,
-            status, verification_status, verification_score, severity, people_affected,
-            latitude, longitude, location, address, landmark, city, state, country,
-            reported_at, source, metadata, created_at, updated_at
-          ) VALUES (
-            $1, DEFAULT, $2, $3, $4, $5,
-            'reported', 'pending', 0, $6, $7,
-            $8, $9, ST_SetSRID(ST_MakePoint($9, $8), 4326), $10, $11, $12, $13, $14,
-            $15, $16, $17, $15, $15
-          ) RETURNING *`,
+            id, reported_by, emergency_type, title, description,
+            status, verification_status, severity, people_affected,
+            latitude, longitude, address, landmark, city, state, country,
+            source, metadata, reported_at, created_at, updated_at
+          ) VALUES ($1, $2, $3, $4, $5, 'reported', 'pending', $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $17, $17)
+          RETURNING *`,
           [
             id,
             data.reportedBy,
@@ -73,31 +67,32 @@ export class IncidentRepository {
             data.city || null,
             data.state || null,
             data.country || 'India',
-            now,
             data.source || 'citizen_app',
             JSON.stringify(data.metadata || {}),
+            now,
           ]
         );
-        const record = res.rows[0];
-        if (record) {
-          fallbackIncidents.set(record.id, record);
-          return record;
+
+        if (res.rows[0]) {
+          fallbackIncidents.set(id, res.rows[0]);
+          return res.rows[0];
         }
       } catch {
-        // Fallback
+        // Fallback to in-memory store
       }
     }
 
+    fallbackIncidentSequence += 1;
     const record: IncidentRecord = {
       id,
-      incident_number: incidentNumber,
+      incident_number: fallbackIncidentSequence,
       reported_by: data.reportedBy,
       emergency_type: data.emergencyType,
       title: data.title || null,
       description: data.description || null,
       status: 'reported',
       verification_status: 'pending',
-      verification_score: 0,
+      verification_score: null,
       severity: data.severity || 3,
       people_affected: data.peopleAffected || 1,
       latitude: data.latitude,
@@ -123,46 +118,35 @@ export class IncidentRepository {
   }
 
   async findById(id: string): Promise<IncidentRecord | null> {
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id.trim());
-    const numericPart = parseInt(id.replace(/^[a-zA-Z\-_]+/g, '').trim(), 10);
-
     if (pool && isPostgresConnected) {
       try {
-        if (isUuid) {
-          const res = await query<IncidentRecord>('SELECT * FROM incidents WHERE id = $1 LIMIT 1', [id.trim()]);
-          if (res.rows[0]) return res.rows[0];
-        }
-
-        if (!isNaN(numericPart)) {
-          const resNum = await query<IncidentRecord>('SELECT * FROM incidents WHERE incident_number = $1 LIMIT 1', [numericPart]);
-          if (resNum.rows[0]) return resNum.rows[0];
-        }
-
-        // If not matched by exact ID, fallback to most recent active incident for demo resilience
-        const resRecent = await query<IncidentRecord>('SELECT * FROM incidents ORDER BY created_at DESC LIMIT 1');
-        if (resRecent.rows[0]) return resRecent.rows[0];
+        const res = await query<IncidentRecord>('SELECT * FROM incidents WHERE id = $1 LIMIT 1', [id]);
+        return res.rows[0] || null;
       } catch {
         // Fallback
       }
     }
+    return fallbackIncidents.get(id) || null;
+  }
 
-    if (fallbackIncidents.has(id)) {
-      return fallbackIncidents.get(id) || null;
-    }
-
-    for (const inc of fallbackIncidents.values()) {
-      if (inc.id === id || (!isNaN(numericPart) && inc.incident_number === numericPart)) {
-        return inc;
+  async findByIncidentNumber(num: number): Promise<IncidentRecord | null> {
+    if (pool && isPostgresConnected) {
+      try {
+        const res = await query<IncidentRecord>('SELECT * FROM incidents WHERE incident_number = $1 LIMIT 1', [num]);
+        return res.rows[0] || null;
+      } catch {
+        // Fallback
       }
     }
-
-    const first = Array.from(fallbackIncidents.values())[0];
-    return first || null;
+    for (const incident of fallbackIncidents.values()) {
+      if (incident.incident_number === num) return incident;
+    }
+    return null;
   }
 
   async list(filters: ListIncidentsQuery): Promise<{ items: IncidentRecord[]; total: number }> {
-    const page = Math.max(1, Number(filters.page) || 1);
-    const limit = Math.min(100, Math.max(1, Number(filters.limit) || 20));
+    const page = Number(filters.page) || 1;
+    const limit = Number(filters.limit) || 20;
     const offset = (page - 1) * limit;
 
     if (pool && isPostgresConnected) {
@@ -189,7 +173,7 @@ export class IncidentRepository {
         }
         if (filters.severity !== undefined) {
           conditions.push(`severity = $${pIdx++}`);
-          params.push(filters.severity);
+          params.push(Number(filters.severity));
         }
 
         const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
@@ -427,6 +411,7 @@ export class IncidentRepository {
       }
     }
 
+    // Fallback simple Euclidean approximation (1 deg ~ 111 km)
     const latDelta = radiusKm / 111;
     const lngDelta = radiusKm / (111 * Math.cos((latitude * Math.PI) / 180));
 

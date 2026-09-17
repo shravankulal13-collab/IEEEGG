@@ -136,7 +136,7 @@ describe('ResQGrid Frontend Subsystems & Stores Unit Tests', () => {
   describe('Routing & Green Wave Service (Anush KD)', () => {
     it('should calculate emergency route with signal preemption nodes', async () => {
       const mockRoute = {
-        provider: 'mapmyindia' as const,
+        provider: 'tomtom' as const,
         distance_meters: 5400,
         duration_seconds: 480,
         formatted_distance: '5.4 km',
@@ -162,12 +162,12 @@ describe('ResQGrid Frontend Subsystems & Stores Unit Tests', () => {
 
     it('should query routing provider circuit breaker health', async () => {
       vi.spyOn(routeService, 'getProviderHealth').mockResolvedValue([
-        { provider: 'mapmyindia', state: 'CLOSED', consecutiveFailures: 0, avgLatencyMs: 120 },
+        { provider: 'tomtom', state: 'CLOSED', consecutiveFailures: 0, avgLatencyMs: 120 },
       ]);
 
       const health = await routeService.getProviderHealth();
       expect(health.length).toBe(1);
-      expect(health[0].provider).toBe('mapmyindia');
+      expect(health[0].provider).toBe('tomtom');
       expect(health[0].state).toBe('CLOSED');
     });
   });
@@ -176,7 +176,7 @@ describe('ResQGrid Frontend Subsystems & Stores Unit Tests', () => {
     it('should fetch fused traffic flow and incidents', async () => {
       vi.spyOn(trafficService, 'getTrafficFlow').mockResolvedValue({
         segments: [{ id: 'seg-1', roadName: 'Outer Ring Rd', startLat: 12.92, startLng: 77.68, endLat: 12.95, endLng: 77.70, congestionLevel: 'MODERATE', currentSpeedKmh: 35, freeFlowSpeedKmh: 50, delaySeconds: 120 }],
-        sourcesUsed: ['mapmyindia'],
+        sourcesUsed: ['tomtom'],
         sourcesFailed: [],
         fusedAt: new Date().toISOString(),
       });

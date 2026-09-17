@@ -59,7 +59,7 @@ export const Register: React.FC = () => {
         </Link>
         <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Create your account</h2>
         <p className="mt-1 text-xs text-slate-500">
-          Join the emergency response platform network
+          Join the emergency medical response grid
         </p>
       </div>
 

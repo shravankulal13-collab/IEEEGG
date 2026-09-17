@@ -67,7 +67,7 @@ export function isProviderOpen(providerName: string): boolean {
     if (elapsed >= OPEN_DURATION_MS) {
       // Cooldown elapsed — allow exactly one probe through.
       record.state = 'HALF_OPEN';
-      logger.debug(`circuit breaker half-open, probing provider`, { provider: providerName });
+      logger.info({ provider: providerName }, `circuit breaker half-open, probing provider`);
       return false;
     }
     return true;
@@ -86,7 +86,7 @@ export function recordProviderSuccess(providerName: string, latencyMs?: number):
   if (latencyMs !== undefined) record.lastLatencyMs = latencyMs;
 
   if (wasOpen) {
-    logger.debug(`circuit breaker closed — provider recovered`, { provider: providerName });
+    logger.info({ provider: providerName }, `circuit breaker closed — provider recovered`);
   }
 }
 
@@ -99,17 +99,17 @@ export function recordProviderFailure(providerName: string): void {
     // Probe failed — back to OPEN immediately, no need to re-count threshold.
     record.state = 'OPEN';
     record.openedAt = Date.now();
-    logger.debug(`circuit breaker re-opened — probe failed`, { provider: providerName });
+    logger.warn({ provider: providerName }, `circuit breaker re-opened — probe failed`);
     return;
   }
 
   if (record.consecutiveFailures >= FAILURE_THRESHOLD && record.state === 'CLOSED') {
     record.state = 'OPEN';
     record.openedAt = Date.now();
-    logger.debug(`circuit breaker OPEN — provider tripped`, {
+    logger.warn({
       provider: providerName,
       consecutiveFailures: record.consecutiveFailures,
-    });
+    }, `circuit breaker OPEN — provider tripped`);
   }
 }
 
@@ -144,5 +144,5 @@ export function resetProvider(providerName: string): void {
     lastFailureAt: null,
     lastLatencyMs: null,
   });
-  logger.info(`circuit breaker manually reset`, { provider: providerName });
+  logger.info({ provider: providerName }, `circuit breaker manually reset`);
 }

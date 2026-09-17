@@ -32,7 +32,7 @@ export const HospitalList: React.FC<HospitalListProps> = ({
       ))}
       {hospitals.length === 0 && (
         <div className="p-6 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-          No trauma centers currently registered.
+          No medical centers currently registered.
         </div>
       )}
     </div>

@@ -42,7 +42,7 @@ export class AuthService {
       role: input.role,
     });
 
-    logger.info('New user successfully registered', { userId: user.id, role: user.role });
+    logger.info({ userId: user.id, role: user.role }, 'New user successfully registered');
 
     const token = this.generateToken(user);
 
@@ -83,7 +83,7 @@ export class AuthService {
       }
     }
 
-    logger.info('User successfully authenticated', { userId: user.id, role: user.role });
+    logger.info({ userId: user.id, role: user.role }, 'User successfully authenticated');
 
     const token = this.generateToken(user);
 

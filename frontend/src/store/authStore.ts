@@ -49,7 +49,7 @@ const DEMO_USERS: Record<string, { email: string; fullName: string; role: UserPr
   },
   hospital_admin: {
     email: 'hospital@resqgrid.org',
-    fullName: 'Dr. Ramesh Rao (Trauma Chief)',
+    fullName: 'Dr. Ramesh Rao (Medical Chief)',
     role: 'hospital_admin',
     targetPath: '/hospital',
   },

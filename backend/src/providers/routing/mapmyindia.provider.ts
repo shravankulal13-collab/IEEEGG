@@ -1,20 +1,17 @@
 // ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
-// MODULE: MapmyIndia / Mappls Routing Integration
+// MODULE: TomTom Routing Integration
 // ============================================================
 /**
- * mapmyindia.provider.ts
+ * tomtom.provider.ts compatibility module
  * Owner: Anush KD
  *
- * Primary routing engine. Wraps Mappls' Route ETA / Route API with:
- *  - OAuth2 client-credentials token caching (Mappls tokens expire hourly)
- *  - timeout + single internal retry on transient network failure
- *  - normalization into our provider-agnostic RouteResult shape
+ * TomTom routing engine with normalization into our provider-agnostic
+ * RouteResult shape and a short request timeout.
  *
  * This is the FIRST provider tried in the fallback chain (priority 0).
- * If it throws RoutingProviderError, fallback.provider.ts moves to Waze,
- * then OSRM.
+ * The filename is retained for compatibility with existing imports.
  */
 
 import { env } from '../../config/env.js';
@@ -22,14 +19,17 @@ import { logger } from '../../config/logger.js';
 import { RoutingProviderError } from './routing.provider.js';
 import type {
   LatLng,
+  RouteGeometry,
   RouteRequest,
   RouteResult,
+  RouteStep,
   RoutingProvider,
 } from './routing.provider.js';
 import { normalizeMapmyIndiaRoute } from './route.normalizer.js';
 
 const MAPPLS_AUTH_URL = 'https://outpost.mappls.com/api/security/oauth/token';
 const MAPPLS_ROUTE_URL = 'https://apis.mappls.com/advancedmaps/v1';
+const TOMTOM_ROUTE_URL = 'https://api.tomtom.com/routing/1/calculateRoute';
 const REQUEST_TIMEOUT_MS = 4000;
 
 interface CachedToken {
@@ -54,27 +54,11 @@ async function getAccessToken(): Promise<string> {
     return tokenCache.token;
   }
 
-  // If a direct access token / key is provided without client_id, use it directly
-  const clientId = env.MAPPLS_CLIENT_ID || env.MAPMYINDIA_CLIENT_ID;
-  const apiKey = env.MAPPLS_API_KEY || env.MAPMYINDIA_CLIENT_SECRET || env.MAPMYINDIA_ACCESS_TOKEN;
-
-  if (!clientId && apiKey) {
-    tokenCache = {
-      token: apiKey,
-      expiresAt: Date.now() + 3600 * 1000,
-    };
-    return apiKey;
-  }
-
-  if (!clientId || !apiKey) {
-    throw new RoutingProviderError('mapmyindia', 'MapMyIndia credentials not configured');
-  }
-
   try {
     const body = new URLSearchParams({
       grant_type: 'client_credentials',
-      client_id: clientId,
-      client_secret: apiKey,
+      client_id: env.MAPPLS_CLIENT_ID,
+      client_secret: env.MAPPLS_API_KEY,
     });
 
     const res = await fetchWithTimeout(
@@ -94,12 +78,12 @@ async function getAccessToken(): Promise<string> {
     };
     return tokenCache.token;
   } catch (err) {
-    throw new RoutingProviderError('mapmyindia', 'failed to acquire OAuth token', err);
+    throw new RoutingProviderError('tomtom', 'failed to acquire OAuth token', err);
   }
 }
 
 function toLatLngPair(p: LatLng): string {
-  return `${p.lng},${p.lat}`;
+  return `${p.lat},${p.lng}`;
 }
 
 async function requestRoute(request: RouteRequest, token: string, attempt = 1): Promise<Response> {
@@ -119,51 +103,98 @@ async function requestRoute(request: RouteRequest, token: string, attempt = 1): 
 
   try {
     const res = await fetchWithTimeout(url, { method: 'GET' }, REQUEST_TIMEOUT_MS);
-    if (res.status === 401 || res.status === 403) {
-      // Direct key is not authorized for Routing API in Mappls console; don't retry, fail immediately to fallback
-      return res;
-    }
-    if (!res.ok && attempt < 2 && res.status >= 500) {
-      logger.debug(`mapmyindia route request failed (status ${res.status}), retrying once`);
+    if (!res.ok && attempt < 2) {
+      logger.warn(`legacy route request failed (status ${res.status}), retrying once`);
       return requestRoute(request, token, attempt + 1);
     }
     return res;
   } catch (err) {
     if (attempt < 2) {
-      logger.debug('mapmyindia route request errored, retrying once', { err });
+      logger.warn({ err }, 'legacy route request errored, retrying once');
       return requestRoute(request, token, attempt + 1);
     }
     throw err;
   }
 }
 
-export const mapmyIndiaRoutingProvider: RoutingProvider = {
-  name: 'mapmyindia',
+function normalizeTomTomRoute(raw: any): RouteResult {
+  const route = raw?.routes?.[0];
+  if (!route) {
+    throw new Error('tomtom response contained no routes');
+  }
+
+  const points = route.legs?.flatMap((leg: any) => leg.points ?? []) ?? [];
+  const geometry: RouteGeometry = {
+    type: 'LineString',
+    coordinates: points.map((point: any) => [point.longitude, point.latitude] as [number, number]),
+  };
+
+  const steps = route.legs?.flatMap((leg: any) => leg.instructions ?? []) ?? [];
+  const normalizedSteps: RouteStep[] = steps.map((step: any) => ({
+    instruction: step?.message ?? 'Continue',
+    distanceMeters: step?.lengthInMeters ?? 0,
+    durationSeconds: step?.travelTimeInSeconds ?? 0,
+    startLocation: { lng: step?.point?.longitude ?? 0, lat: step?.point?.latitude ?? 0 },
+    endLocation: { lng: step?.point?.longitude ?? 0, lat: step?.point?.latitude ?? 0 },
+  }));
+
+  return {
+    provider: 'tomtom',
+    distanceMeters: route.summary?.lengthInMeters ?? 0,
+    durationSeconds: route.summary?.travelTimeInSeconds ?? 0,
+    geometry,
+    steps: normalizedSteps.length ? normalizedSteps : [{
+      instruction: 'Continue',
+      distanceMeters: route.summary?.lengthInMeters ?? 0,
+      durationSeconds: route.summary?.travelTimeInSeconds ?? 0,
+      startLocation: { lng: 0, lat: 0 },
+      endLocation: { lng: 0, lat: 0 },
+    }],
+    computedAt: new Date().toISOString(),
+  };
+}
+
+async function requestTomTomRoute(request: RouteRequest): Promise<RouteResult> {
+  if (!env.TOMTOM_API_KEY) {
+    throw new RoutingProviderError('tomtom', 'TomTom API key is not configured');
+  }
+
+  const coords = [request.origin, ...(request.waypoints ?? []), request.destination]
+    .map((point) => `${point.lat},${point.lng}`)
+    .join(':');
+
+  const url = new URL(`${TOMTOM_ROUTE_URL}/${coords}/json`);
+  url.searchParams.set('key', env.TOMTOM_API_KEY);
+  url.searchParams.set('travelMode', 'car');
+  url.searchParams.set('routeType', 'fastest');
+  url.searchParams.set('computeTravelTimeFor', 'all');
+
+  const res = await fetchWithTimeout(url.toString(), { method: 'GET' }, REQUEST_TIMEOUT_MS);
+  if (!res.ok) {
+    throw new Error(`tomtom route endpoint returned ${res.status}`);
+  }
+
+  const raw = await res.json();
+  return normalizeTomTomRoute(raw);
+}
+
+export const tomTomRoutingProvider: RoutingProvider = {
+  name: 'tomtom',
   priority: 0,
 
   async getRoute(request: RouteRequest): Promise<RouteResult> {
     try {
-      const token = await getAccessToken();
-      const res = await requestRoute(request, token);
-
-      if (!res.ok) {
-        throw new Error(`route_eta endpoint returned ${res.status}`);
-      }
-
-      const raw = await res.json();
-      return normalizeMapmyIndiaRoute(raw);
+      return await requestTomTomRoute(request);
     } catch (err) {
       if (err instanceof RoutingProviderError) throw err;
-      throw new RoutingProviderError('mapmyindia', 'route computation failed', err);
+      throw new RoutingProviderError('tomtom', 'route computation failed', err);
     }
   },
 
   async healthCheck(): Promise<boolean> {
-    try {
-      await getAccessToken();
-      return true;
-    } catch {
-      return false;
-    }
+    return Boolean(env.TOMTOM_API_KEY);
   },
 };
+
+/** Compatibility alias for modules that still import the old filename/export. */
+export const mapmyIndiaRoutingProvider = tomTomRoutingProvider;

@@ -34,7 +34,8 @@ export const IncidentConfirmation: React.FC = () => {
       })
       .catch(() => {
         useIncidentStore.getState().fetchIncidents().then(() => {
-          setIncident(useIncidentStore.getState().incidents[0] || null);
+          const fallback = useIncidentStore.getState().incidents[0] || null;
+          setIncident(fallback);
           setIsLoading(false);
         }).catch((err) => {
           setError(err.message || 'Failed to load incident record.');
@@ -102,7 +103,7 @@ export const IncidentConfirmation: React.FC = () => {
                 <Building2 className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Destination Trauma Center</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase">Destination Medical Center</p>
                 <p className="text-xs font-black text-slate-900">{assignedHosp}</p>
               </div>
             </div>

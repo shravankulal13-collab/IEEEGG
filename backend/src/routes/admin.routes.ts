@@ -14,20 +14,17 @@ import { incidentRepository } from '../modules/incidents/incident.repository.js'
 
 const router = Router();
 
-router.get('/system-status', authenticate, requireRole('system_admin'), async (_req, res, next) => {
+// Protect all admin endpoints with system_admin role
+router.use(authenticate, requireRole('system_admin'));
+
+router.get('/system-status', async (_req, res, next) => {
   try {
     const dbHealth = await checkDatabaseHealth();
-    let userCount = 0;
-    let incidentCount = 0;
-
-    if (dbHealth.connected) {
-      userCount = await authRepository.count().catch(() => 0);
-      const activeIncidents = await incidentRepository.list({
-        page: 1,
-        limit: 1,
-      }).catch(() => ({ total: 0, items: [] }));
-      incidentCount = activeIncidents.total;
-    }
+    const userCount = await authRepository.count();
+    const activeIncidents = await incidentRepository.list({
+      page: 1,
+      limit: 10,
+    });
 
     res.status(200).json({
       success: true,
@@ -42,7 +39,7 @@ router.get('/system-status', authenticate, requireRole('system_admin'), async (_
         },
         counts: {
           users: userCount,
-          incidents: incidentCount,
+          incidents: activeIncidents.total,
         },
       },
     });

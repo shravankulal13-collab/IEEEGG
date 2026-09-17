@@ -74,6 +74,7 @@ export class AuthController {
   }
 
   async logout(_req: Request, res: Response): Promise<void> {
+    // JWT is stateless; client removes token. Endpoint clears cookies if any.
     res.clearCookie('token');
     res.status(200).json({
       success: true,
@@ -84,6 +85,7 @@ export class AuthController {
   async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       forgotPasswordSchema.parse(req.body);
+      // For security, always respond with generic success message without leaking account existence
       res.status(200).json({
         success: true,
         message: 'If an account exists with this email, password recovery instructions have been sent.',

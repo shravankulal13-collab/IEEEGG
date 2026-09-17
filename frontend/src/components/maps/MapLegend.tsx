@@ -36,7 +36,7 @@ export const MapLegend: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="w-3.5 h-3.5 rounded bg-emerald-600 text-white text-[8px] flex items-center justify-center font-bold">H</span>
-              <span className="text-slate-200">Trauma Center (ICU Ready)</span>
+              <span className="text-slate-200">Medical Center (ICU Ready)</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3.5 h-1 rounded-full bg-emerald-400" />

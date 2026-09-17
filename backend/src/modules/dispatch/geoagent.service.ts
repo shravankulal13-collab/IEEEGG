@@ -91,7 +91,7 @@ export class GeoAgentService {
       `);
       ambulances = ambRes.rows;
     } catch (err: any) {
-      logger.warn('Failed to query ambulances for GeoAgent, using empty state', { error: err.message });
+      logger.warn({ error: err.message }, 'Failed to query ambulances for GeoAgent, using empty state');
     }
 
     // 2. Fetch hospitals from PostgreSQL
@@ -106,7 +106,7 @@ export class GeoAgentService {
       `);
       hospitals = hospRes.rows.filter(h => !blockedHospitalIds.has(h.id));
     } catch (err: any) {
-      logger.warn('Failed to query hospitals for GeoAgent, using empty state', { error: err.message });
+      logger.warn({ error: err.message }, 'Failed to query hospitals for GeoAgent, using empty state');
     }
 
     // 3. Score ambulances

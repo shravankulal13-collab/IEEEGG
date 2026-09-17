@@ -55,7 +55,7 @@ export const CommandCenter: React.FC = () => {
   const stats = [
     { label: 'Active Incidents', value: String(activeCount), change: 'Live Database', icon: <Radio className="w-5 h-5 text-red-600 animate-pulse" /> },
     { label: 'Fleet Ready', value: `${availableAmbs} / ${safeAmbulances.length}`, change: 'Available Units', icon: <Ambulance className="w-5 h-5 text-blue-600" /> },
-    { label: 'Trauma Centers', value: String(safeHospitals.length), change: `${totalIcuBeds} ICU Beds Free`, icon: <Building2 className="w-5 h-5 text-emerald-600" /> },
+    { label: 'Medical Centers', value: String(safeHospitals.length), change: `${totalIcuBeds} ICU Beds Free`, icon: <Building2 className="w-5 h-5 text-emerald-600" /> },
     { label: 'Dispatch Latency', value: '< 500 ms', change: 'PostGIS Engine', icon: <Zap className="w-5 h-5 text-purple-600" /> },
   ];
 
@@ -70,10 +70,10 @@ export const CommandCenter: React.FC = () => {
         badgeText="Emergency Dispatch Command Center & Live Matrix"
         headingPrefix="Orchestrate Sub-Second"
         typewriterPhrases={[
-          'Emergency Response Corridors',
+          'Emergency Medical Corridors',
           'PostGIS Fleet Dispatches',
           'Traffic Clearance Green Waves',
-          'Hospital ICU Traumas'
+          'Hospital ICU Capacity'
         ]}
         headingSuffix="with ResQGrid"
         subtitle="Sub-second incident triaging, PostGIS fleet telemetry, dynamic traffic clearance corridors, and automated hospital ICU bed matching."
@@ -88,7 +88,7 @@ export const CommandCenter: React.FC = () => {
         }}
         tickerItems={[
           { text: `${safeAmbulances.length} Units in Fleet` },
-          { text: `${safeHospitals.length} Trauma Hospitals` },
+          { text: `${safeHospitals.length} Medical Hospitals` },
           { text: `${activeCount} Incidents Logged` },
           { text: `${totalIcuBeds} Free ICU Beds` }
         ]}

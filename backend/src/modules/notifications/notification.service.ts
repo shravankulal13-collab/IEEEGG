@@ -4,10 +4,17 @@
 // MODULE: Emergency Alert & Notification Service
 // ============================================================
 
-import { query, pool, isPostgresConnected } from '../../config/database.js';
+import { query } from '../../config/database';
 import { Server } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
 
+// ============================================================
+// Types
+// ============================================================
+
+/**
+ * Mirrors the notification_type enum defined in database/schema.sql.
+ * Do NOT add values here without a corresponding schema migration.
+ */
 export type NotificationType =
   | 'incident_created'
   | 'incident_verified'
@@ -22,6 +29,7 @@ export type NotificationType =
   | 'incident_cancelled'
   | 'system_alert';
 
+/** Mirrors the row shape of the `notifications` table in the database. */
 export interface NotificationRecord {
   id: string;
   user_id: string | null;
@@ -35,6 +43,7 @@ export interface NotificationRecord {
   read_at: string | null;
 }
 
+/** Input shape for creating a new notification. */
 export interface CreateNotificationInput {
   user_id?: string;
   incident_id?: string;
@@ -44,56 +53,46 @@ export interface CreateNotificationInput {
   data?: Record<string, unknown>;
 }
 
-const fallbackNotifications: NotificationRecord[] = [];
+// ============================================================
+// Service
+// ============================================================
 
 export class NotificationService {
   private io: Server | null = null;
 
+  /**
+   * Wire in the Socket.IO server so this service can push realtime
+   * delivery whenever a notification is persisted to the database.
+   *
+   * Must be called once during server startup, from setupSocketServer.
+   */
   setSocketServer(io: Server): void {
     this.io = io;
   }
 
+  /**
+   * Persist a notification record and deliver it in realtime.
+   *
+   * Delivery targets:
+   * - `user:{user_id}` room  (if user_id provided)
+   * - `command_center` room  (always — dispatchers must see all alerts)
+   */
   async create(input: CreateNotificationInput): Promise<NotificationRecord> {
-    const id = uuidv4();
-    const now = new Date().toISOString();
+    const res = await query(
+      `INSERT INTO notifications (user_id, incident_id, notification_type, title, message, data)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [
+        input.user_id ?? null,
+        input.incident_id ?? null,
+        input.notification_type,
+        input.title,
+        input.message,
+        JSON.stringify(input.data ?? {}),
+      ]
+    );
 
-    let notification: NotificationRecord = {
-      id,
-      user_id: input.user_id ?? null,
-      incident_id: input.incident_id ?? null,
-      notification_type: input.notification_type,
-      title: input.title,
-      message: input.message,
-      data: input.data ?? {},
-      is_read: false,
-      created_at: now,
-      read_at: null,
-    };
-
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query(
-          `INSERT INTO notifications (user_id, incident_id, notification_type, title, message, data)
-           VALUES ($1, $2, $3, $4, $5, $6)
-           RETURNING *`,
-          [
-            input.user_id ?? null,
-            input.incident_id ?? null,
-            input.notification_type,
-            input.title,
-            input.message,
-            JSON.stringify(input.data ?? {}),
-          ]
-        );
-        if (res.rows[0]) {
-          notification = res.rows[0] as NotificationRecord;
-        }
-      } catch {
-        fallbackNotifications.push(notification);
-      }
-    } else {
-      fallbackNotifications.push(notification);
-    }
+    const notification = res.rows[0] as NotificationRecord;
 
     if (this.io) {
       if (input.user_id) {
@@ -105,133 +104,83 @@ export class NotificationService {
     return notification;
   }
 
+  /**
+   * Retrieve all unread notifications for a specific user,
+   * ordered newest first.
+   */
   async getUnreadForUser(userId: string): Promise<NotificationRecord[]> {
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query(
-          `SELECT * FROM notifications
-           WHERE user_id = $1 AND is_read = FALSE
-           ORDER BY created_at DESC`,
-          [userId]
-        );
-        return res.rows as NotificationRecord[];
-      } catch {
-        // Fallback
-      }
-    }
-    return fallbackNotifications.filter((n) => n.user_id === userId && !n.is_read);
+    const res = await query(
+      `SELECT * FROM notifications
+       WHERE user_id = $1 AND is_read = FALSE
+       ORDER BY created_at DESC`,
+      [userId]
+    );
+    return res.rows as NotificationRecord[];
   }
 
+  /**
+   * Retrieve recent notifications for a user (read + unread).
+   */
   async getForUser(userId: string, limit = 50): Promise<NotificationRecord[]> {
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query(
-          `SELECT * FROM notifications
-           WHERE user_id = $1
-           ORDER BY created_at DESC
-           LIMIT $2`,
-          [userId, limit]
-        );
-        return res.rows as NotificationRecord[];
-      } catch {
-        // Fallback
-      }
-    }
-    return fallbackNotifications
-      .filter((n) => n.user_id === userId)
-      .slice(0, limit);
+    const res = await query(
+      `SELECT * FROM notifications
+       WHERE user_id = $1
+       ORDER BY created_at DESC
+       LIMIT $2`,
+      [userId, limit]
+    );
+    return res.rows as NotificationRecord[];
   }
 
+  /**
+   * Mark a single notification as read.
+   * Returns null if the notification is not found or does not belong
+   * to the specified user (RLS enforcement at the service layer).
+   */
   async markAsRead(notificationId: string, userId: string): Promise<NotificationRecord | null> {
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query(
-          `UPDATE notifications
-           SET is_read = TRUE, read_at = NOW()
-           WHERE id = $1 AND user_id = $2
-           RETURNING *`,
-          [notificationId, userId]
-        );
-        return (res.rows[0] as NotificationRecord) ?? null;
-      } catch {
-        // Fallback
-      }
-    }
-
-    const n = fallbackNotifications.find((item) => item.id === notificationId && item.user_id === userId);
-    if (n) {
-      n.is_read = true;
-      n.read_at = new Date().toISOString();
-      return n;
-    }
-    return null;
+    const res = await query(
+      `UPDATE notifications
+       SET is_read = TRUE, read_at = NOW()
+       WHERE id = $1 AND user_id = $2
+       RETURNING *`,
+      [notificationId, userId]
+    );
+    return (res.rows[0] as NotificationRecord) ?? null;
   }
 
+  /**
+   * Mark all unread notifications for a user as read.
+   * Returns the number of rows updated.
+   */
   async markAllReadForUser(userId: string): Promise<number> {
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query(
-          `UPDATE notifications
-           SET is_read = TRUE, read_at = NOW()
-           WHERE user_id = $1 AND is_read = FALSE`,
-          [userId]
-        );
-        return res.rowCount ?? 0;
-      } catch {
-        // Fallback
-      }
-    }
-
-    let count = 0;
-    const now = new Date().toISOString();
-    for (const n of fallbackNotifications) {
-      if (n.user_id === userId && !n.is_read) {
-        n.is_read = true;
-        n.read_at = now;
-        count++;
-      }
-    }
-    return count;
+    const res = await query(
+      `UPDATE notifications
+       SET is_read = TRUE, read_at = NOW()
+       WHERE user_id = $1 AND is_read = FALSE`,
+      [userId]
+    );
+    return res.rowCount ?? 0;
   }
 
+  /**
+   * Persist a system-level alert (no specific user) and broadcast it
+   * to the command center room.
+   *
+   * Used by: incidentEscalationJob, stale GPS detection, system health.
+   */
   async broadcastSystemAlert(
     title: string,
     message: string,
     data?: Record<string, unknown>
   ): Promise<NotificationRecord> {
-    const id = uuidv4();
-    const now = new Date().toISOString();
+    const res = await query(
+      `INSERT INTO notifications (notification_type, title, message, data)
+       VALUES ('system_alert', $1, $2, $3)
+       RETURNING *`,
+      [title, message, JSON.stringify(data ?? {})]
+    );
 
-    let notification: NotificationRecord = {
-      id,
-      user_id: null,
-      incident_id: null,
-      notification_type: 'system_alert',
-      title,
-      message,
-      data: data ?? {},
-      is_read: false,
-      created_at: now,
-      read_at: null,
-    };
-
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query(
-          `INSERT INTO notifications (notification_type, title, message, data)
-           VALUES ('system_alert', $1, $2, $3)
-           RETURNING *`,
-          [title, message, JSON.stringify(data ?? {})]
-        );
-        if (res.rows[0]) {
-          notification = res.rows[0] as NotificationRecord;
-        }
-      } catch {
-        fallbackNotifications.push(notification);
-      }
-    } else {
-      fallbackNotifications.push(notification);
-    }
+    const notification = res.rows[0] as NotificationRecord;
 
     if (this.io) {
       this.io.to('command_center').emit('notification:system_alert', notification);
@@ -240,21 +189,18 @@ export class NotificationService {
     return notification;
   }
 
+  /**
+   * Retrieve all notifications related to a specific incident.
+   * Useful for the command center incident detail panel.
+   */
   async getForIncident(incidentId: string): Promise<NotificationRecord[]> {
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query(
-          `SELECT * FROM notifications
-           WHERE incident_id = $1
-           ORDER BY created_at DESC`,
-          [incidentId]
-        );
-        return res.rows as NotificationRecord[];
-      } catch {
-        // Fallback
-      }
-    }
-    return fallbackNotifications.filter((n) => n.incident_id === incidentId);
+    const res = await query(
+      `SELECT * FROM notifications
+       WHERE incident_id = $1
+       ORDER BY created_at DESC`,
+      [incidentId]
+    );
+    return res.rows as NotificationRecord[];
   }
 }
 

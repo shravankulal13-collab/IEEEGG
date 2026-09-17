@@ -36,7 +36,7 @@ export async function apiRequest<T = any>(
   
   const token = typeof window !== 'undefined' && window.localStorage ? localStorage.getItem('token') : null;
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
     ...(options.headers as Record<string, string>),
   };
 

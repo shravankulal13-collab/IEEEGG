@@ -7,7 +7,7 @@
 import { env } from './env.js';
 import { logger } from './logger.js';
 
-export interface RedisClientInterface {
+interface RedisClientInterface {
   get(key: string): Promise<string | null>;
   set(key: string, value: string, mode?: string, duration?: number): Promise<'OK' | null>;
   del(key: string): Promise<number>;
@@ -47,7 +47,7 @@ class FallbackRedisClient implements RedisClientInterface {
 export const redisClient: RedisClientInterface = new FallbackRedisClient();
 
 if (env.REDIS_URL) {
-  logger.info('Redis connection configured with memory fallback resilience.', { redisUrl: env.REDIS_URL });
+  logger.info({ redisUrl: env.REDIS_URL }, 'Redis connection string found. Initialized with memory fallback resilience.');
 } else {
   logger.debug('Redis URL not configured; using high-performance local memory cache fallback.');
 }

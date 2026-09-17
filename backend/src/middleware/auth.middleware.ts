@@ -20,25 +20,12 @@ declare global {
   namespace Express {
     interface Request {
       user?: AuthUser;
-      id?: string;
     }
   }
 }
 
-const DEMO_USERS_MAP: Record<string, AuthUser> = {
-  dispatcher: { id: 'a0000000-0000-0000-0000-000000000008', email: 'dispatcher@example.com', role: 'dispatcher', fullName: 'Vikram Mehta' },
-  ambulance_driver: { id: 'a0000000-0000-0000-0000-000000000007', email: 'driver@example.com', role: 'ambulance_driver', fullName: 'Manjunath Gowda' },
-  driver: { id: 'a0000000-0000-0000-0000-000000000007', email: 'driver@example.com', role: 'ambulance_driver', fullName: 'Manjunath Gowda' },
-  ambulance: { id: 'a0000000-0000-0000-0000-000000000007', email: 'driver@example.com', role: 'ambulance_driver', fullName: 'Manjunath Gowda' },
-  hospital_admin: { id: 'a0000000-0000-0000-0000-000000000009', email: 'hospital@example.com', role: 'hospital_admin', fullName: 'Sunita Rao' },
-  hospital: { id: 'a0000000-0000-0000-0000-000000000009', email: 'hospital@example.com', role: 'hospital_admin', fullName: 'Sunita Rao' },
-  system_admin: { id: 'a0000000-0000-0000-0000-000000000010', email: 'admin@example.com', role: 'system_admin', fullName: 'Dr. Ramesh Kumar' },
-  admin: { id: 'a0000000-0000-0000-0000-000000000010', email: 'admin@example.com', role: 'system_admin', fullName: 'Dr. Ramesh Kumar' },
-  citizen: { id: 'a0000000-0000-0000-0000-000000000006', email: 'citizen@example.com', role: 'citizen', fullName: 'Pavana Murthy' },
-};
-
 /**
- * Validates JWT access tokens from the Authorization header.
+ * Validates JWT access tokens or Supabase bearer tokens from the request header.
  */
 export function authenticate(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
@@ -55,14 +42,6 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
     return;
   }
 
-  // Support demo session tokens in development / testing modes
-  if (token.startsWith('demo-')) {
-    const roleKey = token.replace('demo-', '').split('-')[0].toLowerCase();
-    req.user = DEMO_USERS_MAP[roleKey] || DEMO_USERS_MAP.citizen;
-    next();
-    return;
-  }
-
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET) as AuthUser;
     req.user = {
@@ -73,7 +52,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
     };
     next();
   } catch (err: any) {
-    logger.warn('JWT verification failed', { err: err.message, ip: req.ip });
+    logger.warn({ err: err.message, ip: req.ip }, 'JWT verification failed');
     res.status(401).json({
       success: false,
       error: {
@@ -85,20 +64,13 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
 }
 
 /**
- * Optional authentication that populates req.user if a valid token is present.
+ * Optional authentication that populates req.user if a valid token is present, but does not reject anonymous calls.
  */
 export function optionalAuthenticate(req: Request, _res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
   if (token) {
-    if (token.startsWith('demo-')) {
-      const roleKey = token.replace('demo-', '').split('-')[0].toLowerCase();
-      req.user = DEMO_USERS_MAP[roleKey] || DEMO_USERS_MAP.citizen;
-      next();
-      return;
-    }
-
     try {
       const decoded = jwt.verify(token, env.JWT_SECRET) as AuthUser;
       req.user = {

@@ -170,7 +170,6 @@ export const Topbar: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-[#E50914] inline-block" />
             <span className="w-2 h-2 rounded-full bg-white inline-block" />
           </div>
-
           <div className="flex items-center gap-1">
             <span className="font-black text-xl tracking-tight text-white">ResQ</span>
             <span className="font-black text-xl text-[#E50914]">Grid</span>

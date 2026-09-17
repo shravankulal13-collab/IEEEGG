@@ -16,6 +16,7 @@ import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { ResetPassword } from './pages/auth/ResetPassword';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { NotFound } from './pages/NotFound';
+import { PublicReports } from './pages/PublicReports';
 
 // Citizen Portal Pages (Saishree Santhosh Shet)
 import { EmergencyHome } from './pages/citizen/EmergencyHome';
@@ -95,6 +96,7 @@ function App() {
             </RoleGuard>
           }
         />
+        <Route path="/public" element={<PublicReports />} />
 
         {/* 1. Citizen Portal Routes */}
         <Route

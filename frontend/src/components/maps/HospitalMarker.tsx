@@ -1,6 +1,6 @@
 // ============================================================
 // PRIMARY OWNER: Shreevarsha V Hegde / khushi.shettyyy
-// ROLE: Hospital & Trauma Center Visualization
+// ROLE: Hospital & Medical Center Visualization
 // MODULE: Hospital Destination Marker with Real-time Capacity
 // ============================================================
 

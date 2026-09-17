@@ -1,15 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "CommonJS",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "sourceMap": true,
     "strict": true,
     "skipLibCheck": true,
-    "sourceMap": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "rootDir": "./src",
-    "outDir": "./dist",
-    "types": ["node"]
+    "outDir": "./dist"
   },
   "include": ["src/**/*"]
 }

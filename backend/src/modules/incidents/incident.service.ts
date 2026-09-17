@@ -1,7 +1,7 @@
 // ============================================================
 // PRIMARY OWNER: SK
 // ROLE: Core Platform + Backend Integration Lead
-// MODULE: Incident Lifecycle & Verification Service
+// MODULE: Incident Business Logic, State Machine & Verification
 // ============================================================
 
 import { logger } from '../../config/logger.js';
@@ -11,6 +11,7 @@ import type {
   IncidentRecord,
   IncidentStatus,
   IncidentVerificationRecord,
+  VerificationStatus,
 } from './incident.types.js';
 import type {
   CancelIncidentInput,
@@ -23,15 +24,15 @@ import type {
 
 // Valid status transitions for emergency state machine
 const ALLOWED_STATUS_TRANSITIONS: Record<IncidentStatus, IncidentStatus[]> = {
-  reported: ['verifying', 'verified', 'dispatching', 'dispatched', 'en_route', 'cancelled', 'false_report'],
-  verifying: ['verified', 'dispatching', 'dispatched', 'en_route', 'arrived', 'cancelled', 'false_report'],
-  verified: ['dispatching', 'dispatched', 'en_route', 'arrived', 'cancelled'],
-  dispatching: ['dispatched', 'en_route', 'arrived', 'cancelled'],
-  dispatched: ['en_route', 'arrived', 'transporting', 'cancelled'],
-  en_route: ['arrived', 'transporting', 'resolved', 'cancelled'],
-  arrived: ['transporting', 'resolved', 'cancelled', 'en_route'],
-  transporting: ['arrived', 'resolved', 'cancelled'],
-  resolved: ['reported', 'cancelled', 'transporting', 'arrived'], // Allow re-opening if needed
+  reported: ['verifying', 'verified', 'cancelled', 'false_report'],
+  verifying: ['verified', 'rejected' as any, 'cancelled', 'false_report'],
+  verified: ['dispatching', 'dispatched', 'cancelled'],
+  dispatching: ['dispatched', 'cancelled'],
+  dispatched: ['en_route', 'cancelled'],
+  en_route: ['arrived', 'cancelled'],
+  arrived: ['transporting', 'resolved', 'cancelled'],
+  transporting: ['resolved', 'cancelled'],
+  resolved: [], // Terminal
   cancelled: [], // Terminal
   false_report: [], // Terminal
   expired: [], // Terminal
@@ -51,7 +52,7 @@ export class IncidentService {
     const isPotentialDuplicate = nearby.length > 0;
 
     const initialMetadata: Record<string, unknown> = {
-      ...(input.metadata || {}),
+      ...input.metadata,
       isWithinIndia,
       potentialDuplicate: isPotentialDuplicate,
       nearbyActiveIncidentCount: nearby.length,
@@ -76,12 +77,15 @@ export class IncidentService {
       metadata: initialMetadata,
     });
 
-    logger.info('Emergency incident successfully logged', {
-      incidentId: incident.id,
-      incidentNumber: incident.incident_number,
-      emergencyType: incident.emergency_type,
-      isDuplicate: isPotentialDuplicate,
-    });
+    logger.info(
+      {
+        incidentId: incident.id,
+        incidentNumber: incident.incident_number,
+        emergencyType: incident.emergency_type,
+        isDuplicate: isPotentialDuplicate,
+      },
+      'Emergency incident successfully logged'
+    );
 
     // Initial automated verification signal
     const initialVerificationScore = this.calculateVerificationScore({
@@ -149,11 +153,10 @@ export class IncidentService {
       throw new AppError('Failed to update incident status.', 500);
     }
 
-    logger.info('Incident status transitioned', {
-      incidentId: id,
-      previousStatus: incident.status,
-      newStatus: input.status,
-    });
+    logger.info(
+      { incidentId: id, previousStatus: incident.status, newStatus: input.status },
+      'Incident status transitioned'
+    );
 
     return updated;
   }
@@ -188,11 +191,10 @@ export class IncidentService {
       verifiedAt: input.result === 'verified' ? new Date() : undefined,
     });
 
-    logger.info('Incident verification recorded', {
-      incidentId: id,
-      result: input.result,
-      confidence: input.confidenceScore,
-    });
+    logger.info(
+      { incidentId: id, result: input.result, confidence: input.confidenceScore },
+      'Incident verification recorded'
+    );
 
     return {
       incident: updated || incident,
@@ -216,7 +218,7 @@ export class IncidentService {
       throw new AppError('Failed to cancel incident', 500);
     }
 
-    logger.info('Incident cancelled', { incidentId: id, reason: input.cancellationReason });
+    logger.info({ incidentId: id, reason: input.cancellationReason }, 'Incident cancelled');
     return updated;
   }
 

@@ -31,7 +31,7 @@ export const RouteLayer: React.FC<RouteLayerProps> = ({
               {preemptedSignalsCount} Signals Preempted
             </span>
           </div>
-          <p className="text-[10px] text-slate-300">MapMyIndia Dynamic Traffic Preemption Enabled</p>
+          <p className="text-[10px] text-slate-300">TomTom Dynamic Traffic Preemption Enabled</p>
         </div>
       </div>
     </div>

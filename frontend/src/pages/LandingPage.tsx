@@ -41,14 +41,14 @@ export const LandingPage: React.FC = () => {
 
   // Typewriter Text Effect for Real Platform Capabilities
   const typewriterPhrases = [
-    'Emergency Response',
+    'Emergency Medical Response',
     'Ambulance Dispatch',
-    'Trauma Coordination',
+    'Medical Coordination',
     'Green Signal Corridors',
     'Hospital Bed Allocation',
   ];
   const [typewriterIndex, setTypewriterIndex] = useState(0);
-  const [displayedText, setDisplayedText] = useState('Emergency Response');
+  const [displayedText, setDisplayedText] = useState('Emergency Medical Response');
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Carousel ref
@@ -107,7 +107,7 @@ export const LandingPage: React.FC = () => {
   const servicesData = [
     {
       id: 's1',
-      title: 'Fracture & Trauma Stabilization',
+      title: 'Fracture & Medical Stabilization',
       img: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80',
       isCustomCard: false,
     },
@@ -126,7 +126,7 @@ export const LandingPage: React.FC = () => {
     {
       id: 's4',
       title: 'Wound Care & Sterile Suture Units',
-      subtitle: 'Sub-second digital telemetry with direct trauma surgeon pre-arrival alert.',
+      subtitle: 'Sub-second digital telemetry with direct medical team pre-arrival alert.',
       isCustomCard: true,
     },
     {
@@ -144,7 +144,7 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div style={{ backgroundColor: '#F4F7FB', color: '#0F172A', minHeight: '100vh', fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif" }}>
+    <div className="landing-page" style={{ backgroundColor: '#F4F7FB', color: '#0F172A', minHeight: '100vh', fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif" }}>
       
       {/* ======================================================== */}
       {/* SECTION 1: HERO HEADER (IMAGE 1)                         */}
@@ -159,9 +159,9 @@ export const LandingPage: React.FC = () => {
           borderBottom: '1px solid #1E3A8A',
         }}
       >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="landing-hero-inner" style={{ maxWidth: '1200px', margin: '0 auto' }}>
           {/* Topbar Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '36px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="landing-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '36px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
             
             {/* Logo */}
             <div
@@ -184,12 +184,12 @@ export const LandingPage: React.FC = () => {
               <button onClick={() => handleEnterPortal('citizen')} style={{ background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer', fontWeight: 600 }}>Citizen SOS</button>
               <button onClick={() => handleEnterPortal('ambulance_driver')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }}>Driver Fleet</button>
               <button onClick={() => handleEnterPortal('dispatcher')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }}>Command Hub</button>
-              <button onClick={() => handleEnterPortal('hospital_admin')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }}>Trauma Network</button>
+              <button onClick={() => handleEnterPortal('hospital_admin')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }}>Medical Network</button>
               <button onClick={() => handleEnterPortal('system_admin')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }}>Diagnostics</button>
             </nav>
 
             {/* Right CTAs */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="landing-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {health?.status === 'healthy' && (
                 <span style={{ padding: '4px 10px', borderRadius: '9999px', backgroundColor: 'rgba(6, 78, 59, 0.7)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#34D399', fontSize: '11px', fontWeight: 700 }} className="hidden sm:inline-block">
                   ● API Operational
@@ -212,7 +212,7 @@ export const LandingPage: React.FC = () => {
                   boxShadow: '0 8px 20px rgba(229, 9, 20, 0.4)',
                   transition: 'all 0.2s ease',
                 }}
-                className="hover:scale-105"
+                className="landing-header-cta hover:scale-105"
               >
                 <span>Launch SOS Portal</span>
                 <ArrowRight style={{ width: '15px', height: '15px' }} />
@@ -221,10 +221,10 @@ export const LandingPage: React.FC = () => {
           </div>
 
             {/* Hero Center Headline */}
-            <div style={{ textAlign: 'center', paddingTop: '60px', paddingBottom: '20px', maxWidth: '960px', margin: '0 auto' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '9999px', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', fontSize: '13px', fontWeight: 700, color: '#38BDF8', marginBottom: '20px' }}>
+            <div className="landing-hero-copy" style={{ textAlign: 'center', paddingTop: '60px', paddingBottom: '20px', maxWidth: '960px', margin: '0 auto' }}>
+              <div className="landing-eyebrow" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '9999px', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', fontSize: '13px', fontWeight: 700, color: '#38BDF8', marginBottom: '20px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#E50914', display: 'inline-block' }} />
-                <span>Emergency Response & Rapid Coordination Platform</span>
+                <span>Emergency medical response grid</span>
               </div>
 
               <h1 style={{ fontSize: 'clamp(32px, 6vw, 64px)', fontWeight: 900, lineHeight: 1.15, letterSpacing: '-1.5px', margin: '0 0 24px 0', color: '#FFFFFF' }}>
@@ -241,7 +241,7 @@ export const LandingPage: React.FC = () => {
                 Sub-second incident triaging, PostGIS ambulance telemetry, dynamic traffic clearance corridors, and automated hospital ICU bed matching.
               </p>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
+              <div className="landing-hero-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => handleEnterPortal('citizen')}
                   style={{
@@ -317,7 +317,7 @@ export const LandingPage: React.FC = () => {
                 </span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Building2 style={{ width: '16px', height: '16px', color: '#34D399' }} />
-                  Trauma Hospital Network
+                  Medical Hospital Network
                 </span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Ambulance style={{ width: '16px', height: '16px', color: '#F87171' }} />
@@ -339,13 +339,13 @@ export const LandingPage: React.FC = () => {
         {/* ======================================================== */}
         {/* SECTION 3: ULTIMATE SOLUTION (IMAGE 2 & 3)               */}
         {/* ======================================================== */}
-        <section id="features" style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
+        <section id="features" className="landing-section" style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+          <div className="landing-responsive-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
             
             {/* Left Text Block */}
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', backgroundColor: '#EFF6FF', border: '1px solid #DBEAFE', fontSize: '12px', fontWeight: 700, color: '#1E40AF', marginBottom: '20px' }}>
-                <span>Operational Emergency Response Platform</span>
+                <span>Operational Emergency Medical Response Grid</span>
               </div>
 
               <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 900, color: '#0F172A', lineHeight: 1.15, margin: '0 0 16px 0', letterSpacing: '-1px' }}>
@@ -353,7 +353,7 @@ export const LandingPage: React.FC = () => {
               </h2>
 
               <p style={{ fontSize: '15px', color: '#475569', fontWeight: 600, margin: '0 0 28px 0' }}>
-                Real-time situational coordination across dispatch, fleet, and trauma facilities.
+                Real-time situational coordination across dispatch, fleet, and medical facilities.
               </p>
             </div>
 
@@ -363,7 +363,7 @@ export const LandingPage: React.FC = () => {
               {[
                 { title: 'Automated Dispatch Matrix', desc: 'Multi-criteria spatial proximity scoring', icon: <Radio style={{ width: '16px', height: '16px', color: '#E50914' }} /> },
                 { title: 'PostGIS Geofenced Fleet Tracking', desc: 'Real-time vehicle telemetry and status', icon: <Ambulance style={{ width: '16px', height: '16px', color: '#2563EB' }} /> },
-                { title: 'Hospital Trauma Unit Synchronization', desc: 'ICU and Cath Lab bed reservation', icon: <Building2 style={{ width: '16px', height: '16px', color: '#059669' }} /> },
+                { title: 'Hospital Medical Unit Synchronization', desc: 'ICU and Cath Lab bed reservation', icon: <Building2 style={{ width: '16px', height: '16px', color: '#059669' }} /> },
                 { title: 'Emergency Traffic Corridors', desc: 'Active green wave signal preemption', icon: <Zap style={{ width: '16px', height: '16px', color: '#D97706' }} /> },
               ].map((item, idx) => (
                 <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
@@ -653,13 +653,13 @@ export const LandingPage: React.FC = () => {
                 </div>
                 <div>
                   <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                    Trauma Hospital Network
+                    Medical Hospital Network
                   </h3>
                   <span style={{ fontSize: '12px', color: '#16A34A', fontWeight: 700 }}>42 ICU Beds Available</span>
                 </div>
               </div>
               <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>
-                Real-time bed availability and on-call trauma surgeon matching.
+                Real-time bed availability and on-call medical specialist matching.
               </p>
             </div>
           </div>
@@ -709,7 +709,7 @@ export const LandingPage: React.FC = () => {
               </div>
               <div>
                 <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Specialist Doctors Directory</h4>
-                <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>Roster of on-call trauma surgeons and hospital staff shifts.</p>
+                <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>Roster of on-call medical specialists and hospital staff shifts.</p>
               </div>
             </div>
 
@@ -768,7 +768,7 @@ export const LandingPage: React.FC = () => {
               </div>
               <div>
                 <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Live Traffic Integration</h4>
-                <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>Real-time congestion heatmaps from MapMyIndia and traffic feeds.</p>
+                <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>Real-time congestion heatmaps from TomTom and traffic feeds.</p>
               </div>
             </div>
           </div>
@@ -839,7 +839,7 @@ export const LandingPage: React.FC = () => {
           </h2>
 
           <p style={{ fontSize: '15px', color: '#CBD5E1', margin: '0 auto 36px auto', maxWidth: '650px', fontWeight: 500 }}>
-            Unified coordination across citizens, paramedics, dispatchers, and trauma centers.
+            Unified coordination across citizens, paramedics, dispatchers, and medical centers.
           </p>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
@@ -865,7 +865,7 @@ export const LandingPage: React.FC = () => {
               onClick={() => handleEnterPortal('hospital_admin')}
               style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: '#FFFFFF', padding: '12px 24px', borderRadius: '9999px', fontWeight: 700, fontSize: '13px', border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}
             >
-              Hospital Trauma Unit
+              Hospital Medical Unit
             </button>
             <button
               onClick={() => handleEnterPortal('system_admin')}

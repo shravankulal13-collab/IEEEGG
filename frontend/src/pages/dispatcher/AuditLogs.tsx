@@ -45,7 +45,7 @@ export const AuditLogs: React.FC = () => {
       action: 'HOSPITAL_BED_RESERVED',
       actor: 'HOSPITAL_INTEGRATION_HUB',
       incident: 'ER-2048',
-      details: 'Cath-Lab Bed #4 held at Metro Trauma Center',
+      details: 'Cath-Lab Bed #4 held at Metro Medical Center',
       timestamp: '12:35:22 UTC',
     },
   ];

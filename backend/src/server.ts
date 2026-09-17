@@ -1,23 +1,19 @@
 // ============================================================
-// PRIMARY OWNER: SK
-// ROLE: Core Platform + Backend Integration Lead
+// PRIMARY OWNER: SK / khushi.shettyyy
+// ROLE: Core Platform + Realtime Socket Server Gateway
 // MODULE: Server Lifecycle & Bootstrap
 // ============================================================
 
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import app from './app.js';
+import { app } from './app.js';
+import { checkDatabaseHealth } from './config/database.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
-import { setupSocketServer } from './websocket/socket.server.js';
-import { staleGpsJob } from './jobs/staleGps.job.js';
 import { incidentEscalationJob } from './jobs/incidentEscalation.job.js';
-import { startProviderHealthJob, stopProviderHealthJob } from './jobs/providerHealth.job.js';
-import { startRouteMonitoringJob, stopRouteMonitoringJob } from './jobs/routeMonitoring.job.js';
-import { dispatchTimeoutJob } from './jobs/dispatchTimeout.job.js';
-import { hospitalResourceExpiryJob } from './jobs/hospitalResourceExpiry.job.js';
+import { staleGpsJob } from './jobs/staleGps.job.js';
+import { setupSocketServer } from './websocket/socket.server.js';
 
-const PORT = env.PORT || 5000;
 const server = http.createServer(app);
 
 const io = new SocketIOServer(server, {
@@ -27,51 +23,81 @@ const io = new SocketIOServer(server, {
   },
 });
 
-// Setup central websocket server and namespace/room delegation
+// Register all Socket.IO handlers (ambulance telemetry, incident events, notifications)
 setupSocketServer(io);
 
-// Start background asynchronous jobs
-const staleGpsTimer = staleGpsJob.startPeriodicCheck(30000);
-const incidentEscalationTimer = incidentEscalationJob.startPeriodicCheck(60000);
-const dispatchTimeoutTimer = dispatchTimeoutJob.startPeriodicCheck(60000);
-const hospitalExpiryTimer = hospitalResourceExpiryJob.startPeriodicCheck(900000);
-startProviderHealthJob();
-startRouteMonitoringJob(io);
+// Background scheduled monitoring jobs
+let staleGpsInterval: NodeJS.Timeout | null = null;
+let incidentEscalationInterval: NodeJS.Timeout | null = null;
 
 server.on('error', (err: any) => {
   if (err.code === 'EADDRINUSE') {
-    logger.error(`[Backend] Port ${PORT} is already in use. Retrying or shutting down cleanly.`);
+    logger.error(`[Backend] Port ${env.PORT} is already in use. Retrying or shutting down cleanly.`);
     process.exit(1);
   } else {
     logger.error(`[Backend] Server error: ${err.message}`);
   }
 });
 
-server.listen(Number(PORT), '0.0.0.0', () => {
-  logger.info(`[Backend] Emergency Response Platform server listening on http://127.0.0.1:${PORT} in ${env.NODE_ENV} mode`);
-});
+async function startServer(): Promise<void> {
+  try {
+    const dbStatus = await checkDatabaseHealth();
+    logger.info(
+      { provider: dbStatus.provider, connected: dbStatus.connected },
+      'Database connection verified'
+    );
 
-// Graceful shutdown handling
-function gracefulShutdown(signal: string): void {
-  logger.info(`Received ${signal}. Gracefully shutting down...`);
-  clearInterval(staleGpsTimer);
-  clearInterval(incidentEscalationTimer);
-  clearInterval(dispatchTimeoutTimer);
-  clearInterval(hospitalExpiryTimer);
-  stopProviderHealthJob();
-  stopRouteMonitoringJob();
+    // Start background jobs
+    staleGpsInterval = staleGpsJob.startPeriodicCheck(30000);
+    incidentEscalationInterval = incidentEscalationJob.startPeriodicCheck(60000);
+
+    server.listen(env.PORT, env.HOST, () => {
+      logger.info(
+        { port: env.PORT, host: env.HOST, env: env.NODE_ENV },
+        `🚀 Emergency Response Intelligence Backend running at http://${env.HOST}:${env.PORT}`
+      );
+      logger.info(`📋 Health check available at http://localhost:${env.PORT}/api/health`);
+    });
+  } catch (err: any) {
+    logger.fatal({ err: err.message }, 'Fatal error during server startup');
+    process.exit(1);
+  }
+}
+
+// Graceful shutdown
+function gracefulShutdown(signal: string) {
+  logger.info({ signal }, 'Received shutdown signal. Closing HTTP and Socket servers...');
+
+  if (staleGpsInterval) clearInterval(staleGpsInterval);
+  if (incidentEscalationInterval) clearInterval(incidentEscalationInterval);
 
   io.close(() => {
-    logger.info('Socket.IO connections closed.');
+    logger.info('Socket.IO gateway closed.');
   });
 
   server.close(() => {
-    logger.info('HTTP server closed.');
+    logger.info('HTTP server closed successfully. Terminating process.');
     process.exit(0);
   });
+
+  setTimeout(() => {
+    logger.error('Forced termination: shutdown timeout exceeded');
+    process.exit(1);
+  }, 10000);
 }
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+process.on('unhandledRejection', (reason) => {
+  logger.error({ reason }, 'Unhandled Promise Rejection detected');
+});
+
+process.on('uncaughtException', (err) => {
+  logger.fatal({ err: err.message, stack: err.stack }, 'Uncaught Exception detected');
+  process.exit(1);
+});
+
+startServer();
 
 export { server, io };

@@ -56,10 +56,10 @@ async function probeOnce(): Promise<void> {
         }
       } catch (err) {
         recordProviderFailure(provider.name);
-        logger.debug('provider health probe errored', {
+        logger.debug({
           provider: provider.name,
           error: (err as Error).message,
-        });
+        }, 'provider health probe errored');
       }
     }),
   );
@@ -67,7 +67,7 @@ async function probeOnce(): Promise<void> {
   const summary = getAllProviderHealth();
   const unhealthy = summary.filter((s) => s.state !== 'CLOSED');
   if (unhealthy.length > 0) {
-    logger.debug('provider health sweep found degraded providers', { unhealthy });
+    logger.warn({ unhealthy }, 'provider health sweep found degraded providers');
   } else {
     logger.debug('provider health sweep: all providers healthy');
   }
@@ -81,7 +81,7 @@ export function startProviderHealthJob(): void {
     return;
   }
 
-  logger.info('starting provider health job', { intervalMs: PROBE_INTERVAL_MS });
+  logger.info({ intervalMs: PROBE_INTERVAL_MS }, 'starting provider health job');
   void probeOnce();
   intervalHandle = setInterval(() => {
     void probeOnce();

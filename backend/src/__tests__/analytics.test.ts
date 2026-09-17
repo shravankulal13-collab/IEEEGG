@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { INCIDENT_EVENTS } from '../modules/incidents/incident.events.js';
-import { NOTIFICATION_CLIENT_EVENTS, NOTIFICATION_SERVER_EVENTS } from '../websocket/notification.socket.js';
-import { SOCKET_ROOMS } from '../websocket/socket.server.js';
-import { NotificationService } from '../modules/notifications/notification.service.js';
-import { IncidentEscalationJob } from '../jobs/incidentEscalation.job.js';
+import { INCIDENT_EVENTS } from '../modules/incidents/incident.events';
+import { NOTIFICATION_CLIENT_EVENTS, NOTIFICATION_SERVER_EVENTS } from '../websocket/notification.socket';
+import { SOCKET_ROOMS } from '../websocket/socket.server';
+import { NotificationService } from '../modules/notifications/notification.service';
+import { IncidentEscalationJob } from '../jobs/incidentEscalation.job';
 
 // ============================================================
 // A. Incident Event Name Constants
@@ -97,7 +97,8 @@ describe('NotificationService', () => {
 
   it('setSocketServer stores the server without throwing', () => {
     const svc = new NotificationService();
-    expect(() => svc.setSocketServer({ to: () => ({ emit: () => {} }) } as any)).not.toThrow();
+    // Pass a minimal mock — we only verify it does not throw
+    expect(() => svc.setSocketServer({ to: () => ({}) } as any)).not.toThrow();
   });
 });
 
@@ -113,6 +114,7 @@ describe('IncidentEscalationJob', () => {
 
   it('startPeriodicCheck returns a NodeJS.Timeout', () => {
     const job = new IncidentEscalationJob();
+    // Patch runEscalationCycle so no DB call is made
     job.runEscalationCycle = async () => {};
     const handle = job.startPeriodicCheck(999999);
     expect(handle).toBeDefined();

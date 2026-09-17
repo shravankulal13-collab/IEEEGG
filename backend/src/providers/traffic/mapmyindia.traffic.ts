@@ -88,7 +88,7 @@ export const mapmyIndiaTrafficProvider: TrafficProvider = {
         confidence: 0.8,
       };
     } catch (err) {
-      logger.debug('mapmyindia traffic fetch failed', { err });
+      logger.warn({ err }, 'mapmyindia traffic fetch failed');
       throw new TrafficProviderError('mapmyindia', 'failed to fetch traffic flow', err);
     }
   },

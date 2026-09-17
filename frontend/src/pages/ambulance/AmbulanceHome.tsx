@@ -23,7 +23,7 @@ import {
 export const AmbulanceHome: React.FC = () => {
   const navigate = useNavigate();
   const [dutyStatus, setDutyStatus] = useState<'available' | 'offline'>('available');
-  const [hasAssignment] = useState(true);
+  const [hasAssignment] = useState(false);
 
   return (
     <AppShell>
@@ -39,7 +39,7 @@ export const AmbulanceHome: React.FC = () => {
             'Life Support Protocols'
           ]}
           headingSuffix="with ResQGrid"
-          subtitle="Unit AMB-104 (Advanced Life Support) | Real-time traffic clearance, high-frequency telemetry, and direct trauma ER routing."
+          subtitle="Unit AMB-104 (Advanced Life Support) | Real-time traffic clearance, high-frequency telemetry, and direct medical ER routing."
           primaryCta={{
             label: "Open Navigation & Map",
             onClick: () => navigate('/ambulance/navigation'),
@@ -51,7 +51,7 @@ export const AmbulanceHome: React.FC = () => {
           }}
           tickerItems={[
             { text: 'Unit AMB-104 (ALS)' },
-            { text: 'Speed: 72 km/h' },
+            { text: 'Speed: telemetry pending' },
             { text: 'GPS Accuracy: ±3.2m' },
             { text: 'O2 Tank: 98% Full' },
             { text: 'Defibrillator: Ready' }
@@ -71,17 +71,17 @@ export const AmbulanceHome: React.FC = () => {
                     PRIORITY DISPATCH ASSIGNMENT
                   </span>
                   <span className="text-xs font-mono text-red-300 font-bold">
-                    Incident ER-2048
+                    Active incident assignment
                   </span>
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                  Severe Cardiac Arrest & Trauma
+                  Assigned medical response
                 </h2>
 
                 <p className="text-sm text-slate-300 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>123 Medical Drive, Sector 4 | Distance: 1.8 km</span>
+                  <span>Live incident location and route will appear after dispatch</span>
                 </p>
               </div>
 
@@ -98,7 +98,7 @@ export const AmbulanceHome: React.FC = () => {
 
             <div className="mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-4 relative z-10">
               <button
-                onClick={() => navigate('/ambulance/active?incidentId=ER-2048')}
+                onClick={() => navigate('/ambulance/active')}
                 className="w-full sm:flex-1 py-3.5 px-6 bg-gradient-to-r from-red-600 to-[#B80710] hover:from-red-500 hover:to-red-600 text-white font-extrabold text-sm rounded-2xl shadow-xl shadow-red-600/40 flex items-center justify-center gap-2 transition active:scale-95"
               >
                 <Zap className="w-4 h-4" />
@@ -107,7 +107,7 @@ export const AmbulanceHome: React.FC = () => {
               </button>
 
               <button
-                onClick={() => navigate('/ambulance/navigation?incidentId=ER-2048')}
+                onClick={() => navigate('/ambulance/navigation')}
                 className="w-full sm:w-auto px-6 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs rounded-2xl border border-slate-700 flex items-center justify-center gap-2 transition"
               >
                 <Navigation className="w-4 h-4 text-blue-400" />
@@ -115,7 +115,7 @@ export const AmbulanceHome: React.FC = () => {
               </button>
 
               <button
-                onClick={() => navigate('/ambulance/dispatch?incidentId=ER-2048')}
+                onClick={() => navigate('/ambulance/dispatch')}
                 className="w-full sm:w-auto px-6 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs rounded-2xl border border-slate-700 flex items-center justify-center gap-2 transition"
               >
                 <ShieldAlert className="w-4 h-4 text-amber-400" />
@@ -215,7 +215,7 @@ export const AmbulanceHome: React.FC = () => {
 
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-slate-300">MapMyIndia GPS Accuracy:</span>
+                <span className="text-slate-300">TomTom GPS Accuracy:</span>
                 <span className="font-bold text-emerald-400">High Accuracy (3m)</span>
               </div>
               <div className="flex items-center justify-between">
@@ -238,7 +238,7 @@ export const AmbulanceHome: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
                 <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider block">PRE-ARRIVED DESTINATION</span>
-                <h3 className="text-base font-black text-slate-900 mt-0.5">St. Jude Trauma Center (Level 1)</h3>
+                <h3 className="text-base font-black text-slate-900 mt-0.5">St. Jude Medical Center (Level 1)</h3>
               </div>
               <Badge variant="success">ICU BAY RESERVED</Badge>
             </div>

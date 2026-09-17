@@ -213,7 +213,7 @@ export class AuthRepository {
         );
         return res.rows[0] || null;
       } catch {
-        // Fallback to local store
+        // Fallback to local store if DB query encounters table setup or connectivity issue
       }
     }
 

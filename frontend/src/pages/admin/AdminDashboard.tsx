@@ -132,7 +132,7 @@ export const AdminDashboard: React.FC = () => {
           'Realtime Telemetry Meshes'
         ]}
         headingSuffix="with ResQGrid"
-        subtitle="Real-time backend microservices, PostGIS spatial database connectivity, MapMyIndia routing fallback circuit breakers, and WebSocket telemetry."
+        subtitle="Real-time backend microservices, PostGIS spatial database connectivity, TomTom routing fallback circuit breakers, and WebSocket telemetry."
         primaryCta={{
           label: "Refresh Live Diagnostics",
           onClick: fetchDiagnostics,

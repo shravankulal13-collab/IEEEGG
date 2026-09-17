@@ -7,6 +7,14 @@
 import type { NextFunction, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
+declare global {
+  namespace Express {
+    interface Request {
+      id?: string;
+    }
+  }
+}
+
 export function requestIdMiddleware(req: Request, res: Response, next: NextFunction): void {
   const incomingId = req.header('x-request-id');
   const requestId = incomingId && incomingId.trim().length > 0 ? incomingId : uuidv4();

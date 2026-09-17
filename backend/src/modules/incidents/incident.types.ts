@@ -60,7 +60,7 @@ export interface IncidentRecord {
   cancelled_at: Date | null;
   cancellation_reason: string | null;
   source: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   created_at: Date;
   updated_at: Date;
 }

@@ -74,7 +74,7 @@ export const Login: React.FC = () => {
         </Link>
         <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Sign in to your portal</h2>
         <p className="mt-1 text-xs text-slate-500">
-          Emergency response coordination for citizens, drivers & hospitals
+          Emergency medical response coordination for citizens, drivers & hospitals
         </p>
       </div>
 

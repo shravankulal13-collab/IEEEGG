@@ -18,7 +18,7 @@ export class DispatchTimeoutJob {
         await this.repo.updateDispatchStatus(dispatch.id, 'REASSIGNMENT_REQUIRED');
       }
     } catch (error: any) {
-      logger.error('Error in Dispatch Timeout Job', { err: error.message });
+      logger.error({ err: error.message }, 'Error in Dispatch Timeout Job');
     }
   }
 

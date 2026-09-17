@@ -8,6 +8,7 @@ NOTE: Shared dependency -- changes require team coordination.
 */
 
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
   /* Brand Theme Colors */

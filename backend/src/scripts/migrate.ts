@@ -53,6 +53,18 @@ async function runMigration() {
       console.log('✓ schema.sql executed successfully.');
     }
 
+    const publicReportsPath = path.resolve(process.cwd(), '../database/migrations/002_public_incident_reports.sql');
+    if (fs.existsSync(publicReportsPath)) {
+      await client.query(fs.readFileSync(publicReportsPath, 'utf8').replace(/^\uFEFF/, '').trim());
+      console.log('✓ public incident report tables verified.');
+    }
+
+    const healthPostsPath = path.resolve(process.cwd(), '../database/migrations/003_health_posts.sql');
+    if (fs.existsSync(healthPostsPath)) {
+      await client.query(fs.readFileSync(healthPostsPath, 'utf8').replace(/^\uFEFF/, '').trim());
+      console.log('✓ health post tables verified.');
+    }
+
     // 2. Ensure dispatch_logs table exists
     console.log('Ensuring dispatch_logs and compatibility structures exist...');
     await client.query(`

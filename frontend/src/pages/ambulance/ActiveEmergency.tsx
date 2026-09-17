@@ -136,7 +136,7 @@ export const ActiveEmergency: React.FC = () => {
   const reporterName = incident?.reporter_name || 'Emergency Caller';
   const reporterPhone = incident?.reporter_phone || 'Emergency Contact';
   const patientLocation = incident?.address || 'Reported Incident GPS Coordinates';
-  const assignedHospitalName = hospital?.name || incident?.assigned_hospital_name || 'Assigned Trauma Center (Pending)';
+  const assignedHospitalName = hospital?.name || incident?.assigned_hospital_name || 'Assigned Medical Center (Pending)';
 
   return (
     <AppShell>
@@ -162,7 +162,7 @@ export const ActiveEmergency: React.FC = () => {
         <Card className="p-6 border-2 border-red-500/80 bg-white shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
-              <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">ACTIVE EMERGENCY RESPONSE</span>
+              <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">ACTIVE MEDICAL RESPONSE</span>
               <h2 className="text-xl font-black text-slate-900 mt-0.5">
                 {String(incident?.emergency_type || 'MEDICAL').toUpperCase()} Emergency
               </h2>
@@ -207,7 +207,7 @@ export const ActiveEmergency: React.FC = () => {
               className="py-3 bg-blue-600 hover:bg-blue-700"
             >
               <Navigation className="w-4 h-4 mr-2" />
-              Open Turn-by-Turn Mappls Navigation
+              Open Turn-by-Turn TomTom Navigation
             </Button>
           </div>
         </Card>

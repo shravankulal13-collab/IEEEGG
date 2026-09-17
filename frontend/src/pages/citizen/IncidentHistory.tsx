@@ -48,7 +48,7 @@ export const IncidentHistory: React.FC = () => {
         <PageHeader
           pillTag="Incident History"
           title="Emergency Incident Records"
-          subtitle="Review past emergency responses, timeline dispatches, and hospital destinations."
+          subtitle="Review past medical responses, timeline dispatches, and hospital destinations."
           actions={
             <Button
               variant="outline"

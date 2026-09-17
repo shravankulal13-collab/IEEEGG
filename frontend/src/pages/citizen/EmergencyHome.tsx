@@ -37,10 +37,10 @@ export const EmergencyHome: React.FC = () => {
 
   const emergencyCategories = [
     { id: 'cardiac', label: 'Cardiac & Stroke', icon: <HeartPulse className="w-5 h-5 text-red-600" />, desc: 'Chest pain, stroke, unconsciousness', severity: 'critical' },
-    { id: 'trauma', label: 'Severe Trauma', icon: <Activity className="w-5 h-5 text-amber-600" />, desc: 'Accident, severe bleeding, fracture', severity: 'high' },
+    { id: 'trauma', label: 'Severe Injury', icon: <Activity className="w-5 h-5 text-amber-600" />, desc: 'Accident, severe bleeding, fracture', severity: 'high' },
     { id: 'respiratory', label: 'Severe Respiratory', icon: <AlertCircle className="w-5 h-5 text-blue-600" />, desc: 'Asthma attack, choking, COVID', severity: 'high' },
     { id: 'accident', label: 'Road Accident', icon: <Car className="w-5 h-5 text-purple-600" />, desc: 'Vehicle collision, multiple victims', severity: 'critical' },
-    { id: 'fire', label: 'Fire & Burn Injury', icon: <Flame className="w-5 h-5 text-orange-600" />, desc: 'Smoke inhalation, burn trauma', severity: 'critical' },
+    { id: 'fire', label: 'Fire & Burn Injury', icon: <Flame className="w-5 h-5 text-orange-600" />, desc: 'Smoke inhalation, burn injury', severity: 'critical' },
   ];
 
   const handleInstantSos = async (categoryId?: string) => {
@@ -112,12 +112,12 @@ export const EmergencyHome: React.FC = () => {
       <div className="max-w-5xl mx-auto space-y-8 pb-12">
         {/* Animated Royal Blue Flagship Hero Section */}
         <HeroSection
-          badgeText="Citizen Emergency Response & SOS Coordination"
+          badgeText="Citizen Emergency Medical Response & SOS Coordination"
           headingPrefix="Instant Medical &"
           typewriterPhrases={[
             'Emergency SOS Dispatch',
             'Live Ambulance Tracking',
-            'Trauma Bed Pre-Alerts',
+            'Medical Bed Pre-Alerts',
             'Critical Care Response'
           ]}
           headingSuffix="with ResQGrid"

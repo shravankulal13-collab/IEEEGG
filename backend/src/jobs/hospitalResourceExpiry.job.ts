@@ -22,7 +22,7 @@ export class HospitalResourceExpiryJob {
         AND d.updated_at < NOW() - INTERVAL '2 hours'
       `);
     } catch (error: any) {
-      logger.error('Error in Resource Expiry Job', { err: error.message });
+      logger.error({ err: error.message }, 'Error in Resource Expiry Job');
     }
   }
 

@@ -37,24 +37,6 @@ export class NotFoundError extends AppError {
   }
 }
 
-export class DatabaseUnavailableError extends AppError {
-  constructor(
-    message = 'Database service is currently unavailable. Please try again shortly.',
-    details?: Record<string, unknown> | Array<unknown>
-  ) {
-    super(message, 503, 'DATABASE_UNAVAILABLE', details);
-  }
-}
-
-export class DatabaseQueryError extends AppError {
-  constructor(
-    message = 'Database query execution failed.',
-    details?: Record<string, unknown> | Array<unknown>
-  ) {
-    super(message, 500, 'DATABASE_QUERY_ERROR', details);
-  }
-}
-
 export class ValidationError extends AppError {
   constructor(message = 'Validation failed for request parameters', details?: Record<string, unknown> | Array<unknown>) {
     super(message, 400, 'VALIDATION_ERROR', details);
@@ -92,13 +74,16 @@ export function errorHandler(
 
   // 1. Handle custom AppError
   if (err instanceof AppError) {
-    logger.warn(`Operational error: ${err.message}`, {
-      requestId,
-      code: err.code,
-      statusCode: err.statusCode,
-      message: err.message,
-      path: req.originalUrl,
-    });
+    logger.warn(
+      {
+        requestId,
+        code: err.code,
+        statusCode: err.statusCode,
+        message: err.message,
+        path: req.originalUrl,
+      },
+      `Operational error: ${err.message}`
+    );
 
     res.status(err.statusCode).json({
       success: false,
@@ -119,7 +104,7 @@ export function errorHandler(
       code: issue.code,
     }));
 
-    logger.warn('Request schema validation failed', { requestId, errors: formattedErrors, path: req.originalUrl });
+    logger.warn({ requestId, errors: formattedErrors, path: req.originalUrl }, 'Request schema validation failed');
 
     res.status(400).json({
       success: false,
@@ -134,7 +119,7 @@ export function errorHandler(
 
   // 3. Handle PostgreSQL Unique Constraint Violation
   if ((err as any).code === '23505') {
-    logger.warn('PostgreSQL unique constraint violation', { requestId, detail: (err as any).detail });
+    logger.warn({ requestId, detail: (err as any).detail }, 'PostgreSQL unique constraint violation');
     res.status(409).json({
       success: false,
       error: {
@@ -146,13 +131,16 @@ export function errorHandler(
   }
 
   // 4. Fallback for unhandled unexpected server errors
-  logger.error('Unhandled server error occurred', {
-    requestId,
-    err: err.message,
-    stack: env.NODE_ENV === 'development' ? err.stack : undefined,
-    path: req.originalUrl,
-    method: req.method,
-  });
+  logger.error(
+    {
+      requestId,
+      err: err.message,
+      stack: env.NODE_ENV === 'development' ? err.stack : undefined,
+      path: req.originalUrl,
+      method: req.method,
+    },
+    'Unhandled server error occurred'
+  );
 
   res.status(500).json({
     success: false,

@@ -4,26 +4,51 @@
 // MODULE: Analytics & Operational Intelligence API Routes
 // ============================================================
 
-import { Router, Request, Response } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { analyticsService } from '../modules/analytics/analytics.service.js';
 import { authenticate } from '../middleware/auth.middleware.js';
 import { requireRole } from '../middleware/role.middleware.js';
 
 const router = Router();
 
+// ============================================================
+// Input helpers
+// ============================================================
+
+/**
+ * Parse and validate the `window` query parameter (hours).
+ * Returns null if the value is invalid.
+ */
 function parseWindowHours(raw: unknown): number | null {
   const n = parseInt(String(raw ?? '24'), 10);
   if (isNaN(n) || n < 1 || n > 720) return null;
   return n;
 }
 
+// ============================================================
+// Routes
+// ============================================================
+
 /**
- * GET /api/analytics/kpis
- * Executive overview KPI card metrics.
+ * GET /api/analytics/overview
+ *
+ * High-level operational snapshot for the Command Center dashboard.
+ *
+ * Response: OperationalOverview
  */
+router.get('/overview', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (_req: Request, res: Response) => {
+  try {
+    const data = await analyticsService.getOperationalOverview();
+    res.json({ success: true, data });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    res.status(500).json({ success: false, error: message });
+  }
+});
+
 router.get('/kpis', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (_req: Request, res: Response) => {
   try {
-    const data = await analyticsService.getSystemKPIs();
+    const data = await analyticsService.getOperationalOverview();
     res.json({ success: true, data });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Internal server error';
@@ -33,7 +58,11 @@ router.get('/kpis', authenticate, requireRole('dispatcher', 'hospital_admin', 's
 
 /**
  * GET /api/analytics/incidents?window=24
- * Incident volume breakdown by status, emergency type, and severity.
+ *
+ * Incident breakdown by status, emergency type, and severity
+ * over the last N hours (1–720). Default window = 24 h.
+ *
+ * Response: IncidentBreakdown
  */
 router.get('/incidents', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (req: Request, res: Response) => {
   try {
@@ -55,7 +84,10 @@ router.get('/incidents', authenticate, requireRole('dispatcher', 'hospital_admin
 
 /**
  * GET /api/analytics/response-times?window=24
+ *
  * Response-time metrics with P50/P90 percentiles over the last N hours.
+ *
+ * Response: ResponseTimeMetrics
  */
 router.get('/response-times', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (req: Request, res: Response) => {
   try {
@@ -77,7 +109,11 @@ router.get('/response-times', authenticate, requireRole('dispatcher', 'hospital_
 
 /**
  * GET /api/analytics/sla?window=24
+ *
  * SLA compliance metrics over the last N hours.
+ * SLA threshold = 900 seconds (15 min) from reported_at to arrived_at.
+ *
+ * Response: SLAMetrics
  */
 router.get('/sla', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (req: Request, res: Response) => {
   try {
@@ -99,7 +135,10 @@ router.get('/sla', authenticate, requireRole('dispatcher', 'hospital_admin', 'sy
 
 /**
  * GET /api/analytics/ambulances
+ *
  * Current ambulance fleet utilization snapshot.
+ *
+ * Response: AmbulanceUtilization
  */
 router.get('/ambulances', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (_req: Request, res: Response) => {
   try {
@@ -113,7 +152,16 @@ router.get('/ambulances', authenticate, requireRole('dispatcher', 'hospital_admi
 
 /**
  * GET /api/analytics/audit
+ *
  * Paginated audit log entries.
+ *
+ * Query params:
+ *   limit       — rows per page (1–200, default 50)
+ *   offset      — row offset (default 0)
+ *   entityType  — filter by entity_type string (e.g. "incident")
+ *   actorUserId — filter by actor UUID
+ *
+ * Response: AuditLogPage
  */
 router.get('/audit', authenticate, requireRole('system_admin', 'dispatcher'), async (req: Request, res: Response) => {
   try {

@@ -25,7 +25,7 @@ export const IncomingEmergency: React.FC = () => {
   return (
     <AppShell>
       <PageHeader
-        pillTag="DEMO / SIMULATION Trauma Inbound Stream"
+        pillTag="DEMO / SIMULATION Medical Inbound Stream"
         title="Live Inbound Patient Telemetry [SIMULATION]"
         subtitle="Simulated cardiac waveform, oxygen saturation, and paramedic telemetry stream"
         badge={<Badge variant="danger">Simulation Inbound</Badge>}
@@ -101,10 +101,10 @@ export const IncomingEmergency: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: Hospital Trauma Team Readiness Controls */}
+        {/* Right: Hospital Medical Team Readiness Controls */}
         <div className="lg:col-span-4 space-y-6">
           <Card>
-            <h3 className="text-sm font-extrabold text-slate-900 mb-3">Trauma Team Preparation</h3>
+            <h3 className="text-sm font-extrabold text-slate-900 mb-3">Medical Team Preparation</h3>
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200/80">
                 <span className="font-bold text-slate-800">Cath-Lab Theater #2</span>
