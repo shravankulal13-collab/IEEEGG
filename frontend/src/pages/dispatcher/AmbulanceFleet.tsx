@@ -54,18 +54,12 @@ export const AmbulanceFleet: React.FC = () => {
   );
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <PageHeader
-        pillTag="PostGIS Vehicle Coordinates & Onboard Vitals"
+        pillTag=""
         title="Ambulance Fleet Telemetry & GPS"
         subtitle="Real-time PostGIS vehicle coordinates, onboard vitals, and mission state"
-        badge={
-          error ? (
-            <Badge variant="danger">Database Offline</Badge>
-          ) : (
-            <Badge variant="info">{fleet.length} Units Monitored</Badge>
-          )
-        }
+
         actions={
           <Button variant="outline" size="sm" onClick={loadFleet}>
             <RefreshCw className="w-4 h-4 mr-1.5" />
@@ -152,11 +146,10 @@ export const AmbulanceFleet: React.FC = () => {
                     <td className="py-3.5 px-4 font-bold">{v.driver_name || 'Paramedic Unit'}</td>
                     <td className="py-3.5 px-4">
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          v.status.toLowerCase() === 'available'
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-red-100 text-red-700'
-                        }`}
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${v.status.toLowerCase() === 'available'
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-red-100 text-red-700'
+                          }`}
                       >
                         {v.status.toUpperCase().replace('_', ' ')}
                       </span>

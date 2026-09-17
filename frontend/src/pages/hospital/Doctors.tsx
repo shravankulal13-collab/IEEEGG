@@ -44,17 +44,10 @@ export const Doctors: React.FC = () => {
   const activeHospital = currentDashboard?.hospital || hospitals.find((h) => h.id === selectedHospitalId);
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <PageHeader
         title="On-Call Trauma Surgeons & Specialists"
         subtitle={`Live roster of active emergency room physicians and specialists for ${activeHospital?.name || 'Trauma Network'}`}
-        badge={
-          error ? (
-            <Badge variant="danger">Database Offline</Badge>
-          ) : (
-            <Badge variant="success">{doctors.length} Specialists Active</Badge>
-          )
-        }
         actions={
           <Button
             variant="outline"
@@ -64,7 +57,7 @@ export const Doctors: React.FC = () => {
               else fetchHospitals();
             }}
           >
-            <RefreshCw className="w-4 h-4 mr-1.5" />
+
             Refresh Roster
           </Button>
         }
@@ -103,7 +96,7 @@ export const Doctors: React.FC = () => {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
-                    <Users className="w-6 h-6 text-blue-600" />
+
                   </div>
                   <div>
                     <h3 className="text-base font-extrabold text-slate-900">{doc.name}</h3>
@@ -111,13 +104,12 @@ export const Doctors: React.FC = () => {
                   </div>
                 </div>
                 <span
-                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                    doc.status === 'AVAILABLE' || doc.status === 'ON_DUTY'
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                      : doc.status === 'SURGERY'
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${doc.status === 'AVAILABLE' || doc.status === 'ON_DUTY'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : doc.status === 'SURGERY'
                       ? 'bg-red-50 text-red-700 border border-red-200'
                       : 'bg-amber-50 text-amber-700 border border-amber-200'
-                  }`}
+                    }`}
                 >
                   {doc.status.replace(/_/g, ' ')}
                 </span>
@@ -134,7 +126,7 @@ export const Doctors: React.FC = () => {
                 fullWidth
                 onClick={() => alert(`Dialing direct extension for ${doc.name}: ${doc.phone}`)}
               >
-                <Phone className="w-4 h-4 mr-1.5 text-blue-600" />
+
                 Direct Physician Page ({doc.phone || 'Extension 108'})
               </Button>
             </div>

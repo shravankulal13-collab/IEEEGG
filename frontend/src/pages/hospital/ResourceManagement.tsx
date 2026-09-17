@@ -70,17 +70,10 @@ export const ResourceManagement: React.FC = () => {
   const ventilatorsTotal = activeHospital?.total_ventilators ?? 15;
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <PageHeader
         title="Hospital Capacity & Resource Management"
         subtitle={`Live capacity controls and resource management for ${activeHospital?.name || 'Trauma Network'}`}
-        badge={
-          error ? (
-            <Badge variant="danger">Database Offline</Badge>
-          ) : (
-            <Badge variant="info">PostgreSQL Sync Active</Badge>
-          )
-        }
         actions={
           <Button
             variant="outline"
@@ -90,7 +83,7 @@ export const ResourceManagement: React.FC = () => {
               else fetchHospitals();
             }}
           >
-            <RefreshCw className="w-4 h-4 mr-1.5" />
+
             Refresh
           </Button>
         }
@@ -130,7 +123,7 @@ export const ResourceManagement: React.FC = () => {
             <Card className="hover-lift">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-red-600" />
+
                   <span>Trauma ICU Beds</span>
                 </h3>
                 <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[11px] font-bold">
@@ -163,7 +156,7 @@ export const ResourceManagement: React.FC = () => {
             <Card className="hover-lift">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-blue-600" />
+
                   <span>Emergency Ward Beds</span>
                 </h3>
                 <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[11px] font-bold">
@@ -196,7 +189,7 @@ export const ResourceManagement: React.FC = () => {
             <Card className="hover-lift">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                  <HeartPulse className="w-4 h-4 text-purple-600" />
+
                   <span>Mechanical Ventilators</span>
                 </h3>
                 <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-[11px] font-bold">

@@ -113,7 +113,7 @@ export const ActiveEmergency: React.FC = () => {
 
   if (isLoading && !incident) {
     return (
-      <AppShell>
+      <AppShell sidebarVariant='top'>
         <div className="max-w-4xl mx-auto py-24 flex flex-col items-center justify-center">
           <Spinner size="lg" />
           <p className="text-xs font-bold text-slate-600 mt-4">Loading mission control telemetry...</p>
@@ -124,7 +124,7 @@ export const ActiveEmergency: React.FC = () => {
 
   if (error && !incident) {
     return (
-      <AppShell>
+      <AppShell sidebarVariant='top'>
         <div className="max-w-3xl mx-auto py-12">
           <ErrorState message={error} onRetry={loadData} />
         </div>
@@ -174,14 +174,14 @@ export const ActiveEmergency: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div className="flex items-start gap-2.5 text-slate-700 p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <MapPin className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+
               <div>
                 <span className="font-bold text-slate-900 block">Patient Pickup Location</span>
                 <span className="text-slate-600">{patientLocation}</span>
               </div>
             </div>
             <div className="flex items-start gap-2.5 text-slate-700 p-3 bg-slate-50 rounded-xl border border-slate-200">
-              <User className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+
               <div>
                 <span className="font-bold text-slate-900 block">Caller Contact</span>
                 <span className="text-slate-600">{reporterName} ({reporterPhone})</span>
@@ -191,7 +191,7 @@ export const ActiveEmergency: React.FC = () => {
 
           <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-emerald-700" />
+
               <span className="font-extrabold text-slate-900">Destination Hospital: {assignedHospitalName}</span>
             </div>
             <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
@@ -206,7 +206,7 @@ export const ActiveEmergency: React.FC = () => {
               onClick={() => navigate(`/ambulance/navigation?incidentId=${incident?.id || incidentId}`)}
               className="py-3 bg-blue-600 hover:bg-blue-700"
             >
-              <Navigation className="w-4 h-4 mr-2" />
+
               Open Turn-by-Turn Mappls Navigation
             </Button>
           </div>
@@ -226,7 +226,7 @@ export const ActiveEmergency: React.FC = () => {
                 className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
               >
                 <span>{isUpdating ? 'Updating Database...' : 'Start Response (Mark En Route)'}</span>
-                <ArrowRight className="w-4 h-4" />
+
               </button>
             )}
 
@@ -237,7 +237,7 @@ export const ActiveEmergency: React.FC = () => {
                 className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
               >
                 <span>{isUpdating ? 'Updating Database...' : 'Mark Arrived at Patient Scene'}</span>
-                <ShieldCheck className="w-4 h-4" />
+
               </button>
             )}
 
@@ -248,7 +248,7 @@ export const ActiveEmergency: React.FC = () => {
                 className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
               >
                 <span>{isUpdating ? 'Updating Database...' : 'Begin Transport to Hospital'}</span>
-                <ArrowRight className="w-4 h-4" />
+
               </button>
             )}
 
@@ -259,7 +259,7 @@ export const ActiveEmergency: React.FC = () => {
                 className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50"
               >
                 <span>{isUpdating ? 'Updating Database...' : 'Complete Patient Handover & Mark Available'}</span>
-                <ShieldCheck className="w-4 h-4" />
+
               </button>
             )}
 

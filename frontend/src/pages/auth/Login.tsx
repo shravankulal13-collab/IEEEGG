@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useAuthStore } from '../../store/authStore';
 import { ShieldAlert, ArrowRight, Ambulance, Building2, LayoutDashboard, User, ShieldCheck, Lock, Mail, AlertCircle } from 'lucide-react';
 
 export const Login: React.FC = () => {
@@ -37,13 +38,23 @@ export const Login: React.FC = () => {
     e.preventDefault();
     try {
       await login({ email, password });
+      // Redirect to where the user was trying to go (if via RoleGuard redirect)
       const from = (location.state as any)?.from?.pathname;
       if (from) {
         navigate(from, { replace: true });
         return;
       }
-      const matched = demoAccounts.find((a) => a.role === selectedRole);
-      navigate(matched ? matched.dest : '/citizen', { replace: true });
+      // Use the actual user role from auth store (set by login()) to pick destination
+      const currentUser = useAuthStore.getState().user;
+      const roleDestMap: Record<string, string> = {
+        citizen: '/citizen',
+        ambulance_driver: '/ambulance',
+        dispatcher: '/dispatcher',
+        hospital_admin: '/hospital',
+        system_admin: '/admin',
+      };
+      const dest = currentUser?.role ? (roleDestMap[currentUser.role] ?? '/citizen') : '/citizen';
+      navigate(dest, { replace: true });
     } catch {
       // Error handled by zustand store
     }

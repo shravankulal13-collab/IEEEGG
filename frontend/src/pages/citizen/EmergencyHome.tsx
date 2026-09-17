@@ -37,11 +37,36 @@ export const EmergencyHome: React.FC = () => {
   const [isTriggeringSos, setIsTriggeringSos] = useState(false);
 
   const emergencyCategories = [
-    { id: 'cardiac', label: 'Cardiac & Stroke', icon: <HeartPulse className="w-5 h-5 text-red-600" />, desc: 'Chest pain, stroke, unconsciousness', severity: 'critical' },
-    { id: 'trauma', label: 'Severe Trauma', icon: <Activity className="w-5 h-5 text-amber-600" />, desc: 'Accident, severe bleeding, fracture', severity: 'high' },
-    { id: 'respiratory', label: 'Severe Respiratory', icon: <AlertCircle className="w-5 h-5 text-blue-600" />, desc: 'Asthma attack, choking, COVID', severity: 'high' },
-    { id: 'accident', label: 'Road Accident', icon: <Car className="w-5 h-5 text-purple-600" />, desc: 'Vehicle collision, multiple victims', severity: 'critical' },
-    { id: 'fire', label: 'Fire & Burn Injury', icon: <Flame className="w-5 h-5 text-orange-600" />, desc: 'Smoke inhalation, burn trauma', severity: 'critical' },
+    {
+      id: 'cardiac',
+      label: 'Cardiac & Stroke',
+      desc: 'Chest pain, stroke, unconsciousness',
+      severity: 'critical'
+    },
+    {
+      id: 'trauma',
+      label: 'Severe Trauma',
+      desc: 'Accident, severe bleeding, fracture',
+      severity: 'high'
+    },
+    {
+      id: 'respiratory',
+      label: 'Severe Respiratory',
+      desc: 'Asthma attack, choking, COVID',
+      severity: 'high'
+    },
+    {
+      id: 'accident',
+      label: 'Road Accident',
+      desc: 'Vehicle collision, multiple victims',
+      severity: 'critical'
+    },
+    {
+      id: 'fire',
+      label: 'Fire & Burn Injury',
+      desc: 'Smoke inhalation, burn trauma',
+      severity: 'critical'
+    },
   ];
 
   const handleInstantSos = async (categoryId?: string) => {
@@ -109,11 +134,11 @@ export const EmergencyHome: React.FC = () => {
   };
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <div className="max-w-5xl mx-auto space-y-8 pb-12">
         {/* Animated Royal Blue Flagship Hero Section */}
         <HeroSection
-          badgeText="Citizen Emergency Response & SOS Coordination"
+          badgeText=""
           headingPrefix="Instant Medical &"
           typewriterPhrases={[
             'Emergency SOS Dispatch',
@@ -138,7 +163,7 @@ export const EmergencyHome: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
-              <MapPin className="w-5 h-5 animate-bounce" />
+
             </div>
             <div>
               <p className="text-xs font-bold text-slate-800">
@@ -176,11 +201,7 @@ export const EmergencyHome: React.FC = () => {
             }}
             className="btn-pulse-glow hover:scale-105 active:scale-95 group shadow-2xl disabled:opacity-75"
           >
-            {isTriggeringSos ? (
-              <Spinner size="lg" className="text-white mb-2" />
-            ) : (
-              <Radio className="w-10 h-10 mb-2 group-hover:scale-110 transition-transform animate-pulse" />
-            )}
+
             <span className="text-xl font-black tracking-wider leading-tight">
               {isTriggeringSos ? 'DISPATCHING...' : 'SEND\nEMERGENCY\nSOS'}
             </span>
@@ -205,9 +226,7 @@ export const EmergencyHome: React.FC = () => {
                 className="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:border-red-500 hover:shadow-xl transition-all cursor-pointer group hover-lift flex flex-col justify-between"
               >
                 <div className="flex items-start gap-3">
-                  <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-red-50 transition-colors">
-                    {cat.icon}
-                  </div>
+
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 group-hover:text-red-600 transition-colors">
                       {cat.label}
@@ -217,7 +236,7 @@ export const EmergencyHome: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 text-xs font-bold text-slate-400 group-hover:text-red-600">
                   <span>Fast Track Dispatch</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+
                 </div>
               </div>
             ))}
@@ -228,9 +247,7 @@ export const EmergencyHome: React.FC = () => {
               className="p-5 bg-gradient-to-br from-[#0B1B4F] to-[#0A192F] text-white rounded-2xl shadow-lg flex flex-col justify-between hover-lift cursor-pointer"
             >
               <div className="flex items-start gap-3">
-                <div className="p-3 bg-red-600/20 rounded-xl text-red-400">
-                  <PhoneCall className="w-5 h-5" />
-                </div>
+
                 <div>
                   <h3 className="text-sm font-bold text-white">Dial 108 Hotline</h3>
                   <p className="text-xs text-slate-300 mt-1">24/7 Government emergency medical helpline</p>
@@ -238,7 +255,7 @@ export const EmergencyHome: React.FC = () => {
               </div>
               <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/10 text-xs font-bold text-emerald-400">
                 <span>Direct Voice Call</span>
-                <PhoneCall className="w-3.5 h-3.5" />
+
               </div>
             </a>
           </div>
@@ -250,9 +267,7 @@ export const EmergencyHome: React.FC = () => {
             onClick={() => navigate('/citizen/history')}
             className="cursor-pointer hover-lift flex items-center gap-3 p-4"
           >
-            <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
-              <History className="w-5 h-5" />
-            </div>
+
             <div>
               <p className="text-xs font-bold text-slate-900">Incident History</p>
               <p className="text-[11px] text-slate-500">Past responses & logs</p>
@@ -263,9 +278,7 @@ export const EmergencyHome: React.FC = () => {
             onClick={() => navigate('/citizen/profile')}
             className="cursor-pointer hover-lift flex items-center gap-3 p-4"
           >
-            <div className="p-2.5 bg-purple-50 text-purple-600 rounded-xl">
-              <User className="w-5 h-5" />
-            </div>
+
             <div>
               <p className="text-xs font-bold text-slate-900">Medical ID Profile</p>
               <p className="text-[11px] text-slate-500">{user?.fullName || 'Blood group, allergies'}</p>
@@ -277,7 +290,7 @@ export const EmergencyHome: React.FC = () => {
             className="cursor-pointer hover-lift flex items-center gap-3 p-4 col-span-2 sm:col-span-1"
           >
             <div className="p-2.5 bg-red-50 text-red-600 rounded-xl">
-              <Radio className="w-5 h-5" />
+
             </div>
             <div>
               <p className="text-xs font-bold text-slate-900">Driver Portal</p>

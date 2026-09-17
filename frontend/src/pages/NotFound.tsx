@@ -17,7 +17,7 @@ export const NotFound: React.FC = () => {
 
       <div className="relative z-10 max-w-lg mx-auto">
         <div className="w-20 h-20 rounded-3xl bg-[#E50914] text-white flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-red-600/40 animate-bounce">
-          <ShieldAlert className="w-10 h-10" />
+
         </div>
 
         <span className="text-sm font-extrabold uppercase tracking-widest text-red-500 mb-2 block">
@@ -37,7 +37,7 @@ export const NotFound: React.FC = () => {
             onClick={() => navigate('/')}
             className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95"
           >
-            <Home className="w-4 h-4" />
+
             <span>Return Home</span>
           </button>
 
@@ -45,7 +45,7 @@ export const NotFound: React.FC = () => {
             onClick={() => navigate('/citizen/report')}
             className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-[#E50914] hover:bg-[#D9232D] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-red-600/40 transition-transform hover:scale-105 active:scale-95"
           >
-            <Siren className="w-4 h-4 animate-pulse" />
+
             <span>Emergency SOS</span>
           </button>
         </div>

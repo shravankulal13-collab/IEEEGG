@@ -35,14 +35,14 @@ export const MapControls: React.FC<MapControlsProps> = ({
           className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center text-slate-200 transition"
           title="Zoom In"
         >
-          <Plus className="w-4 h-4" />
+
         </button>
         <button
           onClick={onZoomOut}
           className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center text-slate-200 transition"
           title="Zoom Out"
         >
-          <Minus className="w-4 h-4" />
+
         </button>
       </div>
 
@@ -53,7 +53,6 @@ export const MapControls: React.FC<MapControlsProps> = ({
           className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-blue-600 flex items-center justify-center text-slate-200 hover:text-white transition"
           title="Recenter GPS"
         >
-          <Compass className="w-4 h-4" />
         </button>
 
         <button
@@ -61,7 +60,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
           className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center text-slate-200 transition"
           title={`Layer: ${activeLayer}`}
         >
-          <Layers className="w-4 h-4" />
+
         </button>
 
         {onRefresh && (
@@ -70,7 +69,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
             className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center text-slate-200 transition"
             title="Refresh Telemetry"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+
           </button>
         )}
 
@@ -80,7 +79,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
             className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 flex items-center justify-center text-slate-200 transition"
             title="Toggle Fullscreen"
           >
-            <Maximize2 className="w-3.5 h-3.5" />
+
           </button>
         )}
       </div>

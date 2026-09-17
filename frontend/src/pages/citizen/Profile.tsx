@@ -40,10 +40,10 @@ export const Profile: React.FC = () => {
   };
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <div className="max-w-4xl mx-auto space-y-6 pb-12">
         <PageHeader
-          pillTag="Citizen Medical ID"
+
           title="Personal Emergency Profile"
           subtitle="Pre-configured medical triage record, blood group specifications, and authorized emergency contacts."
           actions={
@@ -53,14 +53,14 @@ export const Profile: React.FC = () => {
               onClick={() => navigate('/citizen')}
               className="border-slate-300 text-slate-700 hover:bg-slate-100"
             >
-              <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to SOS Portal
+              Back to SOS Portal
             </Button>
           }
         />
 
         {savedSuccess && (
           <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2 text-xs font-bold text-emerald-800 animate-fadeIn">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+
             <span>Emergency medical profile updated successfully! Changes synced to dispatch database.</span>
           </div>
         )}
@@ -75,7 +75,7 @@ export const Profile: React.FC = () => {
               <h2 className="text-xl font-black text-slate-900">{profile.fullName}</h2>
               <p className="text-xs text-slate-500 font-mono">Citizen ID: {profile.citizenId}</p>
               <div className="mt-1 flex items-center gap-1.5 text-xs text-emerald-600 font-bold">
-                <ShieldCheck className="w-3.5 h-3.5" />
+
                 <span>Location & Identity Verified</span>
               </div>
             </div>
@@ -97,7 +97,7 @@ export const Profile: React.FC = () => {
           <form onSubmit={handleSave} className="space-y-6">
             <Card className="p-6 bg-white border border-slate-200/80 shadow-md space-y-4">
               <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
-                <Heart className="w-4 h-4 text-red-500" />
+
                 <span>Edit Medical Details</span>
               </h3>
 
@@ -136,7 +136,7 @@ export const Profile: React.FC = () => {
 
             <Card className="p-6 bg-white border border-slate-200/80 shadow-md space-y-4">
               <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
-                <Phone className="w-4 h-4 text-blue-600" />
+
                 <span>Edit Emergency Contacts</span>
               </h3>
 
@@ -187,7 +187,7 @@ export const Profile: React.FC = () => {
                   Cancel
                 </Button>
                 <Button type="submit" variant="danger" size="sm">
-                  <Save className="w-3.5 h-3.5 mr-1" />
+
                   Save Changes
                 </Button>
               </div>
@@ -197,7 +197,7 @@ export const Profile: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="hover-lift p-6">
               <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2 mb-4">
-                <Heart className="w-4 h-4 text-red-500" />
+
                 <span>Medical & Triage Profile</span>
               </h3>
 
@@ -219,7 +219,7 @@ export const Profile: React.FC = () => {
 
             <Card className="hover-lift p-6">
               <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2 mb-4">
-                <Phone className="w-4 h-4 text-blue-600" />
+
                 <span>Emergency SOS Contacts</span>
               </h3>
 

@@ -30,17 +30,11 @@ export const HospitalNetwork: React.FC = () => {
   const totalVentilators = hospitals.reduce((sum, h) => sum + (h.available_ventilators ?? 0), 0);
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <PageHeader
         title="Trauma Hospital Network"
         subtitle="Real-time ICU capacity, surgical theater availability, and specialist rosters"
-        badge={
-          error ? (
-            <Badge variant="danger">Database Offline</Badge>
-          ) : (
-            <Badge variant="success">{hospitals.length} Centers Online</Badge>
-          )
-        }
+
         actions={
           <Button variant="outline" size="sm" onClick={() => fetchHospitals()}>
             <RefreshCw className="w-4 h-4 mr-1.5" />

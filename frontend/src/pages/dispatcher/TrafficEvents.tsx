@@ -53,13 +53,13 @@ export const TrafficEvents: React.FC = () => {
   const filteredEvents = events.filter((ev) => filter === 'all' || ev.severity === filter);
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <div className="space-y-6 max-w-5xl mx-auto pb-12">
         <PageHeader
-          pillTag="Municipal Traffic Fusion & Sensors"
+
           title="Live Traffic & Road Incident Stream"
           subtitle="Real-time municipal sensors, road closures, and automated green corridor ambulance detours."
-          badge={<Badge variant="warning">3 Active Events</Badge>}
+
           actions={
             <div className="flex items-center gap-2">
               <Button
@@ -68,14 +68,14 @@ export const TrafficEvents: React.FC = () => {
                 onClick={() => navigate('/dispatcher')}
                 className="border-slate-300 text-slate-700 hover:bg-slate-100"
               >
-                <ArrowLeft className="w-4 h-4 mr-1.5" /> Command Center
+                Command Center
               </Button>
               <Button
                 variant="danger"
                 size="sm"
                 onClick={() => navigate('/dispatcher/routes')}
               >
-                <Zap className="w-4 h-4 mr-1.5" /> Green Wave Corridors
+                Green Wave Corridors
               </Button>
             </div>
           }
@@ -105,11 +105,10 @@ export const TrafficEvents: React.FC = () => {
               <button
                 key={lvl}
                 onClick={() => setFilter(lvl)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition capitalize ${
-                  filter === lvl
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition capitalize ${filter === lvl
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
               >
                 {lvl}
               </button>
@@ -129,9 +128,9 @@ export const TrafficEvents: React.FC = () => {
               className="p-5 bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
-                  <AlertTriangle className="w-5 h-5" />
-                </div>
+
+
+
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-extrabold text-slate-900">{ev.type}</h3>
@@ -141,7 +140,7 @@ export const TrafficEvents: React.FC = () => {
                     </Badge>
                   </div>
                   <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+
                     <span>{ev.location}</span>
                   </p>
                   <p className="text-xs font-bold text-red-600 mt-1">{ev.impact}</p>

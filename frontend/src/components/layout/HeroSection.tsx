@@ -5,13 +5,13 @@
 // ============================================================
 
 import React, { useState, useEffect } from 'react';
-import { 
-  ArrowRight, 
-  Activity, 
-  ShieldCheck, 
-  Radio, 
-  Zap, 
-  Building2, 
+import {
+  ArrowRight,
+  Activity,
+  ShieldCheck,
+  Radio,
+  Zap,
+  Building2,
 } from 'lucide-react';
 
 export interface HeroCta {
@@ -30,6 +30,7 @@ export interface HeroSectionProps {
   badgeText?: string;
   badgeDotColor?: string;
   headingPrefix?: string;
+  fullBleed?: boolean;
   typewriterPhrases?: string[];
   headingSuffix?: string;
   subtitle?: string;
@@ -48,17 +49,18 @@ const DEFAULT_PHRASES = [
 ];
 
 const DEFAULT_TICKER: TickerItem[] = [
-  { icon: <Building2 className="w-3.5 h-3.5 text-blue-400" />, text: 'Hospital Intake Network' },
-  { icon: <Radio className="w-3.5 h-3.5 text-red-400" />, text: 'PostGIS Location History' },
-  { icon: <Activity className="w-3.5 h-3.5 text-emerald-400" />, text: 'Socket.IO Realtime Telemetry' },
-  { icon: <ShieldCheck className="w-3.5 h-3.5 text-sky-400" />, text: 'Role-Based Access Control' },
-  { icon: <Zap className="w-3.5 h-3.5 text-amber-400" />, text: 'Dispatch Execution < 400ms' },
+  { text: 'Hospital Intake Network' },
+  { text: 'PostGIS Location History' },
+  { text: 'Socket.IO Realtime Telemetry' },
+  { text: 'Role-Based Access Control' },
+  { text: 'Dispatch Execution < 400ms' },
 ];
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   badgeText = 'Emergency Response & Trauma Coordination Platform',
   badgeDotColor = '#E50914',
   headingPrefix = 'Emergency Coordination &',
+  fullBleed = false,
   typewriterPhrases = DEFAULT_PHRASES,
   headingSuffix = 'with ResQGrid',
   subtitle = 'Emergency incident triaging, PostGIS ambulance telemetry, traffic clearance corridors, and hospital ICU bed matching.',
@@ -100,13 +102,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section
-      className={`relative w-full overflow-hidden text-white border-b border-[#1E3A8A]/50 select-none shadow-2xl rounded-3xl mb-8 ${className}`}
+
       style={{
         background: 'radial-gradient(circle at 50% 15%, #102B7B 0%, #0B1B4F 55%, #061136 100%)',
       }}
     >
       {/* Ambient background particles & grid glow */}
-      <div 
+      <div
         className="absolute inset-0 opacity-15 pointer-events-none"
         style={{
           backgroundImage: `radial-gradient(rgba(56, 189, 248, 0.4) 1px, transparent 1px)`,
@@ -118,12 +120,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       {/* Main Container */}
       <div className={`relative max-w-6xl mx-auto px-4 sm:px-6 text-center ${compact ? 'py-8 sm:py-10' : 'py-12 sm:py-16'}`}>
-        
+
         {/* Pill Badge */}
         {badgeText && (
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs sm:text-sm font-bold text-sky-300 shadow-md backdrop-blur-md mb-5 animate-fade-in hover:bg-white/15 transition-all">
-            <span 
-              className="w-2 h-2 rounded-full animate-pulse shrink-0" 
+            <span
+              className="w-2 h-2 rounded-full animate-pulse shrink-0"
               style={{ backgroundColor: badgeDotColor }}
             />
             <span className="tracking-wide">{badgeText}</span>
@@ -161,11 +163,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-extrabold text-sm sm:text-base text-white transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
                 style={{
                   backgroundColor: primaryCta.variant === 'emerald' ? '#10B981' : primaryCta.variant === 'blue' ? '#2563EB' : '#E50914',
-                  boxShadow: primaryCta.variant === 'emerald' 
-                    ? '0 8px 25px rgba(16, 185, 129, 0.45)' 
+                  boxShadow: primaryCta.variant === 'emerald'
+                    ? '0 8px 25px rgba(16, 185, 129, 0.45)'
                     : primaryCta.variant === 'blue'
-                    ? '0 8px 25px rgba(37, 99, 235, 0.45)'
-                    : '0 8px 25px rgba(229, 9, 20, 0.45)',
+                      ? '0 8px 25px rgba(37, 99, 235, 0.45)'
+                      : '0 8px 25px rgba(229, 9, 20, 0.45)',
                 }}
               >
                 <span>{primaryCta.label}</span>
@@ -194,8 +196,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               const icon = isObj ? item.icon : <Zap className="w-3.5 h-3.5 text-amber-400" />;
 
               return (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 transition-all shadow-xs"
                 >
                   {icon}

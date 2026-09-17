@@ -39,14 +39,13 @@ export const History: React.FC = () => {
   ];
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <PageHeader
         title="Hospital Emergency Admission Records"
         subtitle="Completed emergency triage admissions, treatment courses, and discharge outcomes"
-        badge={<Badge variant="info">Historical Archive</Badge>}
+
         actions={
           <Button variant="outline" size="sm" onClick={() => navigate('/hospital')}>
-            <RefreshCw className="w-4 h-4 mr-1.5" />
             Hospital Intake
           </Button>
         }
@@ -69,7 +68,7 @@ export const History: React.FC = () => {
               {history.map((item) => (
                 <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                   <td className="py-3.5 px-4 font-mono font-bold text-slate-900 flex items-center gap-1.5">
-                    <Activity className="w-3.5 h-3.5 text-blue-600" />
+
                     <span>{item.id}</span>
                   </td>
                   <td className="py-3.5 px-4 font-bold text-slate-800">{item.patient}</td>

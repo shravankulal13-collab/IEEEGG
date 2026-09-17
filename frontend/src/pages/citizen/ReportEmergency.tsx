@@ -103,33 +103,33 @@ export const ReportEmergency: React.FC = () => {
       id: 'medical',
       title: 'Medical Emergency',
       subtitle: 'Cardiac, severe respiratory, stroke',
-      icon: <Stethoscope className="w-5 h-5 text-blue-600" />,
+
     },
     {
       id: 'accident',
       title: 'Vehicle Collision',
       subtitle: 'Road crash, structural entrapment',
-      icon: <Car className="w-5 h-5 text-red-600" />,
+
     },
     {
       id: 'trauma',
       title: 'Severe Physical Trauma',
       subtitle: 'Heavy bleeding, fall from height',
-      icon: <Activity className="w-5 h-5 text-amber-600" />,
+
     },
     {
       id: 'other',
       title: 'Critical Incident',
       subtitle: 'Unspecified immediate physical danger',
-      icon: <AlertCircle className="w-5 h-5 text-purple-600" />,
+
     },
   ];
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <div className="space-y-6 max-w-3xl mx-auto pb-12">
         <PageHeader
-          pillTag="Immediate Emergency Intake"
+
           title="Report Emergency Incident"
           subtitle="Direct GPS-tagged dispatch with automated trauma unit and corridor coordination."
           actions={
@@ -139,14 +139,14 @@ export const ReportEmergency: React.FC = () => {
               onClick={() => navigate('/citizen')}
               className="border-slate-300 text-slate-700 hover:bg-slate-100"
             >
-              <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Dashboard
+              Back to Dashboard
             </Button>
           }
         />
 
         {errorMessage && (
           <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs font-bold flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+
             <span>{errorMessage}</span>
           </div>
         )}
@@ -170,23 +170,19 @@ export const ReportEmergency: React.FC = () => {
                       key={cat.id}
                       type="button"
                       onClick={() => setSelectedCategory(cat.id as any)}
-                      className={`p-4 rounded-2xl border text-left flex items-start justify-between transition-all cursor-pointer ${
-                        isSelected
-                          ? 'border-red-600 bg-red-50/70 ring-2 ring-red-500/30'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
+                      className={`p-4 rounded-2xl border text-left flex items-start justify-between transition-all cursor-pointer ${isSelected
+                        ? 'border-red-600 bg-red-50/70 ring-2 ring-red-500/30'
+                        : 'border-slate-200 hover:border-slate-300 bg-white'
+                        }`}
                     >
                       <div>
-                        <div className="mb-2.5 p-2 bg-slate-50 rounded-xl inline-block border border-slate-100">
-                          {cat.icon}
-                        </div>
+
                         <p className="text-xs font-extrabold text-slate-900">{cat.title}</p>
                         <p className="text-[11px] text-slate-500 leading-tight mt-0.5">{cat.subtitle}</p>
                       </div>
                       <div
-                        className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
-                          isSelected ? 'border-red-600 bg-red-600' : 'border-slate-300'
-                        }`}
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${isSelected ? 'border-red-600 bg-red-600' : 'border-slate-300'
+                          }`}
                       >
                         {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                       </div>
@@ -208,9 +204,7 @@ export const ReportEmergency: React.FC = () => {
               <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50">
                 <div className="p-4 flex items-center justify-between text-xs bg-white border-b border-slate-200">
                   <div className="flex items-center gap-2.5 text-slate-800">
-                    <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-200">
-                      <MapPin className="w-4 h-4" />
-                    </div>
+
                     <div>
                       <span className="font-extrabold text-slate-900 block">Current Incident Coordinates</span>
                       <span className="text-slate-500 font-medium">
@@ -218,9 +212,7 @@ export const ReportEmergency: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                    GPS LOCK HIGH ACCURACY
-                  </span>
+
                 </div>
               </div>
             </div>
@@ -295,7 +287,7 @@ export const ReportEmergency: React.FC = () => {
                 disabled={isSubmitting}
                 className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-red-600 to-[#B80710] hover:from-red-500 hover:to-red-600 text-white text-sm font-extrabold rounded-2xl shadow-xl shadow-red-600/30 transition-all transform hover:scale-[1.02] active:scale-98 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                <Radio className="w-4 h-4 animate-pulse" />
+
                 <span>{isSubmitting ? 'PERSISTING & TRANSMITTING SOS...' : 'TRANSMIT SOS SIGNAL NOW'}</span>
               </button>
             </div>

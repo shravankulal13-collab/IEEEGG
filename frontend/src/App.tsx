@@ -48,6 +48,9 @@ import { ResourceManagement } from './pages/hospital/ResourceManagement';
 import { Doctors } from './pages/hospital/Doctors';
 import { History } from './pages/hospital/History';
 
+// Route Protection Guard
+import { RoleGuard } from './components/layout/RoleGuard';
+
 function App() {
   return (
     <BrowserRouter>
@@ -55,49 +58,245 @@ function App() {
         {/* Public Showcase & Landing Page (Theme & Moving Animations) */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Authentication & User Management Routes */}
+        {/* Authentication & User Management Routes — public */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* System Administration & Diagnostics */}
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route
+          path="/admin"
+          element={
+            <RoleGuard allowedRoles={['system_admin']}>
+              <AdminDashboard />
+            </RoleGuard>
+          }
+        />
 
-        {/* 1. Citizen Portal Routes */}
-        <Route path="/citizen" element={<EmergencyHome />} />
-        <Route path="/citizen/report" element={<ReportEmergency />} />
-        <Route path="/citizen/confirm" element={<IncidentConfirmation />} />
-        <Route path="/citizen/tracking" element={<LiveIncidentTracking />} />
-        <Route path="/citizen/history" element={<IncidentHistory />} />
-        <Route path="/citizen/profile" element={<Profile />} />
+        {/* 1. Citizen Portal Routes — accessible by all authenticated users (shared profile / SOS) */}
+        <Route
+          path="/citizen"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'system_admin']}>
+              <EmergencyHome />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/citizen/report"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'system_admin']}>
+              <ReportEmergency />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/citizen/confirm"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'system_admin']}>
+              <IncidentConfirmation />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/citizen/tracking"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'system_admin']}>
+              <LiveIncidentTracking />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/citizen/history"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'system_admin']}>
+              <IncidentHistory />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/citizen/profile"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'system_admin']}>
+              <Profile />
+            </RoleGuard>
+          }
+        />
 
         {/* 2. Ambulance Driver Portal Routes */}
-        <Route path="/ambulance" element={<AmbulanceHome />} />
-        <Route path="/ambulance/active" element={<ActiveEmergency />} />
-        <Route path="/ambulance/dispatch" element={<DispatchRequest />} />
-        <Route path="/ambulance/navigation" element={<Navigation />} />
-        <Route path="/ambulance/status" element={<VehicleStatus />} />
-        <Route path="/ambulance/history" element={<TripHistory />} />
+        <Route
+          path="/ambulance"
+          element={
+            <RoleGuard allowedRoles={['ambulance_driver', 'system_admin']}>
+              <AmbulanceHome />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/ambulance/active"
+          element={
+            <RoleGuard allowedRoles={['ambulance_driver', 'system_admin']}>
+              <ActiveEmergency />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/ambulance/dispatch"
+          element={
+            <RoleGuard allowedRoles={['ambulance_driver', 'system_admin']}>
+              <DispatchRequest />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/ambulance/navigation"
+          element={
+            <RoleGuard allowedRoles={['ambulance_driver', 'system_admin']}>
+              <Navigation />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/ambulance/status"
+          element={
+            <RoleGuard allowedRoles={['ambulance_driver', 'system_admin']}>
+              <VehicleStatus />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/ambulance/history"
+          element={
+            <RoleGuard allowedRoles={['ambulance_driver', 'system_admin']}>
+              <TripHistory />
+            </RoleGuard>
+          }
+        />
 
         {/* 3. Dispatcher Command Center Portal Routes */}
-        <Route path="/dispatcher" element={<CommandCenter />} />
-        <Route path="/dispatcher/fleet" element={<AmbulanceFleet />} />
-        <Route path="/dispatcher/hospitals" element={<HospitalNetwork />} />
-        <Route path="/dispatcher/incidents" element={<IncidentDetails />} />
-        <Route path="/dispatcher/incidents/:id" element={<IncidentDetails />} />
-        <Route path="/dispatcher/routes" element={<RouteIntelligence />} />
-        <Route path="/dispatcher/traffic" element={<TrafficEvents />} />
-        <Route path="/dispatcher/analytics" element={<Analytics />} />
-        <Route path="/dispatcher/audit" element={<AuditLogs />} />
-        <Route path="/dispatcher/notifications" element={<Notifications />} />
+        <Route
+          path="/dispatcher"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <CommandCenter />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/dispatcher/fleet"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <AmbulanceFleet />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/dispatcher/hospitals"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <HospitalNetwork />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/dispatcher/incidents"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <IncidentDetails />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/dispatcher/incidents/:id"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <IncidentDetails />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/dispatcher/routes"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <RouteIntelligence />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/dispatcher/traffic"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <TrafficEvents />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/dispatcher/analytics"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <Analytics />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/dispatcher/audit"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <AuditLogs />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/dispatcher/notifications"
+          element={
+            <RoleGuard allowedRoles={['dispatcher', 'system_admin']}>
+              <Notifications />
+            </RoleGuard>
+          }
+        />
 
         {/* 4. Hospital Trauma Unit Portal Routes */}
-        <Route path="/hospital" element={<HospitalDashboard />} />
-        <Route path="/hospital/emergency" element={<IncomingEmergency />} />
-        <Route path="/hospital/resources" element={<ResourceManagement />} />
-        <Route path="/hospital/doctors" element={<Doctors />} />
-        <Route path="/hospital/history" element={<History />} />
+        <Route
+          path="/hospital"
+          element={
+            <RoleGuard allowedRoles={['hospital_admin', 'system_admin']}>
+              <HospitalDashboard />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/hospital/emergency"
+          element={
+            <RoleGuard allowedRoles={['hospital_admin', 'system_admin']}>
+              <IncomingEmergency />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/hospital/resources"
+          element={
+            <RoleGuard allowedRoles={['hospital_admin', 'system_admin']}>
+              <ResourceManagement />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/hospital/doctors"
+          element={
+            <RoleGuard allowedRoles={['hospital_admin', 'system_admin']}>
+              <Doctors />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/hospital/history"
+          element={
+            <RoleGuard allowedRoles={['hospital_admin', 'system_admin']}>
+              <History />
+            </RoleGuard>
+          }
+        />
 
         {/* Catch-all 404 Route */}
         <Route path="*" element={<NotFound />} />

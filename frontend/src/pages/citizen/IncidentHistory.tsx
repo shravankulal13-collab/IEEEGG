@@ -21,7 +21,6 @@ export const IncidentHistory: React.FC = () => {
     {
       id: 'ER-2048',
       type: 'Medical Emergency',
-      icon: <Stethoscope className="w-5 h-5 text-blue-600" />,
       date: '29 Aug 2026',
       responseTime: '08 min',
       status: 'COMPLETED',
@@ -30,7 +29,6 @@ export const IncidentHistory: React.FC = () => {
     {
       id: 'ER-2035',
       type: 'Vehicle Accident',
-      icon: <Car className="w-5 h-5 text-red-600" />,
       date: '15 Aug 2026',
       responseTime: '12 min',
       status: 'COMPLETED',
@@ -43,10 +41,10 @@ export const IncidentHistory: React.FC = () => {
   );
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="top">
       <div className="space-y-6 max-w-5xl mx-auto pb-12">
         <PageHeader
-          pillTag="Incident History"
+
           title="Emergency Incident Records"
           subtitle="Review past emergency responses, timeline dispatches, and hospital destinations."
           actions={
@@ -56,7 +54,7 @@ export const IncidentHistory: React.FC = () => {
               onClick={() => navigate('/citizen')}
               className="border-slate-300 text-slate-700 hover:bg-slate-100"
             >
-              <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Dashboard
+              Back to Dashboard
             </Button>
           }
         />
@@ -64,7 +62,7 @@ export const IncidentHistory: React.FC = () => {
         {/* Search & Filter Bar */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-wrap items-center gap-3 shadow-sm">
           <div className="flex-1 min-w-[240px] relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+
             <input
               type="text"
               value={search}
@@ -80,7 +78,7 @@ export const IncidentHistory: React.FC = () => {
             Type: All
           </button>
           <button className="p-2 border border-slate-200 bg-white hover:bg-slate-50 rounded-xl text-slate-600">
-            <Filter className="w-4 h-4" />
+
           </button>
         </div>
 
@@ -90,12 +88,10 @@ export const IncidentHistory: React.FC = () => {
             <Card
               key={item.id}
               onClick={() => navigate(`/citizen/tracking?incidentId=${item.id}`)}
-              className={`p-5 border border-slate-200 bg-white hover:border-blue-400 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${item.borderColor}`}
+              className={`p-5 border border-slate-200 bg-white hover:border-blue-400 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 `}
             >
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0">
-                  {item.icon}
-                </div>
+
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-extrabold text-slate-900">{item.type}</span>
@@ -104,7 +100,7 @@ export const IncidentHistory: React.FC = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-slate-500 mt-1 font-medium">
-                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
+
                     <span>{item.date}</span>
                   </div>
                 </div>
@@ -117,9 +113,9 @@ export const IncidentHistory: React.FC = () => {
                   </span>
                   <span className="text-sm font-black text-slate-900 font-mono">{item.responseTime}</span>
                 </div>
-                <Badge variant="success">{item.status}</Badge>
+
                 <div className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 text-slate-400">
-                  <ArrowRight className="w-4 h-4" />
+
                 </div>
               </div>
             </Card>
@@ -127,7 +123,7 @@ export const IncidentHistory: React.FC = () => {
 
           {filtered.length === 0 && (
             <div className="text-center py-12 bg-white rounded-2xl border border-slate-200 text-slate-400">
-              <ShieldAlert className="w-8 h-8 mx-auto mb-2 opacity-50" />
+
               <p className="text-xs font-semibold">No past emergency incidents found matching your query.</p>
             </div>
           )}

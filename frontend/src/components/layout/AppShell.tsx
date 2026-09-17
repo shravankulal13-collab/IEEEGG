@@ -13,19 +13,52 @@ import { MobileNavigation } from './MobileNavigation';
 export interface AppShellProps {
   children: React.ReactNode;
   showSidebar?: boolean;
+  sidebarVariant?: 'sidebar' | 'top';
 }
 
-export const AppShell: React.FC<AppShellProps> = ({ children, showSidebar = true }) => {
+export const AppShell: React.FC<AppShellProps> = ({
+  children,
+  showSidebar = true,
+  sidebarVariant = 'sidebar',
+}) => {
+  const isTopNavigation = sidebarVariant === 'top';
+
   return (
-    <div className="min-h-screen bg-[#F4F7FB] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#071338] flex flex-col font-sans">
+
+      {/* Global / Command Center Topbar */}
       <Topbar />
+
       <div className="flex-1 flex overflow-hidden">
-        {showSidebar && <Sidebar />}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-20 md:pb-8">
-          <div className="max-w-7xl mx-auto w-full">{children}</div>
+
+        {/* Normal sidebar for other portals only */}
+        {showSidebar && !isTopNavigation && (
+          <Sidebar variant="sidebar" />
+        )}
+
+        <main
+          className={
+            isTopNavigation
+              ? 'flex-1 overflow-y-auto'
+              : 'flex-1 overflow-y-auto p-4 md:p-8 pb-20 md:pb-8'
+          }
+        >
+          {isTopNavigation ? (
+            <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-10 pt-8">
+              {children}
+            </div>
+          ) : (
+            <div className="max-w-7xl mx-auto w-full">
+              {children}
+            </div>
+          )}
         </main>
+
       </div>
+
       <MobileNavigation />
     </div>
   );
 };
+
+export default AppShell;

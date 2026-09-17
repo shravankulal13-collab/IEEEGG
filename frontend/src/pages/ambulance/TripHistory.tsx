@@ -50,12 +50,12 @@ export const TripHistory: React.FC = () => {
   ];
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant='top'>
       <div className="space-y-6 max-w-7xl mx-auto pb-12">
         <PageHeader
           title="Trip Response Logs: AMB-104"
           subtitle="Audit logs of completed emergency responses, transport durations, and destination hospitals"
-          badge={<Badge variant="info">34 TOTAL MISSIONS</Badge>}
+
           actions={
             <Button
               variant="outline"
@@ -63,7 +63,7 @@ export const TripHistory: React.FC = () => {
               onClick={() => navigate('/ambulance')}
               className="border-slate-300 text-slate-700 hover:bg-slate-100"
             >
-              <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Cockpit
+              Back to Cockpit
             </Button>
           }
         />
@@ -84,9 +84,9 @@ export const TripHistory: React.FC = () => {
                 </div>
 
                 <p className="text-xs text-slate-600 flex items-center gap-1.5 mt-1">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+
                   <span>Pickup: {trip.pickup}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 shrink-0 inline" />
+
                   <span className="font-bold text-slate-800">{trip.hospital}</span>
                 </p>
               </div>

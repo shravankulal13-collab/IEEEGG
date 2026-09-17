@@ -34,7 +34,7 @@ export const ForgotPassword: React.FC = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link to="/" className="inline-flex items-center gap-2 mb-4 group">
           <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-600/30 group-hover:scale-105 transition-transform">
-            <ShieldAlert className="w-6 h-6" />
+
           </div>
           <div className="text-left">
             <span className="text-xl font-extrabold text-[#0B1B4F] tracking-tight">ResQ</span>
@@ -52,7 +52,7 @@ export const ForgotPassword: React.FC = () => {
           {submitted ? (
             <div className="text-center py-4">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-6 h-6" />
+
               </div>
               <h3 className="text-base font-bold text-slate-900 mb-2">Instructions Sent!</h3>
               <p className="text-xs text-slate-500 leading-relaxed mb-6">
@@ -69,7 +69,7 @@ export const ForgotPassword: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <div className="p-3 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2 text-xs font-semibold text-red-700">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
+
                   <span>{error}</span>
                 </div>
               )}
@@ -78,7 +78,7 @@ export const ForgotPassword: React.FC = () => {
                 <label className="block text-xs font-bold text-slate-700 mb-1">Email address</label>
                 <div className="relative rounded-xl shadow-xs">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Mail className="w-4 h-4" />
+
                   </div>
                   <input
                     type="email"
@@ -101,7 +101,7 @@ export const ForgotPassword: React.FC = () => {
                 ) : (
                   <>
                     <span>Send Recovery Email</span>
-                    <ArrowRight className="w-4 h-4" />
+
                   </>
                 )}
               </button>

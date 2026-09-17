@@ -33,10 +33,11 @@ export const IncidentConfirmation: React.FC = () => {
         setIsLoading(false);
       })
       .catch(() => {
-        useIncidentStore.getState().fetchIncidents().then((res) => {
-          setIncident(res[0] || null);
+        useIncidentStore.getState().fetchIncidents().then(() => {
+          const latest = useIncidentStore.getState().incidents[0] || null;
+          setIncident(latest);
           setIsLoading(false);
-        }).catch((err) => {
+        }).catch((err: any) => {
           setError(err.message || 'Failed to load incident record.');
           setIsLoading(false);
         });
