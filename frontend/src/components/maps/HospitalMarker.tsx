@@ -5,7 +5,7 @@
 // ============================================================
 
 import React from 'react';
-import { Building2, Store } from 'lucide-react';
+import { Store } from 'lucide-react';
 
 export interface HospitalMarkerProps {
   id: string;

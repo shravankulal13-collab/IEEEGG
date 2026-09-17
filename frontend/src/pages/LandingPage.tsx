@@ -26,6 +26,8 @@ import {
   Zap,
   Radio,
 } from 'lucide-react';
+import { SpotlightCard } from '../components/ui/SpotlightCard';
+import { SplitText } from '../components/ui/SplitText';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -41,14 +43,14 @@ export const LandingPage: React.FC = () => {
 
   // Typewriter Text Effect for Real Platform Capabilities
   const typewriterPhrases = [
-    'Emergency Response',
-    'Ambulance Dispatch',
-    'Trauma Coordination',
-    'Green Signal Corridors',
-    'Hospital Bed Allocation',
+    'Make Every Route Count',
+    'Route-Deviation Detection',
+    'Traffic-Aware Rerouting',
+    'Emergency Telemetry',
+    'Coordinated Trauma Dispatch',
   ];
   const [typewriterIndex, setTypewriterIndex] = useState(0);
-  const [displayedText, setDisplayedText] = useState('Emergency Response');
+  const [displayedText, setDisplayedText] = useState('Make Every Route Count');
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Carousel ref
@@ -141,6 +143,42 @@ export const LandingPage: React.FC = () => {
       img: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80',
       isCustomCard: false,
     },
+    {
+      id: 's7',
+      title: 'Advanced Life Support (ALS) Response',
+      img: 'https://images.unsplash.com/photo-1587745416684-47953f16f02f?auto=format&fit=crop&w=600&q=80',
+      isCustomCard: false,
+    },
+    {
+      id: 's8',
+      title: 'Surge Bed & ICU Room Allocation',
+      subtitle: 'Automated bed availability reservation synced with active incoming ambulances.',
+      isCustomCard: true,
+    },
+    {
+      id: 's9',
+      title: 'Obstetric & High-Risk Delivery Care',
+      img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80',
+      isCustomCard: false,
+    },
+    {
+      id: 's10',
+      title: 'Burn Trauma & Critical Care Unit',
+      img: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=600&q=80',
+      isCustomCard: false,
+    },
+    {
+      id: 's11',
+      title: 'Neurological & Brain Injury Response',
+      img: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=600&q=80',
+      isCustomCard: false,
+    },
+    {
+      id: 's12',
+      title: 'Toxicology & Poison Control Unit',
+      subtitle: 'Instant poison control database matching and antidote dispatch coordination.',
+      isCustomCard: true,
+    },
   ];
 
   return (
@@ -166,14 +204,10 @@ export const LandingPage: React.FC = () => {
             {/* Logo */}
             <div
               onClick={() => navigate('/')}
-              style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#38BDF8', display: 'inline-block' }} />
-                <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#E50914', display: 'inline-block' }} />
-                <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#FFFFFF', display: 'inline-block' }} />
-              </div>
-              <div style={{ fontWeight: 900, fontSize: '22px', letterSpacing: '-0.5px' }}>
+              <img src="/logo.png" alt="ResQGrid Logo" style={{ width: '42px', height: '42px', objectFit: 'contain', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)', padding: '2px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }} />
+              <div style={{ fontWeight: 900, fontSize: '24px', letterSpacing: '-0.5px' }}>
                 <span style={{ color: '#FFFFFF' }}>ResQ</span>
                 <span style={{ color: '#E50914' }}>Grid</span>
               </div>
@@ -181,11 +215,11 @@ export const LandingPage: React.FC = () => {
 
             {/* Nav Menu */}
             <nav style={{ display: 'flex', alignItems: 'center', gap: '28px', fontSize: '14px', fontWeight: 600, color: '#CBD5E1' }} className="hidden md:flex">
-              <button onClick={() => handleEnterPortal('citizen')} style={{ background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer', fontWeight: 600 }}>Citizen SOS</button>
-              <button onClick={() => handleEnterPortal('ambulance_driver')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }}>Driver Fleet</button>
-              <button onClick={() => handleEnterPortal('dispatcher')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }}>Command Hub</button>
-              <button onClick={() => handleEnterPortal('hospital_admin')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }}>Trauma Network</button>
-              <button onClick={() => handleEnterPortal('system_admin')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }}>Diagnostics</button>
+              <button onClick={() => handleEnterPortal('citizen')} style={{ background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer', fontWeight: 600 }} className="hover:text-red-400 transition-colors">Citizen</button>
+              <button onClick={() => handleEnterPortal('ambulance_driver')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }} className="hover:text-white transition-colors">Ambulance Services</button>
+              <button onClick={() => handleEnterPortal('dispatcher')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }} className="hover:text-white transition-colors">Emergency Dispatch</button>
+              <button onClick={() => handleEnterPortal('hospital_admin')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }} className="hover:text-white transition-colors">Hospitals</button>
+              <button onClick={() => handleEnterPortal('system_admin')} style={{ background: 'none', border: 'none', color: '#CBD5E1', cursor: 'pointer', fontWeight: 600 }} className="hover:text-white transition-colors">Platform Admin</button>
             </nav>
 
             {/* Right CTAs */}
@@ -223,22 +257,20 @@ export const LandingPage: React.FC = () => {
             {/* Hero Center Headline */}
             <div style={{ textAlign: 'center', paddingTop: '60px', paddingBottom: '20px', maxWidth: '960px', margin: '0 auto' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '9999px', backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', fontSize: '13px', fontWeight: 700, color: '#38BDF8', marginBottom: '20px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#E50914', display: 'inline-block' }} />
                 <span>Emergency Response & Rapid Coordination Platform</span>
               </div>
 
               <h1 style={{ fontSize: 'clamp(32px, 6vw, 64px)', fontWeight: 900, lineHeight: 1.15, letterSpacing: '-1.5px', margin: '0 0 24px 0', color: '#FFFFFF' }}>
-                Create your<br />
+                When Every Second Matters,<br />
                 <span style={{ color: '#E50914', display: 'inline-block' }}>
                   {displayedText}
                 </span>
-                <span className="typewriter-cursor" />
                 <br />
-                network with ResQGrid
+                with ResQGrid
               </h1>
 
               <p style={{ fontSize: '18px', color: '#CBD5E1', margin: '0 auto 36px auto', fontWeight: 500, maxWidth: '720px', lineHeight: 1.6 }}>
-                Sub-second incident triaging, PostGIS ambulance telemetry, dynamic traffic clearance corridors, and automated hospital ICU bed matching.
+                Real-time ambulance tracking, route-deviation detection, traffic-aware rerouting, and coordinated emergency response helping emergency vehicles adapt to changing road conditions and reach critical destinations faster.
               </p>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
@@ -344,37 +376,61 @@ export const LandingPage: React.FC = () => {
             
             {/* Left Text Block */}
             <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', backgroundColor: '#EFF6FF', border: '1px solid #DBEAFE', fontSize: '12px', fontWeight: 700, color: '#1E40AF', marginBottom: '20px' }}>
-                <span>Operational Emergency Response Platform</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '9999px', backgroundColor: '#EFF6FF', border: '1px solid #DBEAFE', fontSize: '13px', fontWeight: 700, color: '#1E40AF', marginBottom: '20px' }}>
+                <span>Emergency Care Platform</span>
               </div>
 
-              <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 900, color: '#0F172A', lineHeight: 1.15, margin: '0 0 16px 0', letterSpacing: '-1px' }}>
-                The Operational Core for<br />Emergency & Urgent Care
+              <h2 style={{ fontSize: 'clamp(32px, 4.5vw, 48px)', fontWeight: 900, color: '#0F172A', lineHeight: 1.15, margin: '0 0 20px 0', letterSpacing: '-1.5px' }}>
+                Fast & Coordinated<br />Emergency Care
               </h2>
 
-              <p style={{ fontSize: '15px', color: '#475569', fontWeight: 600, margin: '0 0 28px 0' }}>
-                Real-time situational coordination across dispatch, fleet, and trauma facilities.
-              </p>
+              <div style={{ fontSize: '17px', color: '#475569', fontWeight: 500, lineHeight: 1.6 }}>
+                <SplitText
+                  text="Real-time coordination between patients, ambulances, and emergency hospitals."
+                  textAlign="left"
+                  delay={25}
+                  duration={0.8}
+                  splitType="chars"
+                  from={{ opacity: 0, y: 20 }}
+                  to={{ opacity: 1, y: 0 }}
+                  tag="p"
+                />
+              </div>
             </div>
 
-          {/* Right Operational Capabilities & Red Button */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {/* Right Operational Capabilities Grid & Red Button */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
               {[
-                { title: 'Automated Dispatch Matrix', desc: 'Multi-criteria spatial proximity scoring', icon: <Radio style={{ width: '16px', height: '16px', color: '#E50914' }} /> },
-                { title: 'PostGIS Geofenced Fleet Tracking', desc: 'Real-time vehicle telemetry and status', icon: <Ambulance style={{ width: '16px', height: '16px', color: '#2563EB' }} /> },
-                { title: 'Hospital Trauma Unit Synchronization', desc: 'ICU and Cath Lab bed reservation', icon: <Building2 style={{ width: '16px', height: '16px', color: '#059669' }} /> },
-                { title: 'Emergency Traffic Corridors', desc: 'Active green wave signal preemption', icon: <Zap style={{ width: '16px', height: '16px', color: '#D97706' }} /> },
+                { title: 'Smart Ambulance Assignment', desc: 'Instantly finds and assigns the nearest available ambulance.', icon: <Radio style={{ width: '22px', height: '22px', color: '#E50914' }} /> },
+                { title: 'Live Ambulance Tracking', desc: 'Track ambulance location and arrival time in real time.', icon: <Ambulance style={{ width: '22px', height: '22px', color: '#2563EB' }} /> },
+                { title: 'Hospital Coordination', desc: 'Notifies nearby hospitals and reserves ICU beds in advance.', icon: <Building2 style={{ width: '22px', height: '22px', color: '#059669' }} /> },
+                { title: 'Faster Emergency Routes', desc: 'Clears traffic signals to help emergency vehicles arrive faster.', icon: <Zap style={{ width: '22px', height: '22px', color: '#D97706' }} /> },
               ].map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-                  <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <SpotlightCard
+                  key={idx}
+                  spotlightColor="rgba(102, 163, 191, 0.35)"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '16px',
+                    padding: '24px',
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: '18px',
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.05)',
+                    minHeight: '165px',
+                  }}
+                >
+                  <div style={{ width: '46px', height: '46px', borderRadius: '12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {item.icon}
                   </div>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A' }}>{item.title}</div>
-                    <div style={{ fontSize: '11px', fontWeight: 500, color: '#64748B' }}>{item.desc}</div>
+                    <div style={{ fontSize: '17px', fontWeight: 800, color: '#0F172A', marginBottom: '6px', lineHeight: 1.25 }}>{item.title}</div>
+                    <div style={{ fontSize: '13.5px', fontWeight: 500, color: '#475569', lineHeight: 1.5 }}>{item.desc}</div>
                   </div>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
 
@@ -425,67 +481,59 @@ export const LandingPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Cards Track */}
-          <div
-            ref={carouselRef}
-            className="no-scrollbar"
-            style={{
-              display: 'flex',
-              gap: '20px',
-              overflowX: 'auto',
-              paddingBottom: '16px',
-              scrollBehavior: 'smooth',
-            }}
-          >
-            {servicesData.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => navigate('/citizen/report')}
-                style={{
-                  minWidth: '260px',
-                  maxWidth: '280px',
-                  height: '240px',
-                  borderRadius: '20px',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  cursor: 'pointer',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
-                  flexShrink: 0,
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                  backgroundColor: item.isCustomCard ? '#0B1B4F' : '#1E293B',
-                }}
-                className="hover:-translate-y-1 hover:shadow-xl"
-              >
-                {item.isCustomCard ? (
-                  <div style={{ height: '100%', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, #0B1B4F 0%, #1D4ED8 100%)', color: '#FFFFFF' }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 10px 0' }}>{item.title}</h3>
-                    <p style={{ fontSize: '12px', color: '#93C5FD', margin: 0, lineHeight: 1.5 }}>{item.subtitle}</p>
-                  </div>
-                ) : (
-                  <>
-                    <img
-                      src={item.img}
-                      alt={item.title}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                    <div
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
-                        display: 'flex',
-                        alignItems: 'flex-end',
-                        padding: '20px',
-                      }}
-                    >
-                      <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
-                        {item.title}
-                      </h3>
+          {/* Continuous Marquee Track */}
+          <div style={{ overflow: 'hidden', paddingBottom: '16px', margin: '0 -20px', padding: '0 20px' }}>
+            <div className="services-marquee-track" style={{ gap: '24px' }}>
+              {[...servicesData, ...servicesData].map((item, idx) => (
+                <div
+                  key={`${item.id}-${idx}`}
+                  onClick={() => navigate('/citizen/report')}
+                  style={{
+                    minWidth: '270px',
+                    maxWidth: '280px',
+                    height: '240px',
+                    borderRadius: '20px',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    cursor: 'pointer',
+                    boxShadow: '0 10px 25px rgba(0,0,0,0.08)',
+                    flexShrink: 0,
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    backgroundColor: item.isCustomCard ? '#0B1B4F' : '#1E293B',
+                  }}
+                  className="hover:-translate-y-1.5 hover:shadow-xl"
+                >
+                  {item.isCustomCard ? (
+                    <div style={{ height: '100%', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'linear-gradient(135deg, #0B1B4F 0%, #1D4ED8 100%)', color: '#FFFFFF' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 10px 0' }}>{item.title}</h3>
+                      <p style={{ fontSize: '12px', color: '#93C5FD', margin: 0, lineHeight: 1.5 }}>{item.subtitle}</p>
                     </div>
-                  </>
-                )}
-              </div>
-            ))}
+                  ) : (
+                    <>
+                      <img
+                        src={item.img}
+                        alt={item.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, transparent 100%)',
+                          display: 'flex',
+                          alignItems: 'flex-end',
+                          padding: '20px',
+                        }}
+                      >
+                        <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
+                          {item.title}
+                        </h3>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Centered Red Button */}
@@ -514,154 +562,122 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* ======================================================== */}
-      {/* SECTION 5: CORE SYSTEM CAPABILITIES (IMAGE 4)            */}
+      {/* SECTION 5: USER JOURNEY WORKFLOW                          */}
       {/* ======================================================== */}
       <section id="advantages" style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '9999px', backgroundColor: '#EFF6FF', border: '1px solid #DBEAFE', fontSize: '12px', fontWeight: 700, color: '#1E40AF', marginBottom: '16px' }}>
-            <span>System Architecture & Telemetry</span>
+        {/* Section Header */}
+        <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', borderRadius: '9999px', backgroundColor: '#E0F2FE', border: '1px solid #BAE6FD', fontSize: '13px', fontWeight: 700, color: '#3368A0', marginBottom: '16px' }}>
+            <span>How ResQGrid Helps</span>
           </div>
 
-          <h2 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-1px', margin: 0 }}>
-            System capabilities that power ResQGrid
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-1px', margin: '0 0 16px 0', lineHeight: 1.2 }}>
+            From Emergency Call to Hospital — We Keep Every Step Connected
           </h2>
+
+          <p style={{ fontSize: '16px', color: '#475569', fontWeight: 500, maxWidth: '720px', margin: '0 auto', lineHeight: 1.6 }}>
+            ResQGrid connects citizens, ambulances, dispatch teams, and hospitals to coordinate emergency response in real time.
+          </p>
         </div>
 
-        {/* 3 Column Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+        {/* 5-Step Journey Timeline Container */}
+        <div style={{ position: 'relative' }}>
           
-          {/* Card 1: Dark Slate Spatial Dispatch Card */}
+          {/* Connecting Line (Desktop) */}
           <div
+            aria-hidden="true"
+            className="hidden lg:block"
             style={{
-              backgroundColor: '#060D1E',
-              borderRadius: '24px',
-              padding: '32px',
-              minHeight: '340px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              position: 'relative',
-              overflow: 'hidden',
-              boxShadow: '0 15px 35px rgba(6, 13, 30, 0.35)',
-              border: '1px solid #1E3A8A',
-              color: '#FFFFFF',
+              position: 'absolute',
+              top: '42px',
+              left: '8%',
+              right: '8%',
+              height: '3px',
+              backgroundColor: '#C8DFDB',
+              zIndex: 0,
+              borderRadius: '9999px',
             }}
-          >
-            <div>
-              <span style={{ fontSize: '11px', fontWeight: 800, color: '#38BDF8', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Spatial Dispatch
-              </span>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#FFFFFF', margin: '8px 0 12px 0' }}>
-                PostGIS Fleet Telematics
-              </h3>
-              <p style={{ fontSize: '13px', color: '#94A3B8', lineHeight: 1.5 }}>
-                Sub-second geospatial indexing of active ambulances, incident geocoding, and shortest road-network paths.
-              </p>
-            </div>
+          />
 
-            <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '16px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px' }}>
-                <span style={{ color: '#94A3B8' }}>Active Nodes</span>
-                <span style={{ color: '#34D399', fontWeight: 700 }}>18 Fleet Units</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                <span style={{ color: '#94A3B8' }}>Traffic Signals Preempted</span>
-                <span style={{ color: '#FACC15', fontWeight: 700 }}>3 Junctions</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Metric Benchmarks */}
-          <div
-            style={{
-              background: 'linear-gradient(135deg, #CBD5E1 0%, #E2E8F0 50%, #C7D2FE 100%)',
-              borderRadius: '24px',
-              padding: '32px',
-              minHeight: '340px',
-              boxShadow: '0 15px 35px rgba(0,0,0,0.06)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div>
-              <span style={{ fontSize: '12px', fontWeight: 800, color: '#1E40AF', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Platform Telemetry
-              </span>
-              <h3 style={{ fontSize: '36px', fontWeight: 900, color: '#0F172A', margin: '8px 0 4px 0' }}>99.98%</h3>
-              <p style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>System Uptime & PostGIS Availability</p>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: '16px' }}>
-              <div>
-                <span style={{ fontSize: '11px', color: '#64748B', display: 'block', fontWeight: 600 }}>Avg Arrival ETA</span>
-                <span style={{ fontSize: '16px', fontWeight: 800, color: '#16A34A' }}>7.4 min</span>
-              </div>
-              <div>
-                <span style={{ fontSize: '11px', color: '#64748B', display: 'block', fontWeight: 600 }}>Dispatch Latency</span>
-                <span style={{ fontSize: '16px', fontWeight: 800, color: '#2563EB' }}>&lt; 380 ms</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3: Stacked 2 Right Cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div
-              style={{
-                backgroundColor: '#FFF1F2',
-                borderRadius: '24px',
-                padding: '24px 28px',
-                border: '1px solid #FFE4E6',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                flex: 1,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#FECDD3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <PhoneCall style={{ width: '20px', height: '20px', color: '#BE123C' }} />
+          {/* 5 Step Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', position: 'relative', zIndex: 1 }}>
+            {[
+              {
+                step: '01',
+                title: 'Emergency Reported',
+                desc: 'Citizen sends an emergency request.',
+                icon: <PhoneCall style={{ width: '22px', height: '22px', color: '#3368A0' }} />,
+                accentColor: '#3368A0',
+              },
+              {
+                step: '02',
+                title: 'Ambulance Assigned',
+                desc: 'Quickly identify an available ambulance near the emergency.',
+                icon: <Ambulance style={{ width: '22px', height: '22px', color: '#3368A0' }} />,
+                accentColor: '#3368A0',
+              },
+              {
+                step: '03',
+                title: 'Live Tracking',
+                desc: 'Follow the ambulance as it moves toward the emergency location.',
+                icon: <Navigation style={{ width: '22px', height: '22px', color: '#66A3BF' }} />,
+                accentColor: '#66A3BF',
+              },
+              {
+                step: '04',
+                title: 'Route Updated',
+                desc: 'If traffic or a road problem occurs, the route can be changed.',
+                icon: <Zap style={{ width: '22px', height: '22px', color: '#E50914' }} />,
+                accentColor: '#E50914',
+              },
+              {
+                step: '05',
+                title: 'Hospital Prepared',
+                desc: 'Help identify a suitable hospital before the ambulance arrives.',
+                icon: <Building2 style={{ width: '22px', height: '22px', color: '#3368A0' }} />,
+                accentColor: '#3368A0',
+              },
+            ].map((item, idx) => (
+              <SpotlightCard
+                key={idx}
+                spotlightColor="rgba(102, 163, 191, 0.25)"
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '20px',
+                  padding: '24px 20px',
+                  border: '1px solid #E2E8F0',
+                  boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+                  cursor: 'default',
+                  position: 'relative',
+                }}
+                className="hover:-translate-y-2 hover:shadow-lg hover:border-[#66A3BF]"
+              >
+                {/* Step Badge & Icon */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 900, color: item.accentColor, backgroundColor: '#F1F5F9', padding: '4px 10px', borderRadius: '9999px', letterSpacing: '0.5px' }}>
+                    {item.step}
+                  </span>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {item.icon}
+                  </div>
                 </div>
+
+                {/* Content */}
                 <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                    Emergency Control Center
+                  <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', margin: '0 0 6px 0', lineHeight: 1.3 }}>
+                    {item.title}
                   </h3>
-                  <span style={{ fontSize: '12px', color: '#E11D48', fontWeight: 700 }}>24/7 Incident Dispatch</span>
+                  <p style={{ fontSize: '13px', color: '#64748B', margin: 0, lineHeight: 1.5, fontWeight: 500 }}>
+                    {item.desc}
+                  </p>
                 </div>
-              </div>
-              <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>
-                Instant verification pipeline connecting citizen reports to active responders.
-              </p>
-            </div>
-
-            <div
-              style={{
-                background: 'linear-gradient(135deg, #FFFFFF 0%, #F0FDF4 100%)',
-                borderRadius: '24px',
-                padding: '24px 28px',
-                border: '1px solid #DCFCE7',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                flex: 1,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Building2 style={{ width: '20px', height: '20px', color: '#15803D' }} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-                    Trauma Hospital Network
-                  </h3>
-                  <span style={{ fontSize: '12px', color: '#16A34A', fontWeight: 700 }}>42 ICU Beds Available</span>
-                </div>
-              </div>
-              <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>
-                Real-time bed availability and on-call trauma surgeon matching.
-              </p>
-            </div>
+              </SpotlightCard>
+            ))}
           </div>
         </div>
       </section>
@@ -821,61 +837,253 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* ======================================================== */}
-      {/* SECTION 7: OPERATIONAL PORTALS DIRECTORY                 */}
+      {/* PROFESSIONAL FOOTER                                     */}
       {/* ======================================================== */}
-      <section
+      <footer
         style={{
-          backgroundColor: '#0B1B4F',
-          color: '#FFFFFF',
-          padding: '80px 20px',
-          textAlign: 'center',
+          background: 'linear-gradient(180deg, #070F2B 0%, #030712 100%)',
+          color: '#CBD5E1',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          paddingTop: '72px',
+          paddingBottom: '36px',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
-        <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <h2 style={{ fontSize: 'clamp(28px, 4.5vw, 44px)', fontWeight: 900, letterSpacing: '-1px', margin: '0 0 16px 0', lineHeight: 1.2 }}>
-            Access ResQGrid Operational Portals
-          </h2>
+        <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '0 24px' }}>
+          
+          {/* Main Footer Grid */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '48px',
+              paddingBottom: '56px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            }}
+          >
+            
+            {/* Column 1: Brand Info */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div
+                onClick={() => navigate('/')}
+                style={{ display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer', width: 'fit-content' }}
+              >
+                <img
+                  src="/logo.png"
+                  alt="ResQGrid Logo"
+                  style={{
+                    width: '46px',
+                    height: '46px',
+                    objectFit: 'contain',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    padding: '2px',
+                    boxShadow: '0 0 20px rgba(229, 9, 20, 0.25)',
+                  }}
+                />
+                <div style={{ fontWeight: 900, fontSize: '26px', letterSpacing: '-0.5px' }}>
+                  <span style={{ color: '#FFFFFF' }}>ResQ</span>
+                  <span style={{ color: '#E50914' }}>Grid</span>
+                </div>
+              </div>
 
-          <p style={{ fontSize: '15px', color: '#CBD5E1', margin: '0 auto 36px auto', maxWidth: '650px', fontWeight: 500 }}>
-            Unified coordination across citizens, paramedics, dispatchers, and trauma centers.
-          </p>
+              <p style={{ fontSize: '13px', color: '#94A3B8', lineHeight: 1.65, margin: 0, maxWidth: '320px' }}>
+                Next-generation emergency response and trauma care coordination platform connecting citizens, ambulances, dispatch hubs, and emergency hospitals in real time.
+              </p>
 
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
-            <button
-              onClick={() => handleEnterPortal('citizen')}
-              style={{ backgroundColor: '#E50914', color: '#FFFFFF', padding: '12px 24px', borderRadius: '9999px', fontWeight: 800, fontSize: '13px', border: 'none', cursor: 'pointer', boxShadow: '0 8px 20px rgba(229, 9, 20, 0.4)' }}
-            >
-              Citizen SOS Portal
-            </button>
-            <button
-              onClick={() => handleEnterPortal('ambulance_driver')}
-              style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: '#FFFFFF', padding: '12px 24px', borderRadius: '9999px', fontWeight: 700, fontSize: '13px', border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}
-            >
-              Ambulance Driver Cockpit
-            </button>
-            <button
-              onClick={() => handleEnterPortal('dispatcher')}
-              style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: '#FFFFFF', padding: '12px 24px', borderRadius: '9999px', fontWeight: 700, fontSize: '13px', border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}
-            >
-              Command Center
-            </button>
-            <button
-              onClick={() => handleEnterPortal('hospital_admin')}
-              style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: '#FFFFFF', padding: '12px 24px', borderRadius: '9999px', fontWeight: 700, fontSize: '13px', border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}
-            >
-              Hospital Trauma Unit
-            </button>
-            <button
-              onClick={() => handleEnterPortal('system_admin')}
-              style={{ backgroundColor: '#2563EB', color: '#FFFFFF', padding: '12px 24px', borderRadius: '9999px', fontWeight: 800, fontSize: '13px', border: 'none', cursor: 'pointer' }}
-            >
-              Platform Administration
-            </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                <span
+                  style={{
+                    padding: '6px 14px',
+                    borderRadius: '9999px',
+                    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    color: '#34D399',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    boxShadow: '0 0 12px rgba(16, 185, 129, 0.15)',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#10B981',
+                      boxShadow: '0 0 8px #10B981',
+                    }}
+                  />
+                  Live Network Active • 24/7 Operations
+                </span>
+              </div>
+            </div>
+
+            {/* Column 2: Operational Portals */}
+            <div>
+              <h4 style={{ color: '#FFFFFF', fontSize: '15px', fontWeight: 800, marginBottom: '20px', letterSpacing: '0.3px', textTransform: 'uppercase', opacity: 0.9 }}>
+                Operational Portals
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+                <li>
+                  <button
+                    onClick={() => handleEnterPortal('citizen')}
+                    style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    className="hover:text-white transition-colors group"
+                  >
+                    <span className="text-red-500 font-bold group-hover:translate-x-1 transition-transform">›</span>
+                    Citizen Portal
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleEnterPortal('ambulance_driver')}
+                    style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    className="hover:text-white transition-colors group"
+                  >
+                    <span className="text-red-500 font-bold group-hover:translate-x-1 transition-transform">›</span>
+                    Ambulance Services Portal
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleEnterPortal('dispatcher')}
+                    style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    className="hover:text-white transition-colors group"
+                  >
+                    <span className="text-red-500 font-bold group-hover:translate-x-1 transition-transform">›</span>
+                    Emergency Dispatch Center
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleEnterPortal('hospital_admin')}
+                    style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    className="hover:text-white transition-colors group"
+                  >
+                    <span className="text-red-500 font-bold group-hover:translate-x-1 transition-transform">›</span>
+                    Hospitals Portal
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => handleEnterPortal('system_admin')}
+                    style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    className="hover:text-white transition-colors group"
+                  >
+                    <span className="text-blue-400 font-bold group-hover:translate-x-1 transition-transform">›</span>
+                    Platform Administration
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: System Capabilities */}
+            <div>
+              <h4 style={{ color: '#FFFFFF', fontSize: '15px', fontWeight: 800, marginBottom: '20px', letterSpacing: '0.3px', textTransform: 'uppercase', opacity: 0.9 }}>
+                Core Capabilities
+              </h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px', color: '#94A3B8' }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#60A5FA' }} />
+                  Smart Ambulance Assignment
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#60A5FA' }} />
+                  Live GPS Route & Telemetry
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#60A5FA' }} />
+                  Hospital ICU Bed Reservation
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#60A5FA' }} />
+                  Traffic Corridor Signal Priority
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#60A5FA' }} />
+                  Instant Emergency Incident Triaging
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: 24/7 Emergency Helpline */}
+            <div>
+              <h4 style={{ color: '#FFFFFF', fontSize: '15px', fontWeight: 800, marginBottom: '20px', letterSpacing: '0.3px', textTransform: 'uppercase', opacity: 0.9 }}>
+                Emergency Support
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '13px' }}>
+                <a
+                  href="tel:108"
+                  style={{
+                    backgroundColor: 'rgba(229, 9, 20, 0.12)',
+                    border: '1px solid rgba(229, 9, 20, 0.35)',
+                    color: '#F87171',
+                    padding: '14px 18px',
+                    borderRadius: '14px',
+                    fontWeight: 800,
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px',
+                    transition: 'all 0.25s ease',
+                    boxShadow: '0 4px 16px rgba(229, 9, 20, 0.15)',
+                  }}
+                  className="hover:border-red-500 hover:bg-red-600/20 hover:scale-[1.02]"
+                >
+                  <div style={{ padding: '8px', borderRadius: '10px', backgroundColor: 'rgba(229, 9, 20, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <PhoneCall style={{ width: '20px', height: '20px', color: '#E50914' }} />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '11px', color: '#FCA5A5', display: 'block', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Toll-Free Emergency
+                    </span>
+                    <span style={{ fontSize: '18px', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.3px' }}>
+                      Dial 108
+                    </span>
+                  </div>
+                </a>
+
+                <p style={{ color: '#94A3B8', fontSize: '12px', lineHeight: 1.55, margin: 0 }}>
+                  Active 24/7 central dispatch supervision across regional medical networks.
+                </p>
+              </div>
+            </div>
+
           </div>
+
+          {/* Bottom Bar / Sub-footer */}
+          <div
+            style={{
+              paddingTop: '32px',
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '16px',
+              fontSize: '12px',
+              color: '#64748B',
+            }}
+          >
+            <div>
+              © 2026 ResQGrid Emergency & Trauma Coordination Network. All rights reserved.
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+              <span style={{ cursor: 'pointer' }} className="hover:text-white transition-colors" onClick={() => navigate('/citizen')}>Privacy Policy</span>
+              <span style={{ cursor: 'pointer' }} className="hover:text-white transition-colors" onClick={() => navigate('/citizen')}>Terms of Service</span>
+              <span style={{ cursor: 'pointer' }} className="hover:text-white transition-colors" onClick={() => navigate('/citizen')}>Security Protocol</span>
+              <span style={{ cursor: 'pointer' }} className="hover:text-white transition-colors" onClick={() => navigate('/dispatcher')}>System Health</span>
+            </div>
+          </div>
+
         </div>
-      </section>
+      </footer>
 
       {/* Floating Red Help / SOS Button */}
       <div style={{ position: 'fixed', bottom: '24px', left: '24px', zIndex: 50 }}>

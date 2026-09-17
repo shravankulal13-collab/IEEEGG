@@ -69,9 +69,7 @@ export const Topbar: React.FC = () => {
           onClick={() => navigate('/')}
           className="flex items-center gap-2.5 text-left group transition-transform hover:scale-[1.02]"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 to-[#B80710] flex items-center justify-center text-white shadow-md shadow-red-600/40 border border-red-400/40">
-            <ShieldAlert className="w-5 h-5" />
-          </div>
+          <img src="/logo.png" alt="ResQGrid Logo" className="w-10 h-10 object-contain rounded-full bg-white/10 p-0.5 shadow-md border border-slate-700/60" />
           <div>
             <div className="flex items-center gap-1">
               <span className="font-black text-lg tracking-tight text-white">ResQ</span>
@@ -85,8 +83,8 @@ export const Topbar: React.FC = () => {
         <div className="hidden xl:flex items-center gap-2 pl-4 border-l border-slate-800">
           {health?.database?.connected ? (
             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/70 text-emerald-400 text-xs font-bold border border-emerald-700/60 shadow-inner">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Live Platform Active {health?.database?.latencyMs ? `(${health.database.latencyMs}ms)` : `(${health?.uptimeSeconds || 0}s)`}
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              Live Platform Active {(health?.database as any)?.latencyMs ? `(${(health?.database as any).latencyMs}ms)` : `(${health?.uptimeSeconds || 0}s)`}
             </span>
           ) : (
             <span
@@ -97,7 +95,7 @@ export const Topbar: React.FC = () => {
                 setHealth(data);
               }}
             >
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-red-500" />
               DATABASE OFFLINE / ERROR
             </span>
           )}
@@ -116,7 +114,7 @@ export const Topbar: React.FC = () => {
           }`}
         >
           <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
-          <span>Citizen SOS</span>
+          <span>Citizen</span>
         </button>
 
         <button
@@ -129,7 +127,7 @@ export const Topbar: React.FC = () => {
           }`}
         >
           <Ambulance className="w-3.5 h-3.5 shrink-0" />
-          <span>Driver Cockpit</span>
+          <span>Ambulance Services</span>
         </button>
 
         <button
@@ -142,7 +140,7 @@ export const Topbar: React.FC = () => {
           }`}
         >
           <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
-          <span>Dispatch Hub</span>
+          <span>Emergency Dispatch</span>
         </button>
 
         <button
@@ -155,7 +153,7 @@ export const Topbar: React.FC = () => {
           }`}
         >
           <Building2 className="w-3.5 h-3.5 shrink-0" />
-          <span>Trauma Unit</span>
+          <span>Hospitals</span>
         </button>
       </div>
 

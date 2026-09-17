@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { ShieldAlert, ArrowRight, User, Mail, Lock, Phone, AlertCircle } from 'lucide-react';
+import { ArrowRight, User, Mail, Lock, Phone, AlertCircle } from 'lucide-react';
 
 export const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -39,13 +39,11 @@ export const Register: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F4F7FB] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link to="/" className="inline-flex items-center gap-2 mb-4 group">
-          <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-600/30 group-hover:scale-105 transition-transform">
-            <ShieldAlert className="w-6 h-6" />
-          </div>
+        <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
+          <img src="/logo.png" alt="ResQGrid Logo" className="w-12 h-12 object-contain rounded-full group-hover:scale-105 transition-transform shadow-md" />
           <div className="text-left">
-            <span className="text-xl font-extrabold text-[#0B1B4F] tracking-tight">ResQ</span>
-            <span className="text-xl font-extrabold text-[#E50914] tracking-tight">Grid</span>
+            <span className="text-2xl font-extrabold text-[#0B1B4F] tracking-tight">ResQ</span>
+            <span className="text-2xl font-extrabold text-[#E50914] tracking-tight">Grid</span>
           </div>
         </Link>
         <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Create your account</h2>

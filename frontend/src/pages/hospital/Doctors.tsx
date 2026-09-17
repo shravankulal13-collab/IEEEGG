@@ -5,7 +5,6 @@
 // ============================================================
 
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useHospitalStore } from '../../store/hospitalStore';
 import { AppShell } from '../../components/layout/AppShell';
 import { PageHeader } from '../../components/layout/PageHeader';
@@ -17,7 +16,6 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { Users, Phone, RefreshCw } from 'lucide-react';
 
 export const Doctors: React.FC = () => {
-  const navigate = useNavigate();
   const {
     hospitals,
     selectedHospitalId,

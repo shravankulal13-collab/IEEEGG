@@ -5,7 +5,7 @@
 // ============================================================
 
 import React from 'react';
-import { Home, AlertTriangle, Flame, HeartPulse, Activity } from 'lucide-react';
+import { Home, Flame, HeartPulse, Activity } from 'lucide-react';
 
 export interface IncidentMarkerProps {
   id: string;
@@ -22,7 +22,7 @@ export interface IncidentMarkerProps {
 export const IncidentMarker: React.FC<IncidentMarkerProps> = ({
   incidentNumber,
   type = 'home',
-  severity = 'high',
+  severity: _severity = 'high',
   victimCount = 1,
   address,
   onClick,

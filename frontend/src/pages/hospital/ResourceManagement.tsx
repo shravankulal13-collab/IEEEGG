@@ -5,7 +5,6 @@
 // ============================================================
 
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useHospitalStore } from '../../store/hospitalStore';
 import { AppShell } from '../../components/layout/AppShell';
 import { PageHeader } from '../../components/layout/PageHeader';
@@ -18,7 +17,6 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { Building2, Activity, HeartPulse, RefreshCw } from 'lucide-react';
 
 export const ResourceManagement: React.FC = () => {
-  const navigate = useNavigate();
   const {
     hospitals,
     selectedHospitalId,

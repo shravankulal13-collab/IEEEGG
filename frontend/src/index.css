@@ -67,6 +67,17 @@ body {
   animation-play-state: paused;
 }
 
+.services-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+  will-change: transform;
+}
+
+.services-marquee-track:hover {
+  animation-play-state: paused;
+}
+
 @keyframes typewriter-blink {
   0%, 100% {
     opacity: 1;
@@ -77,29 +88,20 @@ body {
 }
 
 .typewriter-cursor {
-  display: inline-block;
-  width: 3px;
-  height: 0.9em;
-  background-color: var(--emergency-red);
-  margin-left: 4px;
-  vertical-align: -0.05em;
-  animation: typewriter-blink 0.8s steps(1) infinite;
-}
-
-@keyframes pulse-glow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 16px rgba(229, 9, 20, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(229, 9, 20, 0);
-  }
+  display: none !important;
 }
 
 .btn-pulse-glow {
-  animation: pulse-glow 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  animation: none !important;
+}
+
+/* Globally disable blinking & pulsing animations on red dots and status indicators */
+.animate-ping,
+.animate-pulse,
+.blink,
+.pulse-ring,
+.ops-beacon-ring {
+  animation: none !important;
 }
 
 /* Custom Hero Radial Gradient */
@@ -128,3 +130,44 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Spotlight Card Hover Effect */
+.card-spotlight {
+  position: relative;
+  overflow: hidden;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+  --spotlight-color: rgba(102, 163, 191, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    260px circle at var(--mouse-x) var(--mouse-y),
+    var(--spotlight-color),
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-spotlight:hover::before,
+.card-spotlight:focus-within::before {
+  opacity: 1;
+}
+
+.card-spotlight:hover {
+  border-color: #66A3BF !important;
+  box-shadow: 0 6px 20px rgba(51, 104, 160, 0.15) !important;
+}
+
+.card-spotlight > * {
+  position: relative;
+  z-index: 2;
+}
+
