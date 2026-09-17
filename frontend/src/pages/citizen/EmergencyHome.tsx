@@ -24,7 +24,6 @@ import {
   AlertCircle,
   PhoneCall,
   History,
-  User,
   Radio,
   ArrowRight,
 } from 'lucide-react';
@@ -245,43 +244,30 @@ export const EmergencyHome: React.FC = () => {
         </div>
 
         {/* Quick Citizen Navigation Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card
             onClick={() => navigate('/citizen/history')}
-            className="cursor-pointer hover-lift flex items-center gap-3 p-4"
+            className="cursor-pointer hover-lift flex items-center gap-3.5 p-4"
           >
-            <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl shrink-0">
               <History className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-900">Incident History</p>
-              <p className="text-[11px] text-slate-500">Past responses & logs</p>
+              <p className="text-sm font-bold text-slate-900">Incident History</p>
+              <p className="text-xs text-slate-500">View past emergency responses and audit logs</p>
             </div>
           </Card>
 
           <Card
-            onClick={() => navigate('/citizen/profile')}
-            className="cursor-pointer hover-lift flex items-center gap-3 p-4"
+            onClick={() => navigate('/citizen/tracking')}
+            className="cursor-pointer hover-lift flex items-center gap-3.5 p-4"
           >
-            <div className="p-2.5 bg-purple-50 text-purple-600 rounded-xl">
-              <User className="w-5 h-5" />
+            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl shrink-0">
+              <MapPin className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-900">Medical ID Profile</p>
-              <p className="text-[11px] text-slate-500">{user?.fullName || 'Blood group, allergies'}</p>
-            </div>
-          </Card>
-
-          <Card
-            onClick={() => navigate('/ambulance')}
-            className="cursor-pointer hover-lift flex items-center gap-3 p-4 col-span-2 sm:col-span-1"
-          >
-            <div className="p-2.5 bg-red-50 text-red-600 rounded-xl">
-              <Radio className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-900">Driver Portal</p>
-              <p className="text-[11px] text-slate-500">Switch to driver unit</p>
+              <p className="text-sm font-bold text-slate-900">Live Status & Tracking</p>
+              <p className="text-xs text-slate-500">Track dispatched ambulances and route progress</p>
             </div>
           </Card>
         </div>

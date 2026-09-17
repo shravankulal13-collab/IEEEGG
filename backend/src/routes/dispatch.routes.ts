@@ -5,12 +5,13 @@
 // ============================================================
 import { Router } from 'express';
 import { DispatchController } from '../modules/dispatch/dispatch.controller.js';
-import { authenticate, optionalAuthenticate } from '../middleware/auth.middleware.js';
+import { authenticate } from '../middleware/auth.middleware.js';
+import { requireRole } from '../middleware/role.middleware.js';
 
 const router = Router();
 
-router.post('/request', authenticate, DispatchController.requestDispatch);
-router.post('/geoagent/evaluate', optionalAuthenticate, DispatchController.evaluateGeoAgent);
-router.post('/geoagent/simulate', optionalAuthenticate, DispatchController.evaluateGeoAgent);
+router.post('/request', authenticate, requireRole('dispatcher', 'system_admin'), DispatchController.requestDispatch);
+router.post('/geoagent/evaluate', authenticate, requireRole('dispatcher', 'system_admin'), DispatchController.evaluateGeoAgent);
+router.post('/geoagent/simulate', authenticate, requireRole('dispatcher', 'system_admin'), DispatchController.evaluateGeoAgent);
 
 export default router;

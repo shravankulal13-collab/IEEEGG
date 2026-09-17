@@ -7,16 +7,33 @@
 import { Router } from 'express';
 import { ambulanceController } from '../modules/ambulances/ambulance.controller';
 import { trackingService } from '../modules/tracking/tracking.service';
+import { authenticate, optionalAuthenticate } from '../middleware/auth.middleware.js';
+import { requireRole } from '../middleware/role.middleware.js';
 
 const router = Router();
 
-router.get('/', (req, res, next) => ambulanceController.getAllAmbulances(req, res, next));
-router.post('/', (req, res, next) => ambulanceController.create(req, res, next));
-router.get('/driver/:driverId', (req, res, next) => ambulanceController.getDriverAmbulance(req, res, next));
-router.get('/incident/:incidentId', (req, res, next) => ambulanceController.getIncidentAmbulance(req, res, next));
-router.get('/:id', (req, res, next) => ambulanceController.getAmbulanceById(req, res, next));
-router.patch('/:id/status', (req, res, next) => ambulanceController.updateStatus(req, res, next));
-router.post('/:id/location', (req, res, next) => ambulanceController.updateLocation(req, res, next));
+router.get('/', optionalAuthenticate, (req, res, next) => ambulanceController.getAllAmbulances(req, res, next));
+router.post(
+  '/',
+  authenticate,
+  requireRole('dispatcher', 'system_admin'),
+  (req, res, next) => ambulanceController.create(req, res, next)
+);
+router.get('/driver/:driverId', optionalAuthenticate, (req, res, next) => ambulanceController.getDriverAmbulance(req, res, next));
+router.get('/incident/:incidentId', optionalAuthenticate, (req, res, next) => ambulanceController.getIncidentAmbulance(req, res, next));
+router.get('/:id', optionalAuthenticate, (req, res, next) => ambulanceController.getAmbulanceById(req, res, next));
+router.patch(
+  '/:id/status',
+  authenticate,
+  requireRole('ambulance_driver', 'dispatcher', 'system_admin'),
+  (req, res, next) => ambulanceController.updateStatus(req, res, next)
+);
+router.post(
+  '/:id/location',
+  authenticate,
+  requireRole('ambulance_driver', 'system_admin'),
+  (req, res, next) => ambulanceController.updateLocation(req, res, next)
+);
 
 router.get('/:id/tracking', async (req, res, next) => {
   try {

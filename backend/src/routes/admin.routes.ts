@@ -7,13 +7,14 @@
 import { Router } from 'express';
 import { checkDatabaseHealth } from '../config/database.js';
 import { env } from '../config/env.js';
-import { optionalAuthenticate } from '../middleware/auth.middleware.js';
+import { authenticate } from '../middleware/auth.middleware.js';
+import { requireRole } from '../middleware/role.middleware.js';
 import { authRepository } from '../modules/auth/auth.repository.js';
 import { incidentRepository } from '../modules/incidents/incident.repository.js';
 
 const router = Router();
 
-router.get('/system-status', optionalAuthenticate, async (_req, res, next) => {
+router.get('/system-status', authenticate, requireRole('system_admin'), async (_req, res, next) => {
   try {
     const dbHealth = await checkDatabaseHealth();
     let userCount = 0;

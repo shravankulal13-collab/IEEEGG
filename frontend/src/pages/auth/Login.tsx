@@ -4,15 +4,17 @@
 // MODULE: Auth - User Login Portal
 // ============================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useAuthStore } from '../../store/authStore';
+import { getDefaultRolePath } from '../../components/layout/RoleGuard';
 import { ShieldAlert, ArrowRight, Ambulance, Building2, LayoutDashboard, User, ShieldCheck, Lock, Mail, AlertCircle } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isLoading, error, clearError } = useAuth();
+  const { login, isLoading, error, clearError, user, token } = useAuth();
 
   const [email, setEmail] = useState('citizen@example.com');
   const [password, setPassword] = useState('Emergency123!');
@@ -26,6 +28,12 @@ export const Login: React.FC = () => {
     { role: 'system_admin', label: 'Admin', email: 'admin@example.com', icon: <ShieldCheck className="w-3.5 h-3.5" />, dest: '/admin' },
   ];
 
+  useEffect(() => {
+    if (token && user) {
+      navigate(getDefaultRolePath(user.role), { replace: true });
+    }
+  }, [token, user, navigate]);
+
   const handleSelectRole = (roleItem: typeof demoAccounts[0]) => {
     setSelectedRole(roleItem.role as any);
     setEmail(roleItem.email);
@@ -37,13 +45,16 @@ export const Login: React.FC = () => {
     e.preventDefault();
     try {
       await login({ email, password });
+      const currentUser = useAuthStore.getState().user;
+      const targetRole = currentUser?.role || selectedRole;
+      const dest = getDefaultRolePath(targetRole);
+      
       const from = (location.state as any)?.from?.pathname;
-      if (from) {
+      if (from && from !== '/login' && from !== '/') {
         navigate(from, { replace: true });
         return;
       }
-      const matched = demoAccounts.find((a) => a.role === selectedRole);
-      navigate(matched ? matched.dest : '/citizen', { replace: true });
+      navigate(dest, { replace: true });
     } catch {
       // Error handled by zustand store
     }

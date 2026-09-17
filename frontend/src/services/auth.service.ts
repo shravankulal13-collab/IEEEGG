@@ -11,7 +11,7 @@ export interface UserProfile {
   fullName: string;
   email: string;
   phone?: string;
-  role: 'citizen' | 'ambulance_driver' | 'dispatcher' | 'hospital_admin' | 'system_admin';
+  role: 'citizen' | 'ambulance_driver' | 'dispatcher' | 'hospital_admin' | 'hospital_staff' | 'system_admin';
   isActive: boolean;
   createdAt: string;
 }

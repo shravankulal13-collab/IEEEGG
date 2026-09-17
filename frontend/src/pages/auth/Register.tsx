@@ -4,20 +4,28 @@
 // MODULE: Auth - User Registration Portal
 // ============================================================
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useAuthStore } from '../../store/authStore';
+import { getDefaultRolePath } from '../../components/layout/RoleGuard';
 import { ShieldAlert, ArrowRight, User, Mail, Lock, Phone, AlertCircle } from 'lucide-react';
 
 export const Register: React.FC = () => {
   const navigate = useNavigate();
-  const { register, isLoading, error, clearError } = useAuth();
+  const { register, isLoading, error, clearError, user, token } = useAuth();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('citizen');
+
+  useEffect(() => {
+    if (token && user) {
+      navigate(getDefaultRolePath(user.role), { replace: true });
+    }
+  }, [token, user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +38,8 @@ export const Register: React.FC = () => {
         password,
         role,
       });
-      navigate(role === 'citizen' ? '/citizen' : `/${role.split('_')[0]}`, { replace: true });
+      const currentUser = useAuthStore.getState().user;
+      navigate(getDefaultRolePath(currentUser?.role || role), { replace: true });
     } catch {
       // Handled by store
     }

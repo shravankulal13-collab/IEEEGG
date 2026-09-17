@@ -49,12 +49,12 @@ export const LiveIncidentTracking: React.FC = () => {
           activeInc = await fetchIncidentById(incidentId);
         } catch {
           // If the specific incident ID does not exist in the database, load latest active incident
-          const res = await useIncidentStore.getState().fetchIncidents();
-          activeInc = res[0] || null;
+          await useIncidentStore.getState().fetchIncidents();
+          activeInc = useIncidentStore.getState().incidents[0] || null;
         }
       } else {
-        const res = await useIncidentStore.getState().fetchIncidents();
-        activeInc = res[0] || null;
+        await useIncidentStore.getState().fetchIncidents();
+        activeInc = useIncidentStore.getState().incidents[0] || null;
       }
 
       setIncident(activeInc);

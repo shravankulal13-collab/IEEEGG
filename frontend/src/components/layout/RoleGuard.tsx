@@ -16,6 +16,24 @@ export interface RoleGuardProps {
   requireAuth?: boolean;
 }
 
+export function getDefaultRolePath(role?: string): string {
+  switch (role) {
+    case 'citizen':
+      return '/citizen';
+    case 'ambulance_driver':
+      return '/ambulance';
+    case 'dispatcher':
+      return '/dispatcher';
+    case 'hospital_admin':
+    case 'hospital_staff':
+      return '/hospital';
+    case 'system_admin':
+      return '/admin';
+    default:
+      return '/login';
+  }
+}
+
 export const RoleGuard: React.FC<RoleGuardProps> = ({
   children,
   allowedRoles = [],
@@ -38,7 +56,8 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({
   }
 
   if (allowedRoles.length > 0 && user && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/" replace />;
+    const destination = getDefaultRolePath(user.role);
+    return <Navigate to={destination} replace />;
   }
 
   return <>{children}</>;

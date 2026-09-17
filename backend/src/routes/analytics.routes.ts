@@ -6,6 +6,8 @@
 
 import { Router, Request, Response } from 'express';
 import { analyticsService } from '../modules/analytics/analytics.service.js';
+import { authenticate } from '../middleware/auth.middleware.js';
+import { requireRole } from '../middleware/role.middleware.js';
 
 const router = Router();
 
@@ -19,7 +21,7 @@ function parseWindowHours(raw: unknown): number | null {
  * GET /api/analytics/kpis
  * Executive overview KPI card metrics.
  */
-router.get('/kpis', async (_req: Request, res: Response) => {
+router.get('/kpis', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (_req: Request, res: Response) => {
   try {
     const data = await analyticsService.getSystemKPIs();
     res.json({ success: true, data });
@@ -33,7 +35,7 @@ router.get('/kpis', async (_req: Request, res: Response) => {
  * GET /api/analytics/incidents?window=24
  * Incident volume breakdown by status, emergency type, and severity.
  */
-router.get('/incidents', async (req: Request, res: Response) => {
+router.get('/incidents', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (req: Request, res: Response) => {
   try {
     const windowHours = parseWindowHours(req.query.window);
     if (windowHours === null) {
@@ -55,7 +57,7 @@ router.get('/incidents', async (req: Request, res: Response) => {
  * GET /api/analytics/response-times?window=24
  * Response-time metrics with P50/P90 percentiles over the last N hours.
  */
-router.get('/response-times', async (req: Request, res: Response) => {
+router.get('/response-times', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (req: Request, res: Response) => {
   try {
     const windowHours = parseWindowHours(req.query.window);
     if (windowHours === null) {
@@ -77,7 +79,7 @@ router.get('/response-times', async (req: Request, res: Response) => {
  * GET /api/analytics/sla?window=24
  * SLA compliance metrics over the last N hours.
  */
-router.get('/sla', async (req: Request, res: Response) => {
+router.get('/sla', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (req: Request, res: Response) => {
   try {
     const windowHours = parseWindowHours(req.query.window);
     if (windowHours === null) {
@@ -99,7 +101,7 @@ router.get('/sla', async (req: Request, res: Response) => {
  * GET /api/analytics/ambulances
  * Current ambulance fleet utilization snapshot.
  */
-router.get('/ambulances', async (_req: Request, res: Response) => {
+router.get('/ambulances', authenticate, requireRole('dispatcher', 'hospital_admin', 'system_admin'), async (_req: Request, res: Response) => {
   try {
     const data = await analyticsService.getAmbulanceUtilization();
     res.json({ success: true, data });
@@ -113,7 +115,7 @@ router.get('/ambulances', async (_req: Request, res: Response) => {
  * GET /api/analytics/audit
  * Paginated audit log entries.
  */
-router.get('/audit', async (req: Request, res: Response) => {
+router.get('/audit', authenticate, requireRole('system_admin', 'dispatcher'), async (req: Request, res: Response) => {
   try {
     const limit = parseInt(String(req.query.limit ?? '50'), 10);
     const offset = parseInt(String(req.query.offset ?? '0'), 10);

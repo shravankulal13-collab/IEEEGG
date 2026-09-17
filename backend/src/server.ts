@@ -22,7 +22,7 @@ const server = http.createServer(app);
 
 const io = new SocketIOServer(server, {
   cors: {
-    origin: env.FRONTEND_URL === '*' ? '*' : [env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:3000'],
+    origin: (origin, callback) => callback(null, true),
     credentials: true,
   },
 });
@@ -38,8 +38,17 @@ const hospitalExpiryTimer = hospitalResourceExpiryJob.startPeriodicCheck(900000)
 startProviderHealthJob();
 startRouteMonitoringJob(io);
 
-server.listen(PORT, () => {
-  logger.info(`[Backend] Emergency Response Platform server listening on port ${PORT} in ${env.NODE_ENV} mode`);
+server.on('error', (err: any) => {
+  if (err.code === 'EADDRINUSE') {
+    logger.error(`[Backend] Port ${PORT} is already in use. Retrying or shutting down cleanly.`);
+    process.exit(1);
+  } else {
+    logger.error(`[Backend] Server error: ${err.message}`);
+  }
+});
+
+server.listen(Number(PORT), '0.0.0.0', () => {
+  logger.info(`[Backend] Emergency Response Platform server listening on http://127.0.0.1:${PORT} in ${env.NODE_ENV} mode`);
 });
 
 // Graceful shutdown handling

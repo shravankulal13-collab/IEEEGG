@@ -20,13 +20,12 @@ export const registerSchema = z
     fullName: z.string().min(2, 'Full name must contain at least 2 characters').max(100).optional(),
     full_name: z.string().min(2, 'Full name must contain at least 2 characters').max(100).optional(),
     email: z.string().email('Invalid email address format'),
-    phone: z.string().regex(/^\+?[1-9]\d{7,14}$/, 'Invalid phone number format').optional().or(z.literal('')),
+    phone: z.string().optional().or(z.literal('')),
     password: z
       .string()
-      .min(8, 'Password must be at least 8 characters long')
+      .min(6, 'Password must be at least 6 characters long')
       .max(128, 'Password too long')
-      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-      .regex(/[0-9]/, 'Password must contain at least one digit'),
+      .regex(/[A-Z0-9]/, 'Password must contain at least one uppercase letter or digit'),
     role: userRoleEnum.default('citizen'),
   })
   .refine((data) => Boolean(data.fullName || data.full_name), {

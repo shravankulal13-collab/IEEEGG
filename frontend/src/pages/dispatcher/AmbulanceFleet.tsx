@@ -4,8 +4,7 @@
 // MODULE: Central Ambulance Fleet Telemetry Management
 // ============================================================
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ambulanceService, type AmbulanceData } from '../../services/ambulance.service';
 import { AppShell } from '../../components/layout/AppShell';
 import { PageHeader } from '../../components/layout/PageHeader';
@@ -18,7 +17,6 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { Ambulance, Radio, RefreshCw, Search } from 'lucide-react';
 
 export const AmbulanceFleet: React.FC = () => {
-  const navigate = useNavigate();
   const [fleet, setFleet] = useState<AmbulanceData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
