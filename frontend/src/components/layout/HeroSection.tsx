@@ -102,7 +102,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section
-
+      className="relative overflow-hidden"
       style={{
         background: 'radial-gradient(circle at 50% 15%, #102B7B 0%, #0B1B4F 55%, #061136 100%)',
       }}
@@ -191,17 +191,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {tickerItems && tickerItems.length > 0 && (
           <div className="pt-6 border-t border-white/10 flex items-center justify-center gap-4 sm:gap-6 flex-wrap text-xs sm:text-sm font-semibold text-slate-300">
             {tickerItems.map((item, idx) => {
-              const isObj = typeof item === 'object' && item !== null;
-              const text = isObj ? item.text : item;
-              const icon = isObj ? item.icon : <Zap className="w-3.5 h-3.5 text-amber-400" />;
+              const entry: { text: string; icon?: React.ReactNode } =
+                typeof item === 'string'
+                  ? { text: item, icon: undefined }
+                  : item;
 
               return (
                 <div
                   key={idx}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 transition-all shadow-xs"
                 >
-                  {icon}
-                  <span>{text}</span>
+                  {entry.icon ?? <Zap className="w-3.5 h-3.5 text-amber-400" />}
+                  <span>{entry.text}</span>
                 </div>
               );
             })}
