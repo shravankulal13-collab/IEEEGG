@@ -5,7 +5,7 @@
 // ============================================================
 
 import { v4 as uuidv4 } from 'uuid';
-import { isPostgresConnected, pool, query } from '../../config/database.js';
+import { query } from '../../config/database.js';
 import type {
   EmergencyType,
   IncidentLocationUpdateRecord,
@@ -15,11 +15,6 @@ import type {
   VerificationStatus,
 } from './incident.types.js';
 import type { ListIncidentsQuery } from './incident.validator.js';
-
-const fallbackIncidents = new Map<string, IncidentRecord>();
-const fallbackVerifications = new Map<string, IncidentVerificationRecord[]>();
-const fallbackLocations = new Map<string, IncidentLocationUpdateRecord[]>();
-let fallbackIncidentSequence = 1000;
 
 export class IncidentRepository {
   async create(data: {
@@ -42,106 +37,62 @@ export class IncidentRepository {
     const id = uuidv4();
     const now = new Date();
 
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query<IncidentRecord>(
-          `INSERT INTO incidents (
-            id, reported_by, emergency_type, title, description,
-            status, verification_status, severity, people_affected,
-            latitude, longitude, address, landmark, city, state, country,
-            source, metadata, reported_at, created_at, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, 'reported', 'pending', $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $17, $17)
-          RETURNING *`,
-          [
-            id,
-            data.reportedBy,
-            data.emergencyType,
-            data.title || null,
-            data.description || null,
-            data.severity || 3,
-            data.peopleAffected || 1,
-            data.latitude,
-            data.longitude,
-            data.address || null,
-            data.landmark || null,
-            data.city || null,
-            data.state || null,
-            data.country || 'India',
-            data.source || 'citizen_app',
-            JSON.stringify(data.metadata || {}),
-            now,
-          ]
-        );
+    const res = await query<IncidentRecord>(
+      `INSERT INTO incidents (
+        id, reported_by, emergency_type, title, description,
+        status, verification_status, severity, people_affected,
+        latitude, longitude, address, landmark, city, state, country,
+        source, metadata, reported_at, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, 'reported', 'pending', $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $17, $17)
+      RETURNING *`,
+      [
+        id,
+        data.reportedBy,
+        data.emergencyType,
+        data.title || null,
+        data.description || null,
+        data.severity || 3,
+        data.peopleAffected || 1,
+        data.latitude,
+        data.longitude,
+        data.address || null,
+        data.landmark || null,
+        data.city || null,
+        data.state || null,
+        data.country || 'India',
+        data.source || 'citizen_app',
+        JSON.stringify(data.metadata || {}),
+        now,
+      ]
+    );
 
-        if (res.rows[0]) {
-          fallbackIncidents.set(id, res.rows[0]);
-          return res.rows[0];
-        }
-      } catch {
-        // Fallback to in-memory store
-      }
-    }
-
-    fallbackIncidentSequence += 1;
-    const record: IncidentRecord = {
+    return res.rows[0] || ({
       id,
-      incident_number: fallbackIncidentSequence,
       reported_by: data.reportedBy,
       emergency_type: data.emergencyType,
       title: data.title || null,
       description: data.description || null,
       status: 'reported',
       verification_status: 'pending',
-      verification_score: null,
       severity: data.severity || 3,
       people_affected: data.peopleAffected || 1,
       latitude: data.latitude,
       longitude: data.longitude,
       address: data.address || null,
-      landmark: data.landmark || null,
-      city: data.city || null,
-      state: data.state || null,
-      country: data.country || 'India',
       reported_at: now,
-      verified_at: null,
-      resolved_at: null,
-      cancelled_at: null,
-      cancellation_reason: null,
-      source: data.source || 'citizen_app',
-      metadata: data.metadata || {},
       created_at: now,
       updated_at: now,
-    };
-
-    fallbackIncidents.set(id, record);
-    return record;
+    } as any);
   }
 
   async findById(id: string): Promise<IncidentRecord | null> {
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query<IncidentRecord>('SELECT * FROM incidents WHERE id = $1 LIMIT 1', [id]);
-        return res.rows[0] || null;
-      } catch {
-        // Fallback
-      }
-    }
-    return fallbackIncidents.get(id) || null;
+    const res = await query<IncidentRecord>('SELECT * FROM incidents WHERE id = $1 LIMIT 1', [id]);
+    return res.rows[0] || null;
   }
 
   async findByIncidentNumber(num: number): Promise<IncidentRecord | null> {
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query<IncidentRecord>('SELECT * FROM incidents WHERE incident_number = $1 LIMIT 1', [num]);
-        return res.rows[0] || null;
-      } catch {
-        // Fallback
-      }
-    }
-    for (const incident of fallbackIncidents.values()) {
-      if (incident.incident_number === num) return incident;
-    }
-    return null;
+    const res = await query<IncidentRecord>('SELECT * FROM incidents WHERE incident_number = $1 LIMIT 1', [num]);
+    return res.rows[0] || null;
   }
 
   async list(filters: ListIncidentsQuery): Promise<{ items: IncidentRecord[]; total: number }> {
@@ -149,62 +100,41 @@ export class IncidentRepository {
     const limit = Number(filters.limit) || 20;
     const offset = (page - 1) * limit;
 
-    if (pool && isPostgresConnected) {
-      try {
-        const conditions: string[] = [];
-        const params: any[] = [];
-        let pIdx = 1;
+    const conditions: string[] = [];
+    const params: any[] = [];
+    let pIdx = 1;
 
-        if (filters.status) {
-          conditions.push(`status = $${pIdx++}`);
-          params.push(filters.status);
-        }
-        if (filters.emergencyType) {
-          conditions.push(`emergency_type = $${pIdx++}`);
-          params.push(filters.emergencyType);
-        }
-        if (filters.verificationStatus) {
-          conditions.push(`verification_status = $${pIdx++}`);
-          params.push(filters.verificationStatus);
-        }
-        if (filters.city) {
-          conditions.push(`LOWER(city) = LOWER($${pIdx++})`);
-          params.push(filters.city);
-        }
-        if (filters.severity !== undefined) {
-          conditions.push(`severity = $${pIdx++}`);
-          params.push(Number(filters.severity));
-        }
-
-        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-        const countRes = await query<{ count: string }>(`SELECT COUNT(*) as count FROM incidents ${whereClause}`, params);
-        const total = parseInt(countRes.rows[0]?.count || '0', 10);
-
-        const dataRes = await query<IncidentRecord>(
-          `SELECT * FROM incidents ${whereClause} ORDER BY reported_at DESC LIMIT $${pIdx++} OFFSET $${pIdx}`,
-          [...params, limit, offset]
-        );
-
-        return { items: dataRes.rows, total };
-      } catch {
-        // Fallback
-      }
+    if (filters.status) {
+      conditions.push(`status = $${pIdx++}`);
+      params.push(filters.status);
+    }
+    if (filters.emergencyType) {
+      conditions.push(`emergency_type = $${pIdx++}`);
+      params.push(filters.emergencyType);
+    }
+    if (filters.verificationStatus) {
+      conditions.push(`verification_status = $${pIdx++}`);
+      params.push(filters.verificationStatus);
+    }
+    if (filters.city) {
+      conditions.push(`LOWER(city) = LOWER($${pIdx++})`);
+      params.push(filters.city);
+    }
+    if (filters.severity !== undefined) {
+      conditions.push(`severity = $${pIdx++}`);
+      params.push(Number(filters.severity));
     }
 
-    let list = Array.from(fallbackIncidents.values());
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const countRes = await query<{ count: string }>(`SELECT COUNT(*) as count FROM incidents ${whereClause}`, params);
+    const total = parseInt(countRes.rows[0]?.count || '0', 10);
 
-    if (filters.status) list = list.filter((i) => i.status === filters.status);
-    if (filters.emergencyType) list = list.filter((i) => i.emergency_type === filters.emergencyType);
-    if (filters.verificationStatus) list = list.filter((i) => i.verification_status === filters.verificationStatus);
-    if (filters.city) list = list.filter((i) => i.city?.toLowerCase() === filters.city?.toLowerCase());
-    if (filters.severity !== undefined) list = list.filter((i) => i.severity === Number(filters.severity));
+    const dataRes = await query<IncidentRecord>(
+      `SELECT * FROM incidents ${whereClause} ORDER BY reported_at DESC LIMIT $${pIdx++} OFFSET $${pIdx}`,
+      [...params, limit, offset]
+    );
 
-    list.sort((a, b) => new Date(b.reported_at).getTime() - new Date(a.reported_at).getTime());
-
-    const total = list.length;
-    const items = list.slice(offset, offset + limit);
-
-    return { items, total };
+    return { items: dataRes.rows || [], total: total || dataRes.rows.length };
   }
 
   async updateStatus(
@@ -220,58 +150,33 @@ export class IncidentRepository {
     }
   ): Promise<IncidentRecord | null> {
     const now = new Date();
-    const incident = await this.findById(id);
-    if (!incident) return null;
 
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query<IncidentRecord>(
-          `UPDATE incidents
-           SET status = $1,
-               verification_status = COALESCE($2, verification_status),
-               verification_score = COALESCE($3, verification_score),
-               cancellation_reason = COALESCE($4, cancellation_reason),
-               verified_at = COALESCE($5, verified_at),
-               resolved_at = COALESCE($6, resolved_at),
-               cancelled_at = COALESCE($7, cancelled_at),
-               updated_at = $8
-           WHERE id = $9
-           RETURNING *`,
-          [
-            status,
-            extra?.verificationStatus || null,
-            extra?.verificationScore || null,
-            extra?.cancellationReason || null,
-            extra?.verifiedAt || null,
-            extra?.resolvedAt || null,
-            extra?.cancelledAt || null,
-            now,
-            id,
-          ]
-        );
-        if (res.rows[0]) {
-          fallbackIncidents.set(id, res.rows[0]);
-          return res.rows[0];
-        }
-      } catch {
-        // Fallback
-      }
-    }
+    const res = await query<IncidentRecord>(
+      `UPDATE incidents
+       SET status = $1,
+           verification_status = COALESCE($2, verification_status),
+           verification_score = COALESCE($3, verification_score),
+           cancellation_reason = COALESCE($4, cancellation_reason),
+           verified_at = COALESCE($5, verified_at),
+           resolved_at = COALESCE($6, resolved_at),
+           cancelled_at = COALESCE($7, cancelled_at),
+           updated_at = $8
+       WHERE id = $9
+       RETURNING *`,
+      [
+        status,
+        extra?.verificationStatus || null,
+        extra?.verificationScore || null,
+        extra?.cancellationReason || null,
+        extra?.verifiedAt || null,
+        extra?.resolvedAt || null,
+        extra?.cancelledAt || null,
+        now,
+        id,
+      ]
+    );
 
-    const updated: IncidentRecord = {
-      ...incident,
-      status,
-      verification_status: extra?.verificationStatus ?? incident.verification_status,
-      verification_score: extra?.verificationScore ?? incident.verification_score,
-      cancellation_reason: extra?.cancellationReason ?? incident.cancellation_reason,
-      verified_at: extra?.verifiedAt ?? incident.verified_at,
-      resolved_at: extra?.resolvedAt ?? incident.resolved_at,
-      cancelled_at: extra?.cancelledAt ?? incident.cancelled_at,
-      updated_at: now,
-    };
-
-    fallbackIncidents.set(id, updated);
-    return updated;
+    return res.rows[0] || null;
   }
 
   async addVerification(data: {
@@ -286,33 +191,26 @@ export class IncidentRepository {
     const id = uuidv4();
     const now = new Date();
 
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query<IncidentVerificationRecord>(
-          `INSERT INTO incident_verifications (
-            id, incident_id, verifier_user_id, verification_method,
-            result, confidence_score, evidence, notes, verified_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-          RETURNING *`,
-          [
-            id,
-            data.incidentId,
-            data.verifierUserId,
-            data.verificationMethod,
-            data.result,
-            data.confidenceScore ?? 100,
-            JSON.stringify(data.evidence || {}),
-            data.notes || null,
-            now,
-          ]
-        );
-        if (res.rows[0]) return res.rows[0];
-      } catch {
-        // Fallback
-      }
-    }
+    const res = await query<IncidentVerificationRecord>(
+      `INSERT INTO incident_verifications (
+        id, incident_id, verifier_user_id, verification_method,
+        result, confidence_score, evidence, notes, verified_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING *`,
+      [
+        id,
+        data.incidentId,
+        data.verifierUserId,
+        data.verificationMethod,
+        data.result,
+        data.confidenceScore ?? 100,
+        JSON.stringify(data.evidence || {}),
+        data.notes || null,
+        now,
+      ]
+    );
 
-    const record: IncidentVerificationRecord = {
+    return res.rows[0] || ({
       id,
       incident_id: data.incidentId,
       verifier_user_id: data.verifierUserId,
@@ -322,13 +220,7 @@ export class IncidentRepository {
       evidence: data.evidence || {},
       notes: data.notes || null,
       verified_at: now,
-    };
-
-    const existing = fallbackVerifications.get(data.incidentId) || [];
-    existing.push(record);
-    fallbackVerifications.set(data.incidentId, existing);
-
-    return record;
+    } as any);
   }
 
   async recordLocationUpdate(data: {
@@ -342,31 +234,24 @@ export class IncidentRepository {
     const id = uuidv4();
     const now = new Date();
 
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query<IncidentLocationUpdateRecord>(
-          `INSERT INTO incident_location_updates (
-            id, incident_id, latitude, longitude, accuracy_meters, speed_kmh, heading, recorded_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-          RETURNING *`,
-          [
-            id,
-            data.incidentId,
-            data.latitude,
-            data.longitude,
-            data.accuracyMeters || null,
-            data.speedKmh || null,
-            data.heading || null,
-            now,
-          ]
-        );
-        if (res.rows[0]) return res.rows[0];
-      } catch {
-        // Fallback
-      }
-    }
+    const res = await query<IncidentLocationUpdateRecord>(
+      `INSERT INTO incident_location_updates (
+        id, incident_id, latitude, longitude, accuracy_meters, speed_kmh, heading, recorded_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *`,
+      [
+        id,
+        data.incidentId,
+        data.latitude,
+        data.longitude,
+        data.accuracyMeters || null,
+        data.speedKmh || null,
+        data.heading || null,
+        now,
+      ]
+    );
 
-    const record: IncidentLocationUpdateRecord = {
+    return res.rows[0] || ({
       id,
       incident_id: data.incidentId,
       latitude: data.latitude,
@@ -375,13 +260,7 @@ export class IncidentRepository {
       speed_kmh: data.speedKmh || null,
       heading: data.heading || null,
       recorded_at: now,
-    };
-
-    const list = fallbackLocations.get(data.incidentId) || [];
-    list.push(record);
-    fallbackLocations.set(data.incidentId, list);
-
-    return record;
+    } as any);
   }
 
   async findNearbyIncidents(
@@ -392,30 +271,18 @@ export class IncidentRepository {
   ): Promise<IncidentRecord[]> {
     const cutoffTime = new Date(Date.now() - windowMinutes * 60 * 1000);
 
-    if (pool && isPostgresConnected) {
-      try {
-        const res = await query<IncidentRecord>(
-          `SELECT * FROM incidents
-           WHERE reported_at >= $1
-             AND status NOT IN ('resolved', 'cancelled', 'false_report', 'expired')
-             AND ST_DWithin(
-               location,
-               ST_SetSRID(ST_MakePoint($2, $3), 4326)::geography,
-               $4
-             )`,
-          [cutoffTime, longitude, latitude, radiusKm * 1000]
-        );
-        return res.rows;
-      } catch {
-        // Fallback heuristic
-      }
-    }
+    const res = await query<IncidentRecord>(
+      `SELECT * FROM incidents
+       WHERE reported_at >= $1
+         AND status NOT IN ('resolved', 'cancelled', 'false_report', 'expired')
+       ORDER BY reported_at DESC`,
+      [cutoffTime]
+    );
 
-    // Fallback simple Euclidean approximation (1 deg ~ 111 km)
     const latDelta = radiusKm / 111;
     const lngDelta = radiusKm / (111 * Math.cos((latitude * Math.PI) / 180));
 
-    return Array.from(fallbackIncidents.values()).filter((i) => {
+    return (res.rows || []).filter((i) => {
       const isRecent = new Date(i.reported_at) >= cutoffTime;
       const isActive = !['resolved', 'cancelled', 'false_report', 'expired'].includes(i.status);
       const isClose =

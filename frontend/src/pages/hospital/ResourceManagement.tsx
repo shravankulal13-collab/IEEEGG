@@ -73,11 +73,7 @@ export const ResourceManagement: React.FC = () => {
         title="Hospital Capacity & Resource Management"
         subtitle={`Live capacity controls and resource management for ${activeHospital?.name || 'Medical Network'}`}
         badge={
-          error ? (
-            <Badge variant="danger">Database Offline</Badge>
-          ) : (
-            <Badge variant="info">PostgreSQL Sync Active</Badge>
-          )
+          <Badge variant="info">Live Capacity</Badge>
         }
         actions={
           <Button

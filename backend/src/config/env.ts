@@ -14,7 +14,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(5000),
   HOST: z.string().default('0.0.0.0'),
-  DATABASE_URL: z.string().default('postgresql://localhost:5432/emergency_response'),
+  DATABASE_URL: z.string().optional().or(z.literal('')),
   REDIS_URL: z.string().default('redis://localhost:6379'),
   SUPABASE_URL: z.string().url().optional().or(z.literal('')),
   SUPABASE_SECRET_KEY: z.string().optional().or(z.literal('')),
@@ -44,6 +44,7 @@ if (!parsed.success) {
 export const env = parsed.success
   ? {
       ...parsed.data,
+      DATABASE_URL: parsed.data.DATABASE_URL || '',
       MAPPLS_CLIENT_ID: parsed.data.MAPPLS_CLIENT_ID ?? parsed.data.MAPMYINDIA_CLIENT_ID ?? '',
       MAPPLS_API_KEY:
         parsed.data.MAPPLS_API_KEY ??
@@ -55,7 +56,7 @@ export const env = parsed.success
       NODE_ENV: 'development' as const,
       PORT: Number(process.env.PORT) || 5000,
       HOST: '0.0.0.0',
-      DATABASE_URL: process.env.DATABASE_URL || 'postgresql://localhost:5432/emergency_response',
+      DATABASE_URL: process.env.DATABASE_URL || '',
       REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
       SUPABASE_URL: process.env.SUPABASE_URL || '',
       SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY || '',

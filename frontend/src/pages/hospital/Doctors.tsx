@@ -47,11 +47,7 @@ export const Doctors: React.FC = () => {
         title="On-Call Medical Specialists"
         subtitle={`Live roster of active emergency room physicians and specialists for ${activeHospital?.name || 'Medical Network'}`}
         badge={
-          error ? (
-            <Badge variant="danger">Database Offline</Badge>
-          ) : (
-            <Badge variant="success">{doctors.length} Specialists Active</Badge>
-          )
+          <Badge variant="success">{doctors.length} Specialists Active</Badge>
         }
         actions={
           <Button

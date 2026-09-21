@@ -207,30 +207,9 @@ export const Topbar: React.FC = () => {
       </nav>
 
       {/* ======================================================== */}
-      {/* RIGHT: Operational Status Pill + Action CTA + User Menu */}
+      {/* RIGHT: Action CTA + User Menu */}
       {/* ======================================================== */}
       <div className="flex items-center gap-2.5 sm:gap-3">
-        {/* Live Operational Status Pill */}
-        <div className="hidden md:flex items-center">
-          {health?.database?.connected || health?.status === 'healthy' ? (
-            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/70 text-emerald-400 text-[11px] font-bold border border-emerald-700/60 shadow-inner">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              API Operational
-            </span>
-          ) : (
-            <span
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-950/80 text-red-400 text-[11px] font-bold border border-red-700/80 shadow-inner cursor-pointer hover:bg-red-900/80 transition"
-              title={health?.database?.details || 'Database connecting'}
-              onClick={async () => {
-                const data = await checkApiHealth();
-                setHealth(data);
-              }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
-              API OFFLINE
-            </span>
-          )}
-        </div>
 
         {/* Quick SOS Action CTA for Citizens */}
         {isCitizen && (
