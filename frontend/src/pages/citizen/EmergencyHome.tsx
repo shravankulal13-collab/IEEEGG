@@ -1,91 +1,82 @@
 // ============================================================
-// PRIMARY OWNER: Saishree Santhosh Shet
+// PRIMARY OWNER: Saishree Santhosh Shet / SK
 // ROLE: Citizen + Ambulance Application
-// MODULE: Citizen Emergency Home Screen (ResQGrid Core)
+// MODULE: Citizen Primary Portal - Clean Instagram Style Incident Feed
+// SYSTEM: ResQGrid Life-Saver Star Karma & Community Emergency Dispatch
 // ============================================================
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGeolocation } from '../../hooks/useGeolocation';
+import { useFeedStore } from '../../store/feedStore';
 import { useAuthStore } from '../../store/authStore';
+import { useGeolocation } from '../../hooks/useGeolocation';
 import { useIncidentStore } from '../../store/incidentStore';
-import {
-  allocateOptimalEmergencyResources,
-  type EmergencyCategory,
-} from '../../services/hospitalAllocation.service';
+import { allocateOptimalEmergencyResources, type EmergencyCategory } from '../../services/hospitalAllocation.service';
 import { AppShell } from '../../components/layout/AppShell';
-import { HeroSection } from '../../components/layout/HeroSection';
+import { FeedCard } from '../../components/feed/FeedCard';
+import { StoriesBar } from '../../components/feed/StoriesBar';
+import { CreatePostModal } from '../../components/feed/CreatePostModal';
+import { LeaderboardModal } from '../../components/feed/LeaderboardModal';
 import {
-  MapPin,
-  HeartPulse,
-  Activity,
-  Flame,
-  Car,
-  AlertCircle,
-  History,
+  Camera,
   Radio,
-  ArrowRight,
+  Star,
+  Trophy,
+  Heart,
+  MapPin,
+  Flame,
+  Activity,
+  HeartPulse,
   Brain,
-  Stethoscope,
+  Car,
+  AlertTriangle,
+  Clock,
 } from 'lucide-react';
 
 export const EmergencyHome: React.FC = () => {
   const navigate = useNavigate();
-  const geo = useGeolocation(true);
   const { user } = useAuthStore();
+  const geo = useGeolocation(true);
   const { createIncident } = useIncidentStore();
+
+  const {
+    posts,
+    activeCategory,
+    setActiveCategory,
+    searchQuery,
+    setSearchQuery,
+    userStats,
+  } = useFeedStore();
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [isTriggeringSos, setIsTriggeringSos] = useState(false);
 
-  const emergencyCategories: {
-    id: EmergencyCategory;
-    label: string;
-    icon: React.ReactNode;
-    desc: string;
-    severity: 'critical' | 'high';
-  }[] = [
-    {
-      id: 'cardiac',
-      label: 'Cardiac & Chest Pain',
-      icon: <HeartPulse className="w-5 h-5 text-red-500" />,
-      desc: 'Severe chest pressure, cardiac arrest, arrhythmia',
-      severity: 'critical',
-    },
-    {
-      id: 'stroke',
-      label: 'Stroke & Acute Neuro',
-      icon: <Brain className="w-5 h-5 text-indigo-400" />,
-      desc: 'Facial drooping, speech loss, sudden paralysis',
-      severity: 'critical',
-    },
-    {
-      id: 'trauma',
-      label: 'Severe Trauma Injury',
-      icon: <Activity className="w-5 h-5 text-amber-400" />,
-      desc: 'Uncontrolled hemorrhage, compound fractures, falls',
-      severity: 'high',
-    },
-    {
-      id: 'accident',
-      label: 'Road Collision / Crash',
-      icon: <Car className="w-5 h-5 text-purple-400" />,
-      desc: 'High-speed vehicular crash, multi-victim entrapment',
-      severity: 'critical',
-    },
-    {
-      id: 'respiratory',
-      label: 'Severe Respiratory Distress',
-      icon: <AlertCircle className="w-5 h-5 text-sky-400" />,
-      desc: 'Acute choking, severe hypoxia, asthma failure',
-      severity: 'high',
-    },
-    {
-      id: 'fire',
-      label: 'Burns & Toxic Inhalation',
-      icon: <Flame className="w-5 h-5 text-orange-400" />,
-      desc: 'Severe burn trauma, smoke and chemical inhalation',
-      severity: 'critical',
-    },
-  ];
+  // Clear legacy cache keys so browser loads updated authentic imagery
+  React.useEffect(() => {
+    try {
+      localStorage.removeItem('resqgrid_social_feed_storage');
+      localStorage.removeItem('resqgrid_social_feed_storage_v2');
+      localStorage.removeItem('resqgrid_social_feed_storage_v3');
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Filter and search logic
+  const filteredPosts = useMemo(() => {
+    return posts.filter((post) => {
+      const matchesCategory =
+        activeCategory === 'all' || post.category === activeCategory;
+      const matchesSearch =
+        !searchQuery.trim() ||
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.authorName.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [posts, activeCategory, searchQuery]);
 
   const handleInstantSos = async (categoryId?: EmergencyCategory) => {
     setIsTriggeringSos(true);
@@ -94,30 +85,28 @@ export const EmergencyHome: React.FC = () => {
       const lng = geo.longitude || 77.5946;
       const category = categoryId || 'medical';
 
-      // 1. Run K* Multi-Criteria Algorithm to select optimal hospital and ambulance
       const allocation = await allocateOptimalEmergencyResources(
         { latitude: lat, longitude: lng },
         category
       );
 
-      // 2. Persist Real Incident to Backend Database
       const categoryTitles: Record<string, string> = {
-        cardiac: 'Cardiac & Chest Pain Emergency',
-        stroke: 'Stroke & Acute Neuro Emergency',
-        trauma: 'Severe Trauma Injury Emergency',
-        accident: 'Road Collision / Crash Emergency',
-        respiratory: 'Severe Respiratory Distress Emergency',
-        fire: 'Burns & Toxic Inhalation Emergency',
-        medical: 'Emergency SOS: Critical Medical Assistance',
+        cardiac: 'Cardiac Emergency Assistance',
+        stroke: 'Acute Stroke Medical Assistance',
+        trauma: 'Severe Trauma Injury Assistance',
+        accident: 'Road Collision Assistance',
+        respiratory: 'Respiratory Distress Assistance',
+        fire: 'Burns and Fire Medical Assistance',
+        medical: 'Emergency SOS Medical Assistance',
       };
-      const title = categoryTitles[category] || `Emergency SOS: ${category.toUpperCase()} Medical Response`;
+      const title = categoryTitles[category] || `Emergency SOS ${category.toUpperCase()} Medical Response`;
       const reporterName = user?.fullName || 'Citizen Emergency Caller';
       const reporterPhone = '+91 98765 43210';
 
       const incident = await createIncident({
         emergencyType: category as any,
         title: title,
-        description: `Rapid 1-Tap dispatch initiated for ${title}. ${allocation.rationale}`,
+        description: `Rapid dispatch initiated for ${title}. ${allocation.rationale}`,
         latitude: lat,
         longitude: lng,
         address: geo.address || 'Bengaluru Metro Area (GPS Pinpoint)',
@@ -130,7 +119,6 @@ export const EmergencyHome: React.FC = () => {
         severity: 'critical',
       });
 
-      // Synchronize active incident across localStorage and state stores
       localStorage.setItem('resqgrid_active_incident_id', incident.id);
       localStorage.setItem('resqgrid_active_incident_data', JSON.stringify(incident));
       localStorage.setItem('resqgrid_active_incident_timestamp', String(Date.now()));
@@ -140,143 +128,217 @@ export const EmergencyHome: React.FC = () => {
       navigate(`/citizen/confirm?incidentId=${incident.id}&type=${category}`);
     } catch {
       setIsTriggeringSos(false);
-      // Fallback navigate to report form if immediate dispatch creation encountered error
       navigate('/citizen/report', { state: { category: categoryId || 'medical' } });
     }
   };
 
   return (
     <AppShell sidebarVariant="top">
-      <div className="max-w-5xl mx-auto space-y-8 pb-12">
-        {/* Animated Royal Blue Flagship Hero Section */}
-        <HeroSection
-          headingPrefix="Instant Medical &"
-          typewriterPhrases={[
-            'Emergency Ambulance Dispatch',
-            'Live GPS Paramedic Tracking',
-            'Hospital Bed Pre-Alerts',
-            'Critical Emergency Care',
-          ]}
-          headingSuffix="with ResQGrid"
-          subtitle="Get immediate paramedical assistance with one tap. Nearest ambulance is dispatched immediately with live route tracking."
-          primaryCta={{
-            label: isTriggeringSos ? 'Dispatching Nearest Unit...' : 'Launch Instant 1-Tap SOS',
-            onClick: () => handleInstantSos('cardiac'),
-            variant: 'red',
-          }}
-          secondaryCta={{
-            label: 'Track Active Ambulance',
-            onClick: () => navigate('/citizen/tracking'),
-          }}
+      <div className="max-w-6xl mx-auto space-y-4 pb-16 font-sans">
+        
+        {/* 1. Instagram Stories Carousel at Top */}
+        <StoriesBar
+          onAddPost={() => setIsCreateModalOpen(true)}
+          onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+          onSelectCategory={(cat) => setActiveCategory(cat)}
         />
 
-        {/* Central 1-Tap SOS Circle Trigger */}
-        <div className="flex flex-col items-center justify-center py-4 text-center">
-          <button
-            onClick={() => handleInstantSos()}
-            disabled={isTriggeringSos}
-            style={{
-              width: '210px',
-              height: '210px',
-              borderRadius: '50%',
-              backgroundColor: '#E50914',
-              color: '#FFFFFF',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '6px solid rgba(255, 255, 255, 0.9)',
-              cursor: isTriggeringSos ? 'not-allowed' : 'pointer',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-            }}
-            className="btn-pulse-glow hover:scale-105 active:scale-95 group shadow-2xl disabled:opacity-75 cursor-pointer"
-          >
-            <Radio className="w-10 h-10 mb-2 animate-bounce" />
-            <span className="text-xl font-black tracking-wider leading-tight">
-              {isTriggeringSos ? 'DISPATCHING...' : 'SEND\nEMERGENCY\nSOS'}
-            </span>
-          </button>
-          <p className="text-xs text-slate-200 mt-4 font-bold">
-            {user ? `Reporting as ${user.fullName}` : 'Tap to dispatch closest Advanced Life Support ambulance immediately'}
-          </p>
-        </div>
-
-        {/* Categorized Rapid Incident Trigger Grid */}
-        <div>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-            <div>
-              <h2 className="text-base font-extrabold text-white">Select Emergency Type</h2>
-              <p className="text-xs text-slate-300">Tap below to trigger instant response tailored to medical urgency</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
-                ⚡ Auto-Allocates Nearest Hospital
-              </span>
+        {/* 2. Sleek Filter Bar & Action Buttons */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+          {/* Clean Category Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+            {[
+              { id: 'all', label: 'All' },
+              { id: 'accident', label: 'Accidents' },
+              { id: 'traffic', label: 'Traffic' },
+              { id: 'life_saved', label: 'Lives Saved' },
+              { id: 'corridor', label: 'Corridors' },
+              { id: 'blood_donor', label: 'Blood Needs' },
+            ].map((tab) => (
               <button
-                onClick={() => navigate('/citizen/report')}
-                className="text-xs font-bold text-sky-300 hover:text-white underline cursor-pointer"
+                key={tab.id}
+                onClick={() => setActiveCategory(tab.id)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  activeCategory === tab.id
+                    ? 'bg-white text-slate-950 font-bold shadow'
+                    : 'bg-[#0B1B4F]/80 text-slate-300 hover:text-white border border-[#1E3A8A]'
+                }`}
               >
-                Detailed Report Form &rarr;
+                {tab.label}
               </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {emergencyCategories.map((cat) => (
-              <div
-                key={cat.id}
-                onClick={() => handleInstantSos(cat.id)}
-                className="p-5 bg-[#0B1B4F] rounded-2xl border border-[#1E3A8A] shadow-xl hover:border-red-500 hover:shadow-2xl transition-all cursor-pointer group hover-lift flex flex-col justify-between text-white"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="p-2.5 rounded-xl bg-white/10 border border-white/15 shrink-0">
-                    {cat.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-extrabold text-white group-hover:text-red-400 transition-colors">
-                      {cat.label}
-                    </h3>
-                    <p className="text-xs text-slate-300 mt-1 leading-relaxed font-medium">{cat.desc}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/10 text-xs font-bold text-slate-300 group-hover:text-red-400">
-                  <span>⚡ Instant 1-Tap SOS</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
             ))}
           </div>
+
+          {/* Quick Create Post & 1-Tap SOS Buttons */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow transition cursor-pointer"
+            >
+              <Camera className="w-3.5 h-3.5" />
+              <span>Post Incident</span>
+            </button>
+
+            <button
+              onClick={() => handleInstantSos('cardiac')}
+              disabled={isTriggeringSos}
+              className="px-3.5 py-1.5 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-semibold text-xs flex items-center gap-1 transition cursor-pointer disabled:opacity-50"
+            >
+              <Radio className="w-3 h-3 text-rose-400" />
+              <span>{isTriggeringSos ? 'Dispatching...' : '1-Tap SOS'}</span>
+            </button>
+          </div>
         </div>
 
-        {/* Quick Citizen Navigation Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div
-            onClick={() => navigate('/citizen/history')}
-            className="cursor-pointer hover-lift flex items-center gap-3.5 p-4 bg-[#0B1B4F] rounded-2xl border border-[#1E3A8A] text-white shadow-xl"
-          >
-            <div className="p-3 bg-blue-500/20 border border-blue-500/30 text-sky-400 rounded-xl shrink-0">
-              <History className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-white">Emergency History</p>
-              <p className="text-xs text-slate-300 font-medium">View past ambulance dispatches and recorded logs</p>
-            </div>
+        {/* 3. Main Two-Column Layout: Central Clean Feed + Minimal Sticky Sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          {/* Central Feed Column (Instagram Single-Column Stream) */}
+          <div className="lg:col-span-8 space-y-5 max-w-2xl mx-auto w-full">
+            {filteredPosts.length === 0 ? (
+              <div className="p-10 text-center bg-[#0B1B4F]/90 rounded-2xl border border-[#1E3A8A] text-white">
+                <Camera className="w-10 h-10 mx-auto text-slate-400 mb-2.5" />
+                <h3 className="text-sm font-bold text-white">No Posts in this Category</h3>
+                <p className="text-xs text-slate-300 mt-1 mb-3">
+                  Be the first to share a live incident or traffic condition update.
+                </p>
+                <button
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="px-4 py-1.5 bg-red-600 text-white font-semibold text-xs rounded-full shadow cursor-pointer"
+                >
+                  Create Post
+                </button>
+              </div>
+            ) : (
+              filteredPosts.map((post) => (
+                <FeedCard key={post.id} post={post} />
+              ))
+            )}
           </div>
 
-          <div
-            onClick={() => navigate('/citizen/tracking')}
-            className="cursor-pointer hover-lift flex items-center gap-3.5 p-4 bg-[#0B1B4F] rounded-2xl border border-[#1E3A8A] text-white shadow-xl"
-          >
-            <div className="p-3 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl shrink-0">
-              <MapPin className="w-5 h-5" />
+          {/* Minimalist Right Sidebar (Instagram Suggestion Bar Style) */}
+          <div className="hidden lg:block lg:col-span-4 space-y-4 sticky top-20">
+            
+            {/* User Profile Mini Card */}
+            <div className="p-3.5 bg-[#0B1B4F]/90 rounded-2xl border border-[#1E3A8A] text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80"
+                  alt="Avatar"
+                  className="w-10 h-10 rounded-full object-cover border border-sky-400"
+                />
+                <div>
+                  <h4 className="text-xs font-bold text-white leading-tight">
+                    {user?.fullName || 'Citizen Responder'}
+                  </h4>
+                  <p className="text-[11px] text-amber-300 font-medium mt-0.5 flex items-center gap-1">
+                    <Star className="w-3 h-3 fill-amber-300 text-amber-300" />
+                    <span>{userStats.stars} Stars</span>
+                    <span className="text-slate-400">•</span>
+                    <span>{userStats.livesSaved} Saved</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsLeaderboardOpen(true)}
+                className="text-xs font-semibold text-sky-400 hover:text-sky-300 cursor-pointer"
+              >
+                Top Ranks
+              </button>
             </div>
-            <div>
-              <p className="text-sm font-bold text-white">Live Ambulance Tracking</p>
-              <p className="text-xs text-slate-300 font-medium">Track dispatched ambulance and arrival time</p>
+
+            {/* 1-Tap Rapid Emergency Dispatch */}
+            <div className="p-3.5 bg-[#0B1B4F]/90 rounded-2xl border border-[#1E3A8A] text-white">
+              <div className="flex items-center justify-between mb-2.5">
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wide">
+                  Emergency Dispatch
+                </h4>
+                <span className="text-[10px] text-emerald-400 font-medium">Auto-Allocate</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: 'cardiac', label: 'Cardiac', icon: <HeartPulse className="w-3.5 h-3.5 text-red-400" /> },
+                  { id: 'stroke', label: 'Stroke', icon: <Brain className="w-3.5 h-3.5 text-indigo-400" /> },
+                  { id: 'trauma', label: 'Trauma', icon: <Activity className="w-3.5 h-3.5 text-amber-400" /> },
+                  { id: 'accident', label: 'Accident', icon: <Car className="w-3.5 h-3.5 text-purple-400" /> },
+                  { id: 'respiratory', label: 'Breathing', icon: <AlertTriangle className="w-3.5 h-3.5 text-sky-400" /> },
+                  { id: 'fire', label: 'Burns/Fire', icon: <Flame className="w-3.5 h-3.5 text-orange-400" /> },
+                ].map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => handleInstantSos(cat.id as any)}
+                    className="p-2 bg-slate-900/70 hover:bg-red-600/30 border border-white/10 hover:border-red-500 rounded-xl text-xs font-medium text-left transition flex items-center gap-2 cursor-pointer"
+                  >
+                    {cat.icon}
+                    <span className="truncate">{cat.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Top First Responders */}
+            <div className="p-3.5 bg-[#0B1B4F]/90 rounded-2xl border border-[#1E3A8A] text-white">
+              <div className="flex items-center justify-between mb-2.5">
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wide">
+                  Top First Responders
+                </h4>
+                <button
+                  onClick={() => setIsLeaderboardOpen(true)}
+                  className="text-xs font-semibold text-amber-300 hover:underline cursor-pointer"
+                >
+                  View All
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {[
+                  { name: 'Dr. Priya Hegde', role: 'Surgeon', stars: 85, avatar: 'https://images.unsplash.com/photo-1594824813598-a28a30e8c891?auto=format&fit=crop&w=200&q=80' },
+                  { name: 'Paramedic Ananya', role: 'ALS Lead', stars: 62, avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80' },
+                  { name: 'Rajesh Kumar', role: 'First Responder', stars: 48, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80' },
+                ].map((h, i) => (
+                  <div key={i} className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <img src={h.avatar} alt={h.name} className="w-6 h-6 rounded-full object-cover border border-white/20" />
+                      <div>
+                        <p className="font-semibold text-white leading-none">{h.name}</p>
+                        <span className="text-[10px] text-slate-400">{h.role}</span>
+                      </div>
+                    </div>
+                    <span className="font-mono font-semibold text-amber-300 flex items-center gap-0.5">
+                      <Star className="w-2.5 h-2.5 fill-amber-300" />
+                      {h.stars}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Helplines */}
+            <div className="p-3 bg-slate-950/60 rounded-xl border border-white/10 text-white flex items-center justify-between text-xs font-medium">
+              <span className="text-slate-400">Helplines:</span>
+              <a href="tel:108" className="text-red-400 hover:underline">108 Ambulance</a>
+              <span>•</span>
+              <a href="tel:112" className="text-sky-400 hover:underline">112 Police</a>
+              <span>•</span>
+              <a href="tel:101" className="text-orange-400 hover:underline">101 Fire</a>
+            </div>
+
           </div>
         </div>
       </div>
+
+      {/* Post Modal */}
+      <CreatePostModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+
+      {/* Leaderboard Modal */}
+      <LeaderboardModal
+        isOpen={isLeaderboardOpen}
+        onClose={() => setIsLeaderboardOpen(false)}
+      />
     </AppShell>
   );
 };
