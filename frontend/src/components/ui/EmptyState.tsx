@@ -59,11 +59,11 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center p-8 text-center bg-slate-50 border border-dashed border-slate-200 rounded-2xl ${className}`}
+      className={`flex flex-col items-center justify-center p-8 text-center bg-[#0B1B4F]/60 border border-dashed border-white/15 rounded-3xl shadow-xl text-white ${className}`}
     >
-      <div className="mb-3">{icon}</div>
-      <h3 className="text-sm font-bold text-slate-800 mb-1">{title}</h3>
-      <p className="text-xs text-slate-500 max-w-sm mb-4">{displayText}</p>
+      <div className="mb-3 text-sky-400">{icon}</div>
+      <h3 className="text-sm font-extrabold text-white mb-1">{title}</h3>
+      <p className="text-xs text-slate-300 max-w-sm mb-4 font-medium">{displayText}</p>
       {renderAction() && <div>{renderAction()}</div>}
     </div>
   );

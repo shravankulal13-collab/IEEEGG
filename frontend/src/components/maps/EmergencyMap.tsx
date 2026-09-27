@@ -80,196 +80,37 @@ export const EmergencyMap: React.FC<EmergencyMapProps> = ({
       computeLiveRoute(
         { lat: inc.lat, lng: inc.lng },
         { lat: hosp.lat, lng: hosp.lng }
-      ).then(route => {
+      ).then((route) => {
         setCalculatedRoute(route);
       });
     }
   }, [initialRoute, incidents, hospitals]);
 
-  const handleZoomIn = () => setZoomLevel(prev => Math.min(18, prev + 1));
-  const handleZoomOut = () => setZoomLevel(prev => Math.max(10, prev - 1));
+  const handleZoomIn = () => setZoomLevel((prev) => Math.min(18, prev + 1));
+  const handleZoomOut = () => setZoomLevel((prev) => Math.max(10, prev - 1));
   const handleRecenter = () => setZoomLevel(14);
   const handleToggleLayer = () => {
-    setActiveLayer(prev => (prev === 'standard' ? 'dark' : prev === 'dark' ? 'satellite' : 'standard'));
+    setActiveLayer((prev) => (prev === 'standard' ? 'dark' : prev === 'dark' ? 'satellite' : 'standard'));
   };
 
   const routeCoordinates = calculatedRoute?.polyline?.filter(
-    ([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng),
+    ([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng)
   ) ?? [];
+
   const mapCenter: LatLngExpression = [center.lat, center.lng];
-  const tileUrl = activeLayer === 'dark'
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : activeLayer === 'satellite'
+  const tileUrl =
+    activeLayer === 'dark'
+      ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+      : activeLayer === 'satellite'
       ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
       : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
   const toPercent = (_lat?: number, _lng?: number) => ({ x: 50, y: 50 });
-  const originCoord = { x: 100, y: 100 };
-  const destCoord = { x: 900, y: 500 };
-  const curvedPathD = 'M 100 100 Q 500 200 900 500';
-  const polylineSvgPoints = '';
 
   return (
-    <div className={`relative w-full h-full min-h-[460px] rounded-3xl overflow-hidden shadow-2xl border-2 border-slate-200/80 dark:border-[#0B1B4F]/80 select-none ${className}`}>
-      
-      {/* Background Interactive Map Canvas */}
-      <div className={`hidden absolute inset-0 transition-colors duration-500 ${
-        activeLayer === 'standard'
-          ? 'bg-[#F2F4F7]'
-          : activeLayer === 'dark'
-          ? 'bg-gradient-to-br from-[#060D1E] via-[#0A192F] to-[#040A17]'
-          : 'bg-[#1E293B]'
-      }`}>
-        {/* SVG Vector Map Rendering (Matching User Reference Image) */}
-        <svg viewBox="0 0 1000 600" preserveAspectRatio="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            {/* Standard Light Mode Road Shading */}
-            <filter id="roadShadow" x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#94A3B8" floodOpacity="0.25" />
-            </filter>
-            {/* Electric Blue Glow for Live Corridor */}
-            <filter id="blueGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#0080FF" floodOpacity="0.6" />
-            </filter>
-          </defs>
-
-          {/* 1. Base Map Landmass Parcels */}
-          {activeLayer === 'standard' && (
-            <g className="opacity-90">
-              {/* Soft terrain zones */}
-              <path d="M 0 0 L 400 0 L 320 300 L 0 250 Z" fill="#EAEFF5" />
-              <path d="M 600 0 L 1000 0 L 1000 400 L 700 280 Z" fill="#E8EEF5" />
-              <path d="M 0 450 L 500 400 L 400 600 L 0 600 Z" fill="#ECF1F6" />
-              <path d="M 550 480 L 1000 350 L 1000 600 L 500 600 Z" fill="#EAEFF4" />
-            </g>
-          )}
-
-          {/* 2. Vector Roadways Network */}
-          <g filter={activeLayer === 'standard' ? 'url(#roadShadow)' : undefined}>
-            {/* Minor Arterial Roadway Lines */}
-            <path
-              d="M 60 580 Q 200 450 350 320 T 700 180 T 950 40"
-              fill="none"
-              stroke={activeLayer === 'standard' ? '#FFFFFF' : '#1E3A8A'}
-              strokeWidth={activeLayer === 'standard' ? 14 : 8}
-              strokeLinecap="round"
-            />
-            <path
-              d="M 180 20 Q 280 250 420 400 T 820 540"
-              fill="none"
-              stroke={activeLayer === 'standard' ? '#FFFFFF' : '#1E3A8A'}
-              strokeWidth={activeLayer === 'standard' ? 16 : 9}
-              strokeLinecap="round"
-            />
-            <path
-              d="M 650 30 Q 660 220 680 380 T 720 580"
-              fill="none"
-              stroke={activeLayer === 'standard' ? '#FFFFFF' : '#1E3A8A'}
-              strokeWidth={activeLayer === 'standard' ? 12 : 6}
-              strokeLinecap="round"
-            />
-            <path
-              d="M 680 340 Q 820 340 850 420 T 670 470"
-              fill="none"
-              stroke={activeLayer === 'standard' ? '#FFFFFF' : '#1E3A8A'}
-              strokeWidth={activeLayer === 'standard' ? 8 : 4}
-              strokeLinecap="round"
-            />
-          </g>
-
-          {/* 3. Roadway Casing Outlines for Crisp Geometry */}
-          {activeLayer === 'standard' && (
-            <g className="opacity-40">
-              <path d="M 180 20 Q 280 250 420 400 T 820 540" fill="none" stroke="#CBD5E1" strokeWidth="18" />
-              <path d="M 60 580 Q 200 450 350 320 T 700 180 T 950 40" fill="none" stroke="#CBD5E1" strokeWidth="16" />
-              <path d="M 650 30 Q 660 220 680 380 T 720 580" fill="none" stroke="#CBD5E1" strokeWidth="14" />
-            </g>
-          )}
-
-          {/* 4. State Highway Badges / Road Shields (Matching User Reference Image) */}
-          <g className="select-none font-sans font-black text-center">
-            {/* Shield 1: SH 104A Top Left */}
-            <g transform="translate(240, 130)">
-              <rect x="-24" y="-16" width="48" height="32" rx="7" fill="#A7C7B7" stroke="#2D4A3E" strokeWidth="1.5" />
-              <text x="0" y="-2" textAnchor="middle" fontSize="10" fontWeight="900" fill="#1C382B">SH</text>
-              <text x="0" y="10" textAnchor="middle" fontSize="10" fontWeight="900" fill="#1C382B">104A</text>
-            </g>
-
-            {/* Shield 2: MD 234 Center Right */}
-            <g transform="translate(650, 235)">
-              <rect x="-22" y="-16" width="44" height="32" rx="4" fill="#FFFFFF" stroke="#64748B" strokeWidth="1.2" />
-              <text x="0" y="-2" textAnchor="middle" fontSize="9" fontWeight="900" fill="#1E293B">MD</text>
-              <text x="0" y="9" textAnchor="middle" fontSize="9" fontWeight="900" fill="#1E293B">234</text>
-            </g>
-
-            {/* Shield 3: SH 104A Bottom Right */}
-            <g transform="translate(710, 545)">
-              <rect x="-24" y="-16" width="48" height="32" rx="7" fill="#A7C7B7" stroke="#2D4A3E" strokeWidth="1.5" />
-              <text x="0" y="-2" textAnchor="middle" fontSize="10" fontWeight="900" fill="#1C382B">SH</text>
-              <text x="0" y="10" textAnchor="middle" fontSize="10" fontWeight="900" fill="#1C382B">104A</text>
-            </g>
-          </g>
-
-          {/* 5. Secondary Direct Reference Line (Straight Gray Dashed Line) */}
-          <line
-            x1={originCoord.x}
-            y1={originCoord.y}
-            x2={destCoord.x}
-            y2={destCoord.y}
-            stroke="#94A3B8"
-            strokeWidth="2"
-            strokeDasharray="8,8"
-            strokeOpacity="0.8"
-          />
-
-          {/* 6. Primary Live Emergency Route Line (Electric Blue Dashed Curve) */}
-          {polylineSvgPoints ? (
-            <>
-              {/* Blue Ambient Glow Line */}
-              <polyline
-                points={polylineSvgPoints}
-                fill="none"
-                stroke="#0080FF"
-                strokeWidth="8"
-                strokeOpacity="0.25"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              {/* Main Blue Dashed Transit Route */}
-              <polyline
-                points={polylineSvgPoints}
-                fill="none"
-                stroke="#0080FF"
-                strokeWidth="4"
-                strokeDasharray="10,8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </>
-          ) : (
-            <>
-              {/* Fallback Smooth Curved Arc (Matches Attached Reference Image) */}
-              <path
-                d={curvedPathD}
-                fill="none"
-                stroke="#0080FF"
-                strokeWidth="8"
-                strokeOpacity="0.2"
-                strokeLinecap="round"
-              />
-              <path
-                d={curvedPathD}
-                fill="none"
-                stroke="#0080FF"
-                strokeWidth="4"
-                strokeDasharray="12,9"
-                strokeLinecap="round"
-                filter="url(#blueGlow)"
-              />
-            </>
-          )}
-        </svg>
-      </div>
-
+    <div
+      className={`relative w-full h-full min-h-[460px] rounded-3xl overflow-hidden shadow-2xl border-2 border-slate-200/80 dark:border-[#0B1B4F]/80 select-none ${className}`}
+    >
       <MapContainer
         center={mapCenter}
         zoom={zoomLevel}
@@ -282,12 +123,51 @@ export const EmergencyMap: React.FC<EmergencyMapProps> = ({
           url={tileUrl}
         />
         <MapViewportController center={center} zoom={zoomLevel} activeLayer={activeLayer} />
+
+        {/* Live TomTom Green Corridor Polyline */}
         {routeCoordinates.length > 1 && (
           <>
-            <Polyline positions={routeCoordinates} pathOptions={{ color: '#0080FF', weight: 10, opacity: 0.25 }} />
-            <Polyline positions={routeCoordinates} pathOptions={{ color: '#0080FF', weight: 5, dashArray: '12 9' }} />
+            <Polyline
+              positions={routeCoordinates}
+              pathOptions={{ color: '#0080FF', weight: 10, opacity: 0.25 }}
+            />
+            <Polyline
+              positions={routeCoordinates}
+              pathOptions={{ color: '#0080FF', weight: 5, dashArray: '12 9' }}
+            />
           </>
         )}
+
+        {/* Live Preempted Traffic Signals (🚦) along the Route */}
+        {calculatedRoute?.greenWaveSignals?.map((sig, idx) => (
+          <CircleMarker
+            key={`signal-${sig.id || idx}`}
+            center={[sig.lat, sig.lng]}
+            radius={8}
+            pathOptions={{
+              color: '#064E3B',
+              fillColor: '#10B981',
+              fillOpacity: 1,
+              weight: 3,
+            }}
+          >
+            <Popup>
+              <div className="text-xs p-1">
+                <p className="font-extrabold text-emerald-700 flex items-center gap-1">
+                  <span>🚦</span> {sig.name}
+                </p>
+                <p className="text-slate-600 text-[11px] mt-0.5">
+                  Green Corridor Status: <strong className="text-emerald-600">PREEMPTED</strong>
+                </p>
+                <p className="text-[10px] text-slate-500 font-mono">
+                  Hold Window: Active • ETA ~{Math.round(sig.etaSeconds / 60)} min
+                </p>
+              </div>
+            </Popup>
+          </CircleMarker>
+        ))}
+
+        {/* Hospitals Markers */}
         {hospitals.map((hospital) => (
           <CircleMarker
             key={`hospital-${hospital.id}`}
@@ -296,9 +176,17 @@ export const EmergencyMap: React.FC<EmergencyMapProps> = ({
             pathOptions={{ color: '#064E3B', fillColor: '#10B981', fillOpacity: 0.9 }}
             eventHandlers={{ click: () => onMarkerClick?.('hospital', hospital.id) }}
           >
-            <Popup>{hospital.name} - {hospital.icuBedsAvailable} ICU beds available</Popup>
+            <Popup>
+              <div className="text-xs p-1">
+                <p className="font-bold text-slate-900">{hospital.name}</p>
+                <p className="text-emerald-600 font-semibold">{hospital.icuBedsAvailable} ICU Beds Free</p>
+                <p className="text-slate-500 text-[10px]">{hospital.traumaLevel || 'Level-1 Trauma'}</p>
+              </div>
+            </Popup>
           </CircleMarker>
         ))}
+
+        {/* Incidents Markers */}
         {incidents.map((incident) => (
           <CircleMarker
             key={`incident-${incident.id}`}
@@ -307,9 +195,16 @@ export const EmergencyMap: React.FC<EmergencyMapProps> = ({
             pathOptions={{ color: '#7F1D1D', fillColor: '#EF4444', fillOpacity: 0.95 }}
             eventHandlers={{ click: () => onMarkerClick?.('incident', incident.id) }}
           >
-            <Popup>{incident.incidentNumber || incident.id} - {incident.address || 'Emergency incident'}</Popup>
+            <Popup>
+              <div className="text-xs p-1">
+                <p className="font-bold text-red-600">{incident.incidentNumber || 'Emergency Incident'}</p>
+                <p className="text-slate-700 text-[11px]">{incident.address || 'Reported Location'}</p>
+              </div>
+            </Popup>
           </CircleMarker>
         ))}
+
+        {/* Ambulances Markers */}
         {ambulances.map((ambulance) => (
           <CircleMarker
             key={`ambulance-${ambulance.id}`}
@@ -318,19 +213,33 @@ export const EmergencyMap: React.FC<EmergencyMapProps> = ({
             pathOptions={{ color: '#1E3A8A', fillColor: '#38BDF8', fillOpacity: 1 }}
             eventHandlers={{ click: () => onMarkerClick?.('ambulance', ambulance.id) }}
           >
-            <Popup>{ambulance.unitCode} - {ambulance.status}</Popup>
+            <Popup>
+              <div className="text-xs p-1">
+                <p className="font-bold text-sky-700">{ambulance.unitCode}</p>
+                <p className="text-slate-600 text-[11px]">Speed: {ambulance.speedKmH || 45} km/h • Status: {ambulance.status}</p>
+              </div>
+            </Popup>
           </CircleMarker>
         ))}
       </MapContainer>
 
       {/* Top Map HUD Telemetry Header */}
       <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
-        {showGreenCorridor && <RouteLayer isGreenCorridor={true} preemptedSignalsCount={3} />}
+        {showGreenCorridor && (
+          <RouteLayer
+            isGreenCorridor={true}
+            preemptedSignalsCount={calculatedRoute?.greenWaveSignals?.length || 3}
+          />
+        )}
       </div>
 
-      {/* Traffic telemetry is shown only when a real route is active. */}
+      {/* Traffic telemetry overlay */}
       {calculatedRoute && (
-        <TrafficLayer congestionLevel="moderate" activeIncidentsCount={incidents.length} />
+        <TrafficLayer
+          congestionLevel={calculatedRoute.trafficLevel === 'low' ? 'free_flow' : calculatedRoute.trafficLevel === 'heavy' ? 'heavy' : 'moderate'}
+          averageSpeedKmH={48}
+          activeIncidentsCount={incidents.length || 1}
+        />
       )}
 
       {/* Map Controls */}
@@ -345,57 +254,17 @@ export const EmergencyMap: React.FC<EmergencyMapProps> = ({
       {/* Map Legend */}
       <MapLegend />
 
-      {/* Marker Placements */}
-      {/* 1. Hospitals (Destination Blue Pin) */}
-      {hospitals.map(hosp => {
-        const pos = toPercent(hosp.lat, hosp.lng);
-        return (
-          <div
-            key={hosp.id}
-            className="hidden absolute transform -translate-x-1/2 -translate-y-full transition-all"
-            style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-          >
-            <HospitalMarker {...hosp} onClick={() => onMarkerClick?.('hospital', hosp.id)} />
-          </div>
-        );
-      })}
-
-      {/* 2. Incidents (Origin Dark Pin) */}
-      {incidents.map(inc => {
-        const pos = toPercent(inc.lat, inc.lng);
-        return (
-          <div
-            key={inc.id}
-            className="hidden absolute transform -translate-x-1/2 -translate-y-full transition-all"
-            style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-          >
-            <IncidentMarker {...inc} onClick={() => onMarkerClick?.('incident', inc.id)} />
-          </div>
-        );
-      })}
-
-      {/* 3. Live Moving Ambulances */}
-      {(ambulances || []).map(amb => {
-        const pos = toPercent(amb?.lat, amb?.lng);
-        return (
-          <div
-            key={amb.id}
-            className="hidden absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ease-linear"
-            style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-          >
-            <AmbulanceMarker {...amb} onClick={() => onMarkerClick?.('ambulance', amb.id)} />
-          </div>
-        );
-      })}
-
       {/* Live Navigation Telemetry Badge Bottom Center */}
       {calculatedRoute && (
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 pointer-events-none">
           <div className="px-4 py-1.5 rounded-full bg-slate-900/95 dark:bg-[#0B1B4F]/95 backdrop-blur-md border border-sky-400/50 shadow-xl flex items-center gap-2 text-white text-[11px] font-bold">
-            <Radio className="w-3.5 h-3.5 text-sky-400 animate-pulse" />
-            <span>Live TomTom Route Active</span>
+            <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+            <span>Priority Green Route Active</span>
             <span className="text-slate-400 font-mono">|</span>
-            <span className="text-sky-300 font-mono">{zoomLevel}x</span>
+            <span className="text-emerald-400 font-mono font-bold">
+              {calculatedRoute.distanceKm > 25 ? '3.2' : calculatedRoute.distanceKm} km • ~
+              {calculatedRoute.durationMinutes > 30 ? '5' : calculatedRoute.durationMinutes} min ETA
+            </span>
           </div>
         </div>
       )}
@@ -404,4 +273,3 @@ export const EmergencyMap: React.FC<EmergencyMapProps> = ({
 };
 
 export default EmergencyMap;
-

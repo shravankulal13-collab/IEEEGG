@@ -57,17 +57,17 @@ export const AuditLogs: React.FC = () => {
         subtitle="Cryptographically sealed timestamped event logs for regulatory and compliance oversight"
 
         actions={
-          <Button variant="outline" size="sm" onClick={() => navigate('/dispatcher')}>
+          <Button variant="outline" size="sm" onClick={() => navigate('/dispatcher')} className="border-white/20 text-white hover:bg-white/10">
             <RefreshCw className="w-4 h-4 mr-1.5" />
             Command Center
           </Button>
         }
       />
 
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+      <div className="bg-[#0B1B4F] rounded-2xl border border-[#1E3A8A] p-6 shadow-xl text-white">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[10px] border-b border-slate-200">
+            <thead className="bg-slate-900/60 text-slate-300 font-bold uppercase tracking-wider text-[10px] border-b border-white/10">
               <tr>
                 <th className="py-3 px-4">Log ID</th>
                 <th className="py-3 px-4">Event Type</th>
@@ -77,17 +77,17 @@ export const AuditLogs: React.FC = () => {
                 <th className="py-3 px-4">Timestamp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 font-medium">
+            <tbody className="divide-y divide-white/10 font-medium">
               {logs.map((log) => (
-                <tr key={log.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="py-3.5 px-4 font-mono font-bold text-slate-900 flex items-center gap-1.5">
-
+                <tr key={log.id} className="hover:bg-white/5 transition-colors">
+                  <td className="py-3.5 px-4 font-mono font-bold text-white flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     <span>{log.id}</span>
                   </td>
-                  <td className="py-3.5 px-4 font-bold text-blue-600">{log.action}</td>
-                  <td className="py-3.5 px-4 text-slate-700">{log.actor}</td>
-                  <td className="py-3.5 px-4 font-bold text-red-600">{log.incident}</td>
-                  <td className="py-3.5 px-4 text-slate-600 max-w-sm leading-relaxed">{log.details}</td>
+                  <td className="py-3.5 px-4 font-bold text-sky-400">{log.action}</td>
+                  <td className="py-3.5 px-4 text-slate-300">{log.actor}</td>
+                  <td className="py-3.5 px-4 font-bold text-rose-400">{log.incident}</td>
+                  <td className="py-3.5 px-4 text-slate-300 max-w-sm leading-relaxed">{log.details}</td>
                   <td className="py-3.5 px-4 text-slate-400 font-mono text-[11px]">{log.timestamp}</td>
                 </tr>
               ))}

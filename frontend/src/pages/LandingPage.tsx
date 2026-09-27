@@ -34,7 +34,7 @@ export const LandingPage: React.FC = () => {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [activeModalFeature, setActiveModalFeature] = useState<{ title: string; desc: string; route: string } | null>(null);
 
-  const handleEnterPortal = (role: 'citizen' | 'ambulance_driver' | 'dispatcher' | 'hospital_admin' | 'system_admin') => {
+  const handleEnterPortal = (role: 'citizen' | 'ambulance_driver' | 'dispatcher' | 'hospital_admin') => {
     const target = switchDemoRole(role);
     navigate(target);
   };
@@ -281,22 +281,6 @@ export const LandingPage: React.FC = () => {
                   onMouseLeave={(e) => (e.currentTarget.style.color = '#CBD5E1')}
                 >
                   Hospital Network
-                </button>
-
-                <button
-                  onClick={() => handleEnterPortal('system_admin')}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#CBD5E1',
-                    cursor: 'pointer',
-                    fontWeight: 600,
-                    transition: 'color 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = '#CBD5E1')}
-                >
-                  Admin
                 </button>
               </nav>
               {/* Right CTAs */}
@@ -642,7 +626,7 @@ export const LandingPage: React.FC = () => {
                   Spatial Dispatch
                 </span>
                 <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#FFFFFF', margin: '8px 0 12px 0' }}>
-                  PostGIS Fleet Telematics
+                  Precision Fleet Telematics
                 </h3>
                 <p style={{ fontSize: '13px', color: '#94A3B8', lineHeight: 1.5 }}>
                   Sub-second geospatial indexing of active ambulances, incident geocoding, and shortest road-network paths.
@@ -679,7 +663,7 @@ export const LandingPage: React.FC = () => {
                   Platform Telemetry
                 </span>
                 <h3 style={{ fontSize: '36px', fontWeight: 900, color: '#0F172A', margin: '8px 0 4px 0' }}>99.98%</h3>
-                <p style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>System Uptime & PostGIS Availability</p>
+                <p style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>System Uptime & Fleet Grid Availability</p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: '16px' }}>
                 <div>
@@ -849,13 +833,13 @@ export const LandingPage: React.FC = () => {
               </div>
 
               <div
-                onClick={() => navigate('/admin')}
+                onClick={() => navigate('/public')}
                 style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', cursor: 'pointer', padding: '16px', borderRadius: '16px', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}
                 className="hover:border-blue-400 hover:shadow-md transition-all"
               >
                 <div>
-                  <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>System Administration</h4>
-                  <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>Manage users, system access, and platform operations.</p>
+                  <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Public Emergency Alerts</h4>
+                  <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>Live public notifications, disaster warnings, and traffic advisory broadcasts.</p>
                 </div>
               </div>
 
@@ -919,12 +903,6 @@ export const LandingPage: React.FC = () => {
                 style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: '#FFFFFF', padding: '12px 24px', borderRadius: '9999px', fontWeight: 700, fontSize: '13px', border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer' }}
               >
                 Hospital Portal
-              </button>
-              <button
-                onClick={() => handleEnterPortal('system_admin')}
-                style={{ backgroundColor: '#2563EB', color: '#FFFFFF', padding: '12px 24px', borderRadius: '9999px', fontWeight: 800, fontSize: '13px', border: 'none', cursor: 'pointer' }}
-              >
-                Admin Portal
               </button>
             </div>
           </div>

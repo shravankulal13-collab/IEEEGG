@@ -164,7 +164,10 @@ export const incidentService = {
   },
 
   async getById(id: string): Promise<IncidentRecord> {
-    const res = await apiRequest<{ success: boolean; data: any }>(`/incidents/${id}`, {
+    if (!id || id === 'null' || id === 'undefined' || id.trim() === '') {
+      throw new Error('Incident ID is required');
+    }
+    const res = await apiRequest<{ success: boolean; data: any }>(`/incidents/${id.trim()}`, {
       method: 'GET',
     });
     const raw = res.data;

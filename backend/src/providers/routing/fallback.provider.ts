@@ -109,6 +109,11 @@ export async function resolveRoute(request: RouteRequest): Promise<ResolveRouteR
   const errors: RoutingProviderError[] = [];
 
   for (const provider of CHAIN) {
+    // If TomTom has no API key configured, seamlessly fall back to OSRM
+    if (provider.name === 'tomtom' && !process.env.TOMTOM_API_KEY) {
+      continue;
+    }
+
     attempted.push(provider.name);
     try {
       const result = await provider.getRoute(request);
@@ -123,7 +128,7 @@ export async function resolveRoute(request: RouteRequest): Promise<ResolveRouteR
         err instanceof RoutingProviderError
           ? err
           : new RoutingProviderError(provider.name, 'unexpected failure', err);
-      logger.error({
+      logger.warn({
         provider: provider.name,
         error: routingError.message,
       }, `routing provider failed, trying next in chain`);

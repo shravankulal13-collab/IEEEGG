@@ -20,6 +20,7 @@ const reportLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 10,
   keyGenerator: (req) => req.user?.id || req.ip || 'anonymous',
+  validate: { keyGeneratorIpFallback: false, xForwardedForHeader: false },
   standardHeaders: true,
   legacyHeaders: false,
 });

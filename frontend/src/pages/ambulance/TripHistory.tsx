@@ -61,47 +61,47 @@ export const TripHistory: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => navigate('/ambulance')}
-              className="border-slate-300 text-slate-700 hover:bg-slate-100"
+              className="border-white/20 text-slate-200 hover:bg-white/10"
             >
-              Back to Cockpit
+              Back to Dashboard
             </Button>
           }
         />
 
         <div className="space-y-3">
           {trips.map((trip) => (
-            <Card
+            <div
               key={trip.id}
-              className="p-5 border border-slate-200 bg-white hover:border-blue-400 shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              className="p-5 border border-[#1E3A8A] bg-[#0B1B4F] hover:border-sky-400/50 rounded-2xl shadow-xl transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-white"
             >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-black font-mono text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200">
+                  <span className="text-xs font-black font-mono text-red-300 bg-red-500/20 px-2.5 py-0.5 rounded-full border border-red-500/30">
                     {trip.incident}
                   </span>
-                  <h3 className="text-sm font-black text-slate-900">{trip.type}</h3>
+                  <h3 className="text-sm font-black text-white">{trip.type}</h3>
                   <Badge variant="success">COMPLETED</Badge>
                 </div>
 
-                <p className="text-xs text-slate-600 flex items-center gap-1.5 mt-1">
-
+                <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-1">
+                  <MapPin className="w-3.5 h-3.5 text-red-400 shrink-0" />
                   <span>Pickup: {trip.pickup}</span>
-
-                  <span className="font-bold text-slate-800">{trip.hospital}</span>
+                  <span className="text-slate-500">•</span>
+                  <span className="font-bold text-sky-300">{trip.hospital}</span>
                 </p>
               </div>
 
-              <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 border-t sm:border-t-0 pt-3 sm:pt-0">
+              <div className="flex items-center gap-4 text-xs font-semibold text-slate-400 border-t sm:border-t-0 border-white/10 pt-3 sm:pt-0">
                 <div className="text-right">
                   <span className="block text-[10px] text-slate-400 font-bold uppercase">RESPONSE TIME</span>
-                  <span className="font-mono text-emerald-600 font-extrabold">{trip.duration}</span>
+                  <span className="font-mono text-emerald-400 font-extrabold">{trip.duration}</span>
                 </div>
                 <div className="text-right">
                   <span className="block text-[10px] text-slate-400 font-bold uppercase">DATE & TIME</span>
-                  <span className="text-slate-800 font-medium">{trip.date}</span>
+                  <span className="text-slate-200 font-medium">{trip.date}</span>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       </div>

@@ -30,8 +30,8 @@ export function Table<T>({
 }: TableProps<T>) {
   if (isLoading) {
     return (
-      <div className="p-8 text-center text-slate-500 font-medium">
-        <div className="inline-block w-6 h-6 border-2 border-red-600 border-t-transparent rounded-full animate-spin mb-2" />
+      <div className="p-8 text-center text-slate-300 font-medium">
+        <div className="inline-block w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin mb-2" />
         <p className="text-xs">Loading records...</p>
       </div>
     );
@@ -39,27 +39,27 @@ export function Table<T>({
 
   if (data.length === 0) {
     return (
-      <div className="p-8 text-center text-slate-500 text-sm font-medium border border-dashed border-slate-200 rounded-xl">
+      <div className="p-8 text-center text-slate-400 text-xs font-medium border border-dashed border-white/15 rounded-2xl bg-[#0B1B4F]/50">
         {emptyMessage}
       </div>
     );
   }
 
   return (
-    <div className="w-full overflow-x-auto border border-slate-200 rounded-xl shadow-sm bg-white">
-      <table className="w-full text-left text-sm text-slate-700">
-        <thead className="bg-slate-50 text-slate-900 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
+    <div className="w-full overflow-x-auto border border-[#1E3A8A] rounded-2xl shadow-xl bg-[#0B1B4F]">
+      <table className="w-full text-left text-xs text-slate-200">
+        <thead className="bg-slate-900/80 text-white uppercase text-[10px] font-extrabold tracking-wider border-b border-white/10">
           <tr>
             {columns.map((col, index) => (
-              <th key={index} className={`px-4 py-3 ${col.className || ''}`}>
+              <th key={index} className={`px-4 py-3.5 ${col.className || ''}`}>
                 {col.header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-white/10">
           {data.map((row, rowIndex) => (
-            <tr key={keyExtractor(row, rowIndex)} className="hover:bg-slate-50/80 transition-colors">
+            <tr key={keyExtractor(row, rowIndex)} className="hover:bg-white/5 transition-colors">
               {columns.map((col, colIndex) => {
                 let cellContent: React.ReactNode = null;
                 if (typeof col.accessor === 'function') {
@@ -68,7 +68,7 @@ export function Table<T>({
                   cellContent = String(row[col.accessor] ?? '');
                 }
                 return (
-                  <td key={colIndex} className={`px-4 py-3 ${col.className || ''}`}>
+                  <td key={colIndex} className={`px-4 py-3.5 ${col.className || ''}`}>
                     {cellContent}
                   </td>
                 );

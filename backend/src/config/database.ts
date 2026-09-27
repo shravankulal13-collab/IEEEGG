@@ -76,10 +76,19 @@ function normalizeRow(row: any): any {
   return copy;
 }
 
+export const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isValidUuid(id?: any): boolean {
+  if (!id || typeof id !== 'string') return false;
+  const trimmed = id.trim();
+  if (trimmed === 'null' || trimmed === 'undefined' || trimmed === '') return false;
+  return UUID_REGEX.test(trimmed);
+}
+
 /**
  * Execute SQL operations against Supabase PostgREST engine when direct connection is idle or not configured.
  */
-async function executeSupabaseRestQuery<T = any>(
+async function executeSupabaseRestQuery<T extends pg.QueryResultRow = any>(
   text: string,
   params?: any[]
 ): Promise<pg.QueryResult<T>> {
@@ -128,12 +137,27 @@ async function executeSupabaseRestQuery<T = any>(
         const whereClause = whereMatch[1];
         const condRegex = /(?:lower\()?\s*([a-zA-Z0-9_"]+)\s*\)?\s*=\s*\$(\d+)/gi;
         let condMatch;
+        let impossibleCondition = false;
         while ((condMatch = condRegex.exec(whereClause)) !== null) {
           const colName = condMatch[1].replace(/"/g, '');
           const pIdx = parseInt(condMatch[2], 10) - 1;
-          if (pIdx >= 0 && pIdx < params.length && params[pIdx] !== undefined && params[pIdx] !== null) {
-            restUrl += `&${colName}=eq.${encodeURIComponent(String(params[pIdx]))}`;
+          if (pIdx >= 0 && pIdx < params.length) {
+            const paramVal = params[pIdx];
+            if (paramVal === undefined || paramVal === null) {
+              restUrl += `&${colName}=is.null`;
+            } else {
+              const strVal = String(paramVal).trim();
+              if ((colName === 'id' || colName.endsWith('_id') || colName.endsWith('Id')) && !isValidUuid(strVal)) {
+                // An invalid UUID search on a UUID column cannot match any row
+                impossibleCondition = true;
+              }
+              restUrl += `&${colName}=eq.${encodeURIComponent(strVal)}`;
+            }
           }
+        }
+        if (impossibleCondition) {
+          isPostgresConnected = true;
+          return { rows: [], rowCount: 0, command: 'SELECT', oid: 0, fields: [] };
         }
       }
     }
@@ -150,6 +174,10 @@ async function executeSupabaseRestQuery<T = any>(
     const resp = await fetch(restUrl, { headers });
     if (!resp.ok) {
       const errText = await resp.text().catch(() => '');
+      if (resp.status === 400 && (errText.includes('22P02') || errText.includes('invalid input syntax for type uuid'))) {
+        isPostgresConnected = true;
+        return { rows: [], rowCount: 0, command: 'SELECT', oid: 0, fields: [] };
+      }
       throw new Error(`Supabase query on ${table} failed (${resp.status}): ${errText}`);
     }
 
@@ -177,7 +205,7 @@ async function executeSupabaseRestQuery<T = any>(
           count,
         }));
         isPostgresConnected = true;
-        return { rows: rows as T[], rowCount: rows.length, command: 'SELECT', oid: 0, fields: [] };
+        return { rows: (rows as unknown as T[]), rowCount: rows.length, command: 'SELECT', oid: 0, fields: [] };
       }
 
       if (table === 'incidents') {
@@ -272,7 +300,7 @@ async function executeSupabaseRestQuery<T = any>(
 
     isPostgresConnected = true;
     return {
-      rows: normalizedData as T[],
+      rows: (normalizedData as unknown as T[]),
       rowCount: normalizedData.length,
       command: 'SELECT',
       oid: 0,
@@ -319,7 +347,7 @@ async function executeSupabaseRestQuery<T = any>(
       const normalizedInserted = Array.isArray(inserted) ? inserted.map(normalizeRow) : [normalizeRow(record)];
       isPostgresConnected = true;
       return {
-        rows: normalizedInserted as T[],
+        rows: (normalizedInserted as unknown as T[]),
         rowCount: 1,
         command: 'INSERT',
         oid: 0,
@@ -333,8 +361,12 @@ async function executeSupabaseRestQuery<T = any>(
     const tableMatch = cleanText.match(/update\s+([a-zA-Z0-9_"]+)/i);
     if (tableMatch && params && params.length > 0) {
       const table = tableMatch[1].replace(/"/g, '');
-      const idParam = params[params.length - 1]; // standard WHERE id = $last
+      const idParam = String(params[params.length - 1]); // standard WHERE id = $last
       
+      if (!isValidUuid(idParam) && !/^\d+$/.test(idParam)) {
+        return { rows: [], rowCount: 0, command: 'UPDATE', oid: 0, fields: [] };
+      }
+
       const updatePayload: Record<string, any> = {};
 
       const setMatch = cleanText.match(/set\s+(.*?)\s+where/is);
@@ -381,6 +413,9 @@ async function executeSupabaseRestQuery<T = any>(
 
       if (!resp.ok) {
         const errText = await resp.text().catch(() => '');
+        if (resp.status === 400 && (errText.includes('22P02') || errText.includes('invalid input syntax for type uuid'))) {
+          return { rows: [], rowCount: 0, command: 'UPDATE', oid: 0, fields: [] };
+        }
         throw new Error(`Supabase UPDATE on ${table} failed: ${errText}`);
       }
 
@@ -388,7 +423,7 @@ async function executeSupabaseRestQuery<T = any>(
       const normalizedUpdated = Array.isArray(updated) ? updated.map(normalizeRow) : [normalizeRow({ id: idParam, ...updatePayload })];
       isPostgresConnected = true;
       return {
-        rows: normalizedUpdated as T[],
+        rows: (normalizedUpdated as unknown as T[]),
         rowCount: normalizedUpdated.length,
         command: 'UPDATE',
         oid: 0,
@@ -402,7 +437,12 @@ async function executeSupabaseRestQuery<T = any>(
     const tableMatch = cleanText.match(/delete\s+from\s+([a-zA-Z0-9_"]+)/i);
     if (tableMatch && params && params.length > 0) {
       const table = tableMatch[1].replace(/"/g, '');
-      const resp = await fetch(`${baseUrl}/${table}?id=eq.${encodeURIComponent(params[0])}`, {
+      const idParam = String(params[0]);
+      if (!isValidUuid(idParam) && !/^\d+$/.test(idParam)) {
+        return { rows: [], rowCount: 0, command: 'DELETE', oid: 0, fields: [] };
+      }
+
+      const resp = await fetch(`${baseUrl}/${table}?id=eq.${encodeURIComponent(idParam)}`, {
         method: 'DELETE',
         headers,
       });
@@ -437,7 +477,10 @@ export async function query<T extends pg.QueryResultRow = any>(
       logger.debug({ text, duration, rows: res.rowCount }, 'Executed PostgreSQL query via pool');
       isPostgresConnected = true;
       return res;
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.code === '22P02' && text.trim().toLowerCase().startsWith('select')) {
+        return { rows: [], rowCount: 0, command: 'SELECT', oid: 0, fields: [] } as any;
+      }
       logger.warn({ err, text }, 'Direct PostgreSQL query failed; falling back to live Supabase REST');
     }
   }

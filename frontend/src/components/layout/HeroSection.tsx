@@ -42,28 +42,28 @@ export interface HeroSectionProps {
 }
 
 const DEFAULT_PHRASES = [
-  'Green Signal Corridors',
-  'Emergency Incident Triaging',
-  'ICU Bed Allocation',
-  'Ambulance Telemetry Tracking',
+  'Instant Ambulance Dispatch',
+  'Live Location Tracking',
+  'Hospital ICU Bed Alerts',
+  '24/7 Emergency Medical Care',
 ];
 
 const DEFAULT_TICKER: TickerItem[] = [
-  { text: 'Hospital Intake Network' },
-  { text: 'PostGIS Location History' },
-  { text: 'Socket.IO Realtime Telemetry' },
-  { text: 'Role-Based Access Control' },
-  { text: 'Dispatch Execution < 400ms' },
+  { text: '24/7 Rapid Ambulance SOS' },
+  { text: 'Live GPS Paramedic Tracking' },
+  { text: 'Pre-Allocated Emergency Beds' },
+  { text: 'Priority Green Corridor Routes' },
+  { text: 'Immediate Paramedic Support' },
 ];
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
-  badgeText = 'Emergency medical response grid',
+  badgeText = '',
   badgeDotColor = '#E50914',
-  headingPrefix = 'Emergency Coordination &',
+  headingPrefix = 'Emergency Medical Help &',
   fullBleed = false,
   typewriterPhrases = DEFAULT_PHRASES,
   headingSuffix = 'with ResQGrid',
-  subtitle = 'Emergency incident triaging, PostGIS ambulance telemetry, traffic clearance corridors, and hospital ICU bed matching.',
+  subtitle = 'Get immediate medical assistance, track your assigned ambulance in real-time, and get pre-allocated hospital emergency beds.',
   primaryCta,
   secondaryCta,
   tickerItems = DEFAULT_TICKER,
@@ -102,19 +102,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
   return (
     <section
-
+      className={`relative rounded-3xl overflow-hidden border border-blue-500/25 shadow-2xl backdrop-blur-xs mb-8 ${className}`}
       style={{
         background: 'radial-gradient(circle at 50% 15%, #102B7B 0%, #0B1B4F 55%, #061136 100%)',
       }}
     >
-      {/* Ambient background particles & grid glow */}
-      <div
-        className="absolute inset-0 opacity-15 pointer-events-none"
-        style={{
-          backgroundImage: `radial-gradient(rgba(56, 189, 248, 0.4) 1px, transparent 1px)`,
-          backgroundSize: '32px 32px',
-        }}
-      />
+      {/* Ambient background glow */}
       <div className="absolute -top-32 -left-32 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
 

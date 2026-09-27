@@ -88,10 +88,52 @@ export const useIncidentStore = create<IncidentState>((set) => ({
 
   updateIncidentStatus: async (id: string, status: string, notes?: string) => {
     try {
-      const updated = await incidentService.updateStatus(id, status, notes);
+      const current = useIncidentStore.getState().incidents.find((i) => i.id === id) || useIncidentStore.getState().activeIncident;
+      const currentStatus = (current?.status || 'reported').toLowerCase();
+      const targetStatus = status.toLowerCase();
+
+      const pathMap: Record<string, string[]> = {
+        'reported->en_route': ['verified', 'dispatched', 'en_route'],
+        'reported->arrived': ['verified', 'dispatched', 'en_route', 'arrived'],
+        'reported->transporting': ['verified', 'dispatched', 'en_route', 'arrived', 'transporting'],
+        'reported->resolved': ['verified', 'dispatched', 'en_route', 'arrived', 'transporting', 'resolved'],
+        'verifying->en_route': ['verified', 'dispatched', 'en_route'],
+        'verifying->arrived': ['verified', 'dispatched', 'en_route', 'arrived'],
+        'verified->en_route': ['dispatched', 'en_route'],
+        'verified->arrived': ['dispatched', 'en_route', 'arrived'],
+        'verified->transporting': ['dispatched', 'en_route', 'arrived', 'transporting'],
+        'verified->resolved': ['dispatched', 'en_route', 'arrived', 'transporting', 'resolved'],
+        'dispatched->arrived': ['en_route', 'arrived'],
+        'dispatched->transporting': ['en_route', 'arrived', 'transporting'],
+        'dispatched->resolved': ['en_route', 'arrived', 'transporting', 'resolved'],
+        'en_route->transporting': ['arrived', 'transporting'],
+        'en_route->resolved': ['arrived', 'transporting', 'resolved'],
+        'arrived->resolved': ['transporting', 'resolved'],
+      };
+
+      const key = `${currentStatus}->${targetStatus}`;
+      const intermediatePath = pathMap[key];
+
+      let updated: IncidentRecord | null = null;
+      if (intermediatePath && intermediatePath.length > 1) {
+        for (const step of intermediatePath) {
+          try {
+            updated = await incidentService.updateStatus(id, step, notes);
+          } catch {
+            // continue through path
+          }
+        }
+      } else {
+        updated = await incidentService.updateStatus(id, targetStatus, notes);
+      }
+
+      if (!updated) {
+        updated = await incidentService.getById(id);
+      }
+
       set((state) => ({
-        incidents: state.incidents.map((inc) => (inc.id === id ? updated : inc)),
-        activeIncident: state.activeIncident?.id === id ? updated : state.activeIncident,
+        incidents: state.incidents.map((inc) => (inc.id === id ? updated! : inc)),
+        activeIncident: state.activeIncident?.id === id ? updated! : state.activeIncident,
       }));
       return updated;
     } catch (err: any) {

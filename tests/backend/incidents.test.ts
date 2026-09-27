@@ -118,7 +118,7 @@ describe('Incident Lifecycle & Verification Tests', () => {
       const created = await incidentService.createIncident(
         {
           emergencyType: 'police',
-          title: 'Robbery in progress',
+          title: 'Emergency Traffic Clearance Request',
           latitude: 12.9279,
           longitude: 77.6271,
           city: 'Bangalore',

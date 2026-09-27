@@ -49,7 +49,10 @@ export class AmbulanceService {
   }
 
   async getAmbulanceById(id: string): Promise<AmbulanceData> {
-    const res = await apiRequest(`/ambulances/${id}`);
+    if (!id || id === 'null' || id === 'undefined' || id.trim() === '') {
+      throw new Error('Ambulance ID is required');
+    }
+    const res = await apiRequest(`/ambulances/${id.trim()}`);
     return res.data;
   }
 

@@ -26,7 +26,7 @@ const router = Router();
  */
 router.get('/health', async (_req: Request, res: Response) => {
   const dbStatus = await checkDatabaseHealth();
-  const isHealthy = dbStatus.connected || dbStatus.provider === 'in_memory_fallback';
+  const isHealthy = Boolean(dbStatus.connected);
 
   res.status(isHealthy ? 200 : 503).json({
     status: isHealthy ? 'healthy' : 'degraded',

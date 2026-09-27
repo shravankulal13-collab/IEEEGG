@@ -6,6 +6,7 @@
 
 import { ambulanceRepository, AmbulanceRecord } from './ambulance.repository';
 import { assertValidTransition, AmbulanceBackendStatus, mapBackendStatusToUIState } from './ambulance.state-machine';
+import { NotFoundError, AppError } from '../../middleware/error.middleware.js';
 
 export class AmbulanceService {
   async getAllAmbulances(): Promise<AmbulanceRecord[]> {
@@ -15,7 +16,7 @@ export class AmbulanceService {
   async getAmbulanceById(id: string): Promise<AmbulanceRecord> {
     const ambulance = await ambulanceRepository.findById(id);
     if (!ambulance) {
-      throw new Error(`Ambulance with ID '${id}' not found`);
+      throw new NotFoundError(`Ambulance with ID '${id}' not found`);
     }
     return ambulance;
   }
@@ -38,7 +39,7 @@ export class AmbulanceService {
     assertValidTransition(current.status, newStatus);
     const updated = await ambulanceRepository.updateStatus(id, newStatus, incidentId, hospitalId);
     if (!updated) {
-      throw new Error(`Failed to update status for ambulance '${id}'`);
+      throw new AppError(`Failed to update status for ambulance '${id}'`, 500);
     }
     return updated;
   }
@@ -60,7 +61,7 @@ export class AmbulanceService {
       accuracy
     );
     if (!updated) {
-      throw new Error(`Failed to update location for ambulance '${id}'`);
+      throw new AppError(`Failed to update location for ambulance '${id}'`, 500);
     }
     return updated;
   }

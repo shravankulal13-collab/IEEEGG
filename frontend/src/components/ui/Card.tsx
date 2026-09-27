@@ -13,9 +13,27 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Card: React.FC<CardProps> = ({ children, className = '', ...props }) => {
+  const hasBg = /\bbg-/.test(className);
+  const hasBorder = /\bborder-/.test(className);
+  const hasRounded = /\brounded-/.test(className);
+  const hasPadding = /\bp[xytrbl]?-|\bp-/.test(className);
+  const hasText = /\btext-/.test(className);
+
+  const defaultClasses = [
+    hasBg ? '' : 'bg-[#0B1B4F]/90 backdrop-blur-md',
+    hasBorder ? '' : 'border border-[#1E3A8A]',
+    hasRounded ? '' : 'rounded-2xl',
+    hasPadding ? '' : 'p-5',
+    hasText ? '' : 'text-white',
+    'shadow-xl',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div className={`bg-white rounded-xl border border-slate-200 shadow-sm p-4 ${className}`} {...props}>
+    <div className={`${defaultClasses} ${className}`} {...props}>
       {children}
     </div>
   );
 };
+

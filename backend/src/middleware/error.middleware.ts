@@ -130,6 +130,23 @@ export function errorHandler(
     return;
   }
 
+  // 4. Handle PostgreSQL / Supabase invalid UUID data syntax (22P02)
+  if (
+    (err as any).code === '22P02' ||
+    (typeof err.message === 'string' &&
+      (err.message.includes('22P02') || err.message.includes('invalid input syntax for type uuid')))
+  ) {
+    logger.warn({ requestId, err: err.message }, 'Invalid input syntax format / UUID type error');
+    res.status(400).json({
+      success: false,
+      error: {
+        code: 'BAD_REQUEST',
+        message: 'Invalid resource identifier format.',
+      },
+    });
+    return;
+  }
+
   // 4. Fallback for unhandled unexpected server errors
   logger.error(
     {

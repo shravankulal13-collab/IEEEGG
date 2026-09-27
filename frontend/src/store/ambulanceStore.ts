@@ -51,7 +51,36 @@ export const useAmbulanceStore = create<AmbulanceState>((set) => ({
   updateStatus: async (ambulanceId: string, status: string, incidentId?: string) => {
     set({ isLoading: true, error: null });
     try {
-      const updated = await ambulanceService.updateStatus(ambulanceId, status, incidentId);
+      const current = useAmbulanceStore.getState().currentAmbulance;
+      const currentStatus = (current?.status || 'available').toLowerCase();
+      const targetStatus = status.toLowerCase();
+
+      const pathMap: Record<string, string[]> = {
+        'available->on_scene': ['dispatched', 'en_route_to_incident', 'on_scene'],
+        'available->transporting': ['dispatched', 'en_route_to_incident', 'on_scene', 'transporting'],
+        'available->en_route_to_incident': ['dispatched', 'en_route_to_incident'],
+        'dispatched->on_scene': ['en_route_to_incident', 'on_scene'],
+        'dispatched->transporting': ['en_route_to_incident', 'on_scene', 'transporting'],
+        'en_route_to_incident->transporting': ['on_scene', 'transporting'],
+        'on_scene->available': ['transporting', 'at_hospital', 'available'],
+      };
+
+      const key = `${currentStatus}->${targetStatus}`;
+      const intermediatePath = pathMap[key];
+
+      let updated: AmbulanceData | null = null;
+      if (intermediatePath && intermediatePath.length > 1) {
+        for (const step of intermediatePath) {
+          try {
+            updated = await ambulanceService.updateStatus(ambulanceId, step, incidentId);
+          } catch {
+            // continue through path
+          }
+        }
+      } else {
+        updated = await ambulanceService.updateStatus(ambulanceId, targetStatus, incidentId);
+      }
+
       set({ currentAmbulance: updated, isLoading: false });
     } catch (err: any) {
       set({ error: err.message, isLoading: false });

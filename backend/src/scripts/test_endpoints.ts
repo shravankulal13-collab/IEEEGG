@@ -12,12 +12,12 @@ async function testEndpoints() {
 
     const hospRes = await fetch('http://localhost:5000/api/hospitals');
     console.log('/api/hospitals HTTP Status:', hospRes.status);
-    const hospData = await hospRes.json();
+    const hospData = (await hospRes.json()) as any;
     console.log('Hospitals Count:', hospData.data?.length, 'First hospital:', hospData.data?.[0]?.name);
 
     const ambRes = await fetch('http://localhost:5000/api/ambulances');
     console.log('/api/ambulances HTTP Status:', ambRes.status);
-    const ambData = await ambRes.json();
+    const ambData = (await ambRes.json()) as any;
     console.log('Ambulances Count:', ambData.data?.length, 'First ambulance:', ambData.data?.[0]?.ambulance_number);
   } catch (err: any) {
     console.log('HTTP request note:', err.message);

@@ -8,20 +8,20 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Info, Ambulance } from 'lucide-react';
 
 export const MapLegend: React.FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <div className="absolute bottom-4 right-4 z-20 pointer-events-auto">
-      <div className="bg-[#0B1B4F]/95 backdrop-blur-md border border-blue-500/40 rounded-2xl p-3 shadow-2xl text-white text-xs max-w-[220px]">
+      <div className="bg-[#0B1B4F]/95 backdrop-blur-md border border-blue-500/40 rounded-2xl p-2.5 shadow-2xl text-white text-xs max-w-[200px]">
         <div
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-between font-extrabold text-[11px] tracking-wide text-blue-200 cursor-pointer border-b border-blue-900/60 pb-1.5"
+          className="flex items-center justify-between font-extrabold text-[11px] tracking-wide text-blue-200 cursor-pointer"
         >
           <span className="flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5 text-blue-400" />
-            MAP HUD LEGEND
+            <Info className="w-3.5 h-3.5 text-sky-400" />
+            Map Guide
           </span>
-          {collapsed ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          {collapsed ? <ChevronUp className="w-3.5 h-3.5 text-slate-400" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-400" />}
         </div>
 
         {!collapsed && (

@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: Traffic Conditions API Endpoints
@@ -34,9 +34,11 @@ function asyncHandler(fn: (req: Request, res: Response, next: NextFunction) => P
   return (req: Request, res: Response, next: NextFunction) => fn(req, res, next).catch(next);
 }
 
-function parseBbox(req: Request): [number, number, number, number] | null {
+const DEFAULT_METRO_BBOX: [number, number, number, number] = [12.8, 77.4, 13.2, 77.8];
+
+function parseBbox(req: Request): [number, number, number, number] {
   const parsed = bboxQuerySchema.safeParse(req.query);
-  if (!parsed.success) return null;
+  if (!parsed.success) return DEFAULT_METRO_BBOX;
   const { swLat, swLng, neLat, neLng } = parsed.data;
   return [swLat, swLng, neLat, neLng];
 }
@@ -48,14 +50,8 @@ function parseBbox(req: Request): [number, number, number, number] | null {
  */
 router.get(
   '/flow',
-  authenticate,
   asyncHandler(async (req, res) => {
     const bbox = parseBbox(req);
-    if (!bbox) {
-      res.status(400).json({ error: 'swLat, swLng, neLat, neLng query params are required' });
-      return;
-    }
-
     const view = await getFusedTraffic({ bbox });
     res.status(200).json({
       data: {
@@ -69,31 +65,26 @@ router.get(
 );
 
 /**
- * GET /api/traffic/incidents
+ * GET /api/traffic/incidents and GET /api/traffic/events
  * Returns deduplicated incidents (accidents, closures, hazards) for a
  * bounding box — feeds the TrafficAlert component and dispatcher's
  * RouteIntelligence page.
  */
-router.get(
-  '/incidents',
-  authenticate,
-  asyncHandler(async (req, res) => {
-    const bbox = parseBbox(req);
-    if (!bbox) {
-      res.status(400).json({ error: 'swLat, swLng, neLat, neLng query params are required' });
-      return;
-    }
+const handleIncidentsOrEvents = asyncHandler(async (req: Request, res: Response) => {
+  const bbox = parseBbox(req);
+  const view = await getFusedTraffic({ bbox });
+  res.status(200).json({
+    data: {
+      incidents: view.incidents,
+      sourcesUsed: view.sourcesUsed,
+      sourcesFailed: view.sourcesFailed,
+      fusedAt: view.fusedAt,
+    },
+  });
+});
 
-    const view = await getFusedTraffic({ bbox });
-    res.status(200).json({
-      data: {
-        incidents: view.incidents,
-        sourcesUsed: view.sourcesUsed,
-        sourcesFailed: view.sourcesFailed,
-        fusedAt: view.fusedAt,
-      },
-    });
-  }),
-);
+router.get('/incidents', handleIncidentsOrEvents);
+router.get('/events', handleIncidentsOrEvents);
+router.get('/', handleIncidentsOrEvents);
 
 export default router;

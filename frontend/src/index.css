@@ -15,21 +15,21 @@ NOTE: Shared dependency -- changes require team coordination.
   --navy-dark: #0A192F;
   --navy-hero: #0B1B4F;
   --navy-royal: #081B5E;
-  --navy-deep: #050F2C;
+  --navy-deep: #061136;
   --emergency-red: #E50914;
   --emergency-red-hover: #D9232D;
   --emergency-red-dark: #B80710;
-  --bg-slate: #F4F7FB;
-  --bg-light: #F8FAFC;
+  --bg-slate: #061136;
+  --bg-light: #0B1B4F;
   --white: #FFFFFF;
   --text-dark: #0F172A;
-  --text-muted: #64748B;
-  --text-slate: #475569;
-  --border-light: #E2E8F0;
+  --text-muted: #94A3B8;
+  --text-slate: #CBD5E1;
+  --border-light: rgba(255, 255, 255, 0.1);
 
   font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: var(--text-dark);
-  background-color: var(--bg-slate);
+  color: #F8FAFC;
+  background-color: #061136;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -41,8 +41,10 @@ NOTE: Shared dependency -- changes require team coordination.
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg-slate);
-  color: var(--text-dark);
+  background-color: #061136;
+  background-image: radial-gradient(circle at 50% 0%, #102B7B 0%, #0B1B4F 40%, #061136 100%);
+  background-attachment: fixed;
+  color: #F8FAFC;
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
   min-height: 100vh;
 }

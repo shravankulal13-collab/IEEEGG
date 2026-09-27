@@ -24,13 +24,13 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col items-center justify-center p-8 text-center bg-red-50/50 border border-red-200 rounded-2xl ${className}`}
+      className={`flex flex-col items-center justify-center p-8 text-center bg-red-950/40 border border-red-500/40 rounded-3xl shadow-xl text-white ${className}`}
     >
-      <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 mb-4">
+      <div className="w-12 h-12 rounded-2xl bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400 mb-4">
         <AlertOctagon className="w-6 h-6" />
       </div>
-      <h3 className="text-base font-bold text-red-950 mb-1">{title}</h3>
-      <p className="text-xs text-red-700 max-w-sm mb-4 leading-relaxed">{message}</p>
+      <h3 className="text-base font-extrabold text-white mb-1">{title}</h3>
+      <p className="text-xs text-red-200 max-w-sm mb-4 leading-relaxed font-medium">{message}</p>
       {onRetry && (
         <Button variant="danger" size="sm" onClick={onRetry}>
           <RefreshCw className="w-4 h-4 mr-1.5" />

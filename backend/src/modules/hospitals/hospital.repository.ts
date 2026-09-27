@@ -1,4 +1,4 @@
-import { query } from '../../config/database.js';
+import { isValidUuid, query } from '../../config/database.js';
 
 export class HospitalRepository {
   public async getAllHospitals() {
@@ -17,11 +17,13 @@ export class HospitalRepository {
   }
 
   public async getHospitalById(id: string) {
+    if (!isValidUuid(id)) return null;
     const result = await query('SELECT * FROM hospitals WHERE id = $1', [id]);
     return result.rows[0] || null;
   }
 
   public async getDoctors(hospitalId: string) {
+    if (!isValidUuid(hospitalId)) return [];
     const result = await query(
       'SELECT * FROM hospital_doctors WHERE hospital_id = $1 ORDER BY name ASC',
       [hospitalId]
@@ -92,6 +94,7 @@ export class HospitalRepository {
   }
 
   public async getResources(hospitalId: string) {
+    if (!isValidUuid(hospitalId)) return [];
     const result = await query(
       'SELECT * FROM hospital_resources WHERE hospital_id = $1 ORDER BY resource_type ASC',
       [hospitalId]

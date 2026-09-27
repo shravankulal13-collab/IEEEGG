@@ -58,8 +58,7 @@ export const Notifications: React.FC = () => {
         subtitle="Real-time multi-agency notifications, radio dispatch audio alerts, and municipal broadcasts"
 
         actions={
-          <Button variant="outline" size="sm" onClick={() => navigate('/dispatcher')}>
-
+          <Button variant="outline" size="sm" onClick={() => navigate('/dispatcher')} className="border-white/20 text-white hover:bg-white/10">
             Command Center
           </Button>
         }
@@ -69,41 +68,43 @@ export const Notifications: React.FC = () => {
         {/* Left: Feed of Real-time Notifications */}
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Bell className="w-4 h-4 text-sky-400" />
               <span>Priority Notification Feed</span>
             </h3>
-            <span className="text-xs text-slate-500">Auto-updating</span>
+            <span className="text-xs text-slate-400">Auto-updating</span>
           </div>
 
           {notifications.map((notif) => (
             <div
               key={notif.id}
-              className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm flex items-start gap-3.5 hover-lift"
+              className="p-4 bg-[#0B1B4F] rounded-2xl border border-[#1E3A8A] shadow-xl flex items-start gap-3.5 hover-lift text-white"
             >
-
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-slate-900">{notif.title}</h4>
-                  <span className="text-[10px] text-slate-400">{notif.time}</span>
+                  <h4 className="text-xs font-bold text-white">{notif.title}</h4>
+                  <span className="text-[10px] text-slate-400 font-mono">{notif.time}</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-1 leading-relaxed">{notif.desc}</p>
+                <p className="text-xs text-slate-300 mt-1 leading-relaxed">{notif.desc}</p>
               </div>
             </div>
           ))}
         </div>
 
         {/* Right: Broadcast Alert Launcher */}
-        <div className="lg:col-span-5 bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm">
-          <h3 className="text-sm font-bold text-slate-900 mb-2">Send Municipal Broadcast Alert</h3>
-          <p className="text-xs text-slate-500 mb-4">
+        <div className="lg:col-span-5 bg-[#0B1B4F] rounded-3xl p-6 border border-[#1E3A8A] shadow-xl text-white">
+          <div className="flex items-center gap-2 mb-2">
+            <Siren className="w-5 h-5 text-rose-400" />
+            <h3 className="text-sm font-bold text-white">Send Municipal Broadcast Alert</h3>
+          </div>
+          <p className="text-xs text-slate-300 mb-4">
             Push instant emergency notifications to all on-duty drivers, hospital intake staff, and citizen devices.
           </p>
 
           {sentSuccess && (
-            <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-xs font-semibold text-emerald-800">
-
-              <span>Broadcast dispatched to all connected WebSocket clients!</span>
+            <div className="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2 text-xs font-semibold text-emerald-400">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>Emergency alert broadcast dispatched successfully across all channels!</span>
             </div>
           )}
 
@@ -113,11 +114,11 @@ export const Notifications: React.FC = () => {
               value={broadcastText}
               onChange={(e) => setBroadcastText(e.target.value)}
               placeholder="e.g. Flash Flood Alert: Avoid Low-Lying Underpasses in Sector 4..."
-              className="w-full p-3 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-500 bg-white"
+              className="w-full p-3 text-xs border border-white/15 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 bg-slate-900/80 text-white placeholder:text-slate-400"
             />
 
             <Button variant="danger" fullWidth type="submit">
-
+              <Send className="w-4 h-4 mr-1.5" />
               Publish Priority Broadcast
             </Button>
           </form>

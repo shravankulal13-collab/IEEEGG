@@ -32,29 +32,17 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         background: 'radial-gradient(circle at 40% 20%, #102B7B 0%, #0B1B4F 60%, #061136 100%)',
       }}
     >
-      {/* Ambient background particles & grid glow */}
-      <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
-        style={{
-          backgroundImage: `radial-gradient(rgba(56, 189, 248, 0.4) 1px, transparent 1px)`,
-          backgroundSize: '24px 24px',
-        }}
-      />
+      {/* Ambient background glow */}
       <div className="absolute -top-24 -left-24 w-60 h-60 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -right-24 w-60 h-60 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="space-y-2 max-w-3xl">
-          {/* Pill Tag */}
-          <div className="flex items-center gap-2.5 flex-wrap">
-            {pillTag ? (
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-sky-300 shadow-xs backdrop-blur-xs">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <span>{pillTag}</span>
-              </div>
-            ) : null}
-            {badge}
-          </div>
+          {badge && (
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {badge}
+            </div>
+          )}
 
           {/* Heading */}
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white leading-snug">

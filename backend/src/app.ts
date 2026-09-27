@@ -60,6 +60,7 @@ export function createApp(): Application {
   app.use(cookieParser());
 
   // 6. Mount Central API
+  app.use('/api/v1', routes);
   app.use('/api', routes);
 
   // 7. Root ping & simple health route

@@ -12,40 +12,41 @@ export const NotFound: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#0A192F] text-white flex flex-col justify-center items-center px-4 font-sans text-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-transparent pointer-events-none" />
+    <div className="min-h-screen bg-[#061136] text-white flex flex-col justify-center items-center px-4 font-sans text-center relative overflow-hidden">
+      <div className="fixed -top-40 -left-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="fixed bottom-0 -right-40 w-96 h-96 bg-red-600/15 rounded-full blur-3xl pointer-events-none z-0" />
 
-      <div className="relative z-10 max-w-lg mx-auto">
-        <div className="w-20 h-20 rounded-3xl bg-[#E50914] text-white flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-red-600/40 animate-bounce">
-
+      <div className="relative z-10 max-w-lg mx-auto bg-[#0B1B4F] border border-[#1E3A8A] rounded-3xl p-8 shadow-2xl space-y-4">
+        <div className="w-16 h-16 rounded-3xl bg-red-600/20 border border-red-500/40 text-rose-400 flex items-center justify-center mx-auto shadow-xl shadow-red-600/20">
+          <ShieldAlert className="w-8 h-8" />
         </div>
 
-        <span className="text-sm font-extrabold uppercase tracking-widest text-red-500 mb-2 block">
-          Error 404 | Incident Unreachable
+        <span className="text-xs font-black uppercase tracking-widest text-rose-400 block">
+          404 • Page Not Found
         </span>
 
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 text-white">
-          Page Not Found
+        <h1 className="text-3xl sm:text-4xl font-black text-white">
+          Incident Unreachable
         </h1>
 
-        <p className="text-sm sm:text-base text-slate-400 mb-8 leading-relaxed">
-          The requested coordinate or platform subsystem does not exist or has been relocated by emergency command.
+        <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+          The requested coordinate or subsystem does not exist or has been relocated by emergency command.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <button
             onClick={() => navigate('/')}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg transition active:scale-95 cursor-pointer"
           >
-
+            <Home className="w-4 h-4" />
             <span>Return Home</span>
           </button>
 
           <button
             onClick={() => navigate('/citizen/report')}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-[#E50914] hover:bg-[#D9232D] text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg shadow-red-600/40 transition-transform hover:scale-105 active:scale-95"
+            className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-[#E50914] hover:bg-[#D9232D] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-red-600/40 transition active:scale-95 cursor-pointer"
           >
-
+            <Siren className="w-4 h-4" />
             <span>Emergency SOS</span>
           </button>
         </div>
@@ -53,3 +54,6 @@ export const NotFound: React.FC = () => {
     </div>
   );
 };
+
+export default NotFound;
+

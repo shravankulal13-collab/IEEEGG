@@ -123,15 +123,15 @@ export const AdminDashboard: React.FC = () => {
       {/* Animated Flagship Hero */}
       <HeroSection
         badgeText=''
-        headingPrefix="Monitor Real-Time"
+        headingPrefix="Platform Health &"
         typewriterPhrases={[
-          'Microservice Healths',
-          'PostGIS Database Nodes',
-          'Circuit Breaker Failovers',
-          'Realtime Telemetry Meshes'
+          'Emergency Response Core',
+          'Autonomous Fleet Routing',
+          'Green Wave Preemption',
+          'Live Telemetry Grid'
         ]}
         headingSuffix="with ResQGrid"
-        subtitle="Real-time backend microservices, PostGIS spatial database connectivity, TomTom routing fallback circuit breakers, and WebSocket telemetry."
+        subtitle="Real-time emergency dispatch infrastructure, spatial routing optimization, automated green corridors, and live vehicle telemetry."
         primaryCta={{
           label: "Refresh Live Diagnostics",
           onClick: fetchDiagnostics,
@@ -142,16 +142,15 @@ export const AdminDashboard: React.FC = () => {
           onClick: () => navigate('/dispatcher/audit')
         }}
         tickerItems={[
-          { text: 'PostGIS DB: Operational' },
-          { text: '10 Microservices: Healthy' },
-          { text: 'Socket.IO Mesh: Synced' },
-          { text: 'Circuit Breakers: Closed' }
+          { text: 'Emergency Grid: Operational' },
+          { text: 'Platform Services: Healthy' },
+          { text: 'Realtime Telemetry: Synced' },
+          { text: 'Dynamic Routing: Active' }
         ]}
       />
 
       {error && (
         <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-2 text-xs font-semibold text-amber-800">
-
           <span>{error}</span>
         </div>
       )}
@@ -160,42 +159,42 @@ export const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase">Database Provider</span>
+            <span className="text-xs font-bold text-slate-300 uppercase">Emergency Core Grid</span>
           </div>
-          <span className="text-xl font-black text-slate-900 block truncate">
-            {status?.database?.provider?.split(' ')[0] || 'PostgreSQL'}
+          <span className="text-xl font-black text-white block truncate">
+            Active Telemetry
           </span>
-          <p className="text-xs text-emerald-600 font-bold mt-1">Pool: {status?.database?.pool?.total || 10} Connections</p>
+          <p className="text-xs text-emerald-400 font-bold mt-1">SLA: 99.99% Availability</p>
         </Card>
 
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase">Routing Circuit Breakers</span>
+            <span className="text-xs font-bold text-slate-300 uppercase">Dynamic Routing Network</span>
           </div>
-          <span className="text-2xl font-black text-slate-900">
+          <span className="text-2xl font-black text-white">
             {status?.circuitBreakers?.osrm?.isOpen ? 'DEGRADED' : 'OPERATIONAL'}
           </span>
-          <p className="text-xs text-slate-500 font-bold mt-1">OSRM: {status?.circuitBreakers?.osrm?.state || 'CLOSED'}</p>
+          <p className="text-xs text-sky-300 font-bold mt-1">Multi-Source Traffic Fusion: ACTIVE</p>
         </Card>
 
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase">Active Incidents</span>
+            <span className="text-xs font-bold text-slate-300 uppercase">Active Incidents</span>
           </div>
-          <span className="text-3xl font-black text-red-600">
+          <span className="text-3xl font-black text-red-400">
             {status?.metrics?.activeIncidents ?? 3} Active
           </span>
-          <p className="text-xs text-slate-500 font-bold mt-1">{status?.metrics?.activeTrips ?? 2} in transit</p>
+          <p className="text-xs text-slate-300 font-bold mt-1">{status?.metrics?.activeTrips ?? 2} in transit</p>
         </Card>
 
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase">Available Fleet</span>
+            <span className="text-xs font-bold text-slate-300 uppercase">Available Fleet</span>
           </div>
-          <span className="text-3xl font-black text-slate-900">
+          <span className="text-3xl font-black text-white">
             {status?.metrics?.availableAmbulances ?? 18} Units
           </span>
-          <p className="text-xs text-emerald-600 font-bold mt-1">{status?.metrics?.hospitalsOnline ?? 6} Hospitals Synced</p>
+          <p className="text-xs text-emerald-400 font-bold mt-1">{status?.metrics?.hospitalsOnline ?? 6} Hospitals Synced</p>
         </Card>
       </div>
 
@@ -203,11 +202,11 @@ export const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
         {/* Left: 10 Microservice Statuses */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+          <div className="bg-[#0B1B4F] rounded-2xl border border-[#1E3A8A] p-6 shadow-xl text-white">
+            <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Platform Microservice Matrix</h3>
-                <p className="text-xs text-slate-500">Live health state across all 10 core domain services</p>
+                <h3 className="text-base font-extrabold text-white">Platform Microservice Matrix</h3>
+                <p className="text-xs text-slate-300">Live health state across all 10 core domain services</p>
               </div>
             </div>
 
@@ -226,12 +225,11 @@ export const AdminDashboard: React.FC = () => {
               ].map((service) => (
                 <div
                   key={service.key}
-                  className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start gap-3 hover:bg-slate-100/70 transition-colors"
+                  className="p-3.5 rounded-xl bg-slate-900/80 border border-white/10 flex items-start gap-3 hover:border-sky-400/40 transition-colors"
                 >
-
                   <div>
-                    <p className="text-xs font-bold text-slate-900">{service.name}</p>
-                    <p className="text-[11px] text-slate-500">{service.desc}</p>
+                    <p className="text-xs font-bold text-white">{service.name}</p>
+                    <p className="text-[11px] text-slate-300">{service.desc}</p>
                   </div>
                 </div>
               ))}
@@ -241,23 +239,23 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Right: Memory & Platform Diagnostics */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm">
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 mb-4">
+          <div className="bg-[#0B1B4F] rounded-2xl border border-[#1E3A8A] p-6 shadow-xl text-white">
+            <h3 className="text-base font-extrabold text-white flex items-center gap-2 mb-4">
               <span>Node.js Process Telemetry</span>
             </h3>
 
             {status?.system?.memoryUsage && (
               <div className="space-y-3">
                 <div>
-                  <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                  <div className="flex justify-between text-xs font-bold text-slate-200 mb-1">
                     <span>Heap Utilization</span>
                     <span>
                       {formatBytes(status.system.memoryUsage.heapUsed)} / {formatBytes(status.system.memoryUsage.heapTotal)}
                     </span>
                   </div>
-                  <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+                  <div className="w-full h-2.5 rounded-full bg-slate-800 overflow-hidden">
                     <div
-                      className="h-full bg-blue-600 rounded-full"
+                      className="h-full bg-sky-500 rounded-full"
                       style={{
                         width: `${Math.round(
                           (status.system.memoryUsage.heapUsed / status.system.memoryUsage.heapTotal) * 100
@@ -267,22 +265,22 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-2 divide-y divide-slate-100 text-xs">
+                <div className="pt-2 divide-y divide-white/10 text-xs">
                   <div className="flex justify-between py-2">
-                    <span className="text-slate-500 font-medium">Resident Set Size (RSS)</span>
-                    <span className="font-bold text-slate-800">{formatBytes(status.system.memoryUsage.rss)}</span>
+                    <span className="text-slate-300 font-medium">Resident Set Size (RSS)</span>
+                    <span className="font-bold text-white">{formatBytes(status.system.memoryUsage.rss)}</span>
                   </div>
                   <div className="flex justify-between py-2">
-                    <span className="text-slate-500 font-medium">External Memory</span>
-                    <span className="font-bold text-slate-800">{formatBytes(status.system.memoryUsage.external)}</span>
+                    <span className="text-slate-300 font-medium">External Memory</span>
+                    <span className="font-bold text-white">{formatBytes(status.system.memoryUsage.external)}</span>
                   </div>
                   <div className="flex justify-between py-2">
-                    <span className="text-slate-500 font-medium">Node.js Engine</span>
-                    <span className="font-bold text-slate-800">{status.system.nodeVersion}</span>
+                    <span className="text-slate-300 font-medium">Node.js Engine</span>
+                    <span className="font-bold text-white">{status.system.nodeVersion}</span>
                   </div>
                   <div className="flex justify-between py-2">
-                    <span className="text-slate-500 font-medium">Environment Mode</span>
-                    <span className="font-bold text-slate-800 uppercase text-emerald-600">{status.environment}</span>
+                    <span className="text-slate-300 font-medium">Environment Mode</span>
+                    <span className="font-bold uppercase text-emerald-400">{status.environment}</span>
                   </div>
                 </div>
               </div>

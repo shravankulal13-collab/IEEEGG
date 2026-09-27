@@ -60,7 +60,6 @@ export const HospitalDashboard: React.FC = () => {
   return (
     <AppShell sidebarVariant='top'>
       <HeroSection
-        badgeText={`${activeHospital?.name || 'Medical Emergency'} Intake Center`}
         headingPrefix="Coordinate Rapid"
         typewriterPhrases={[
           'ICU Bed Allocations',
@@ -91,63 +90,87 @@ export const HospitalDashboard: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase">Available ICU Beds</span>
-            <Building2 className="w-5 h-5 text-emerald-600" />
+            <span className="text-xs font-bold text-slate-300 uppercase">Available ICU Beds</span>
+            <Building2 className="w-5 h-5 text-emerald-400" />
           </div>
-          <span className="text-3xl font-black text-slate-900">{icuAvailable} / {icuTotal}</span>
-          <p className="text-xs text-emerald-600 font-bold mt-1">{activeHospital ? `${Math.round((icuAvailable / Math.max(icuTotal, 1)) * 100)}% Available` : 'Syncing...'}</p>
+          <span className="text-3xl font-black text-white">{icuAvailable} / {icuTotal}</span>
+          <p className="text-xs text-emerald-400 font-bold mt-1">{activeHospital ? `${Math.round((icuAvailable / Math.max(icuTotal, 1)) * 100)}% Available` : 'Syncing...'}</p>
         </Card>
 
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase">Emergency Beds</span>
-            <Activity className="w-5 h-5 text-blue-600" />
+            <span className="text-xs font-bold text-slate-300 uppercase">Emergency Beds</span>
+            <Activity className="w-5 h-5 text-sky-400" />
           </div>
-          <span className="text-3xl font-black text-slate-900">{emergencyAvailable} Free</span>
-          <p className="text-xs text-blue-600 font-bold mt-1">Available for triage</p>
+          <span className="text-3xl font-black text-white">{emergencyAvailable} Free</span>
+          <p className="text-xs text-sky-300 font-bold mt-1">Available for triage</p>
         </Card>
 
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase">Specialists On Duty</span>
-            <Users className="w-5 h-5 text-purple-600" />
+            <span className="text-xs font-bold text-slate-300 uppercase">Specialists On Duty</span>
+            <Users className="w-5 h-5 text-purple-400" />
           </div>
-          <span className="text-3xl font-black text-slate-900">{doctors.length || (activeHospital?.onCallSpecialists?.length ?? 0)} Doctors</span>
-          <p className="text-xs text-purple-600 font-bold mt-1">Active Roster</p>
+          <span className="text-3xl font-black text-white">{doctors.length || (activeHospital?.onCallSpecialists?.length ?? 0)} Doctors</span>
+          <p className="text-xs text-purple-300 font-bold mt-1">Active Roster</p>
         </Card>
 
         <Card className="hover-lift">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-500 uppercase">Inbound In Triage</span>
-            <HeartPulse className="w-5 h-5 text-red-600 animate-pulse" />
+            <span className="text-xs font-bold text-slate-300 uppercase">Inbound In Triage</span>
+            <HeartPulse className="w-5 h-5 text-red-400 animate-pulse" />
           </div>
-          <span className="text-3xl font-black text-red-600">{incomingPatients.length} Inbound</span>
-          <p className="text-xs text-slate-500 font-bold mt-1">Live Telemetry Queue</p>
+          <span className="text-3xl font-black text-red-400">{incomingPatients.length} Inbound</span>
+          <p className="text-xs text-slate-300 font-bold mt-1">Live Telemetry Queue</p>
         </Card>
       </div>
+
+      {/* Hospital Selector Dropdown */}
+      {hospitals.length > 0 && (
+        <div className="bg-[#0B1B4F] p-4 rounded-2xl border border-[#1E3A8A] shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 text-white">
+          <div className="flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-sky-400" />
+            <span className="text-xs font-bold text-white">Active Hospital Center:</span>
+          </div>
+          <select
+            value={activeHospital?.id || ''}
+            onChange={(e) => {
+              setSelectedHospital(e.target.value);
+              fetchHospitalDashboard(e.target.value);
+            }}
+            className="w-full sm:w-auto px-4 py-2 bg-slate-900/90 border border-white/20 rounded-xl text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-sky-400 cursor-pointer"
+          >
+            {hospitals.map((h) => (
+              <option key={h.id} value={h.id} className="bg-slate-900 text-white">
+                {h.name} ({h.city || 'India'})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {isLoading && (
         <div className="py-12 flex flex-col items-center justify-center">
           <Spinner size="lg" />
-          <p className="text-xs font-bold text-slate-500 mt-3">Loading medical center dashboard from database...</p>
+          <p className="text-xs font-bold text-slate-300 mt-3">Loading medical center dashboard...</p>
         </div>
       )}
 
       {error && !isLoading && (
         <div className="my-6">
-          <ErrorState message={`Database Error: ${error}`} onRetry={() => fetchHospitals()} />
+          <ErrorState message={`Unable to load dashboard: ${error}`} onRetry={() => fetchHospitals()} />
         </div>
       )}
 
       {!isLoading && !error && (
-        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm mb-8">
+        <div className="bg-[#0B1B4F] rounded-3xl border border-[#1E3A8A] p-6 shadow-xl mb-8 text-white">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-extrabold text-slate-900">Inbound Emergency Transports</h3>
-              <p className="text-xs text-slate-500">Live pre-arrival telemetry streamed from in-transit paramedical units</p>
+              <h3 className="text-lg font-extrabold text-white">Inbound Emergency Transports</h3>
+              <p className="text-xs text-slate-300">Live pre-arrival telemetry streamed from in-transit paramedical units</p>
             </div>
             {incomingPatients.length > 0 && (
-              <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold animate-pulse">
+              <span className="px-3 py-1 bg-red-500/20 text-red-300 border border-red-500/40 rounded-full text-xs font-bold animate-pulse">
                 Active Inbound Stream
               </span>
             )}
@@ -156,45 +179,45 @@ export const HospitalDashboard: React.FC = () => {
           {incomingPatients.length === 0 ? (
             <EmptyState
               title="No Inbound Patients"
-              description="There are currently no ambulances in-transit to this hospital center in the database."
+              description="There are currently no inbound emergency ambulances assigned to this trauma unit."
             />
           ) : (
             <div className="space-y-4">
               {incomingPatients.map((patient) => (
                 <div
                   key={patient.incident_id}
-                  className="p-5 bg-slate-50 rounded-2xl border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-slate-100/70 transition-colors"
+                  className="p-5 bg-slate-900/80 rounded-2xl border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-sky-400/40 transition-colors text-white"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-md">
-                      <Ambulance className="w-6 h-6 text-white" />
+                    <div className="w-12 h-12 rounded-xl bg-red-600/20 border border-red-500/30 text-red-400 flex items-center justify-center font-black text-lg shrink-0 shadow-md">
+                      <Ambulance className="w-6 h-6 text-red-400" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="text-base font-extrabold text-slate-900">{patient.patient_condition || 'Emergency Inbound'}</h4>
-                        <span className="font-mono text-xs font-bold bg-slate-200 px-2 py-0.5 rounded text-slate-700">
+                        <h4 className="text-base font-extrabold text-white">{patient.patient_condition || 'Emergency Inbound'}</h4>
+                        <span className="font-mono text-xs font-bold bg-white/10 border border-white/15 px-2 py-0.5 rounded text-sky-300">
                           {patient.incident_id}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600 mt-1 font-semibold">
+                      <p className="text-xs text-slate-300 mt-1 font-semibold">
                         Unit: {patient.ambulance_number} | Driver: {patient.driver_name}
                       </p>
                       {patient.vitals && (
-                        <div className="mt-2 flex items-center gap-2 text-xs font-mono font-bold text-red-700 bg-red-50 px-2.5 py-1 rounded-lg border border-red-200">
-                          <HeartPulse className="w-3.5 h-3.5 shrink-0" />
+                        <div className="mt-2 flex items-center gap-2 text-xs font-mono font-bold text-red-300 bg-red-950/60 px-2.5 py-1 rounded-lg border border-red-500/30">
+                          <HeartPulse className="w-3.5 h-3.5 shrink-0 text-red-400" />
                           <span>HR: {patient.vitals.heart_rate || '--'} bpm | SpO2: {patient.vitals.spo2 || '--'}% | BP: {patient.vitals.bp || '--'}</span>
                         </div>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 text-right w-full md:w-auto justify-between md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-slate-200">
+                  <div className="flex items-center gap-4 text-right w-full md:w-auto justify-between md:justify-end pt-2 md:pt-0 border-t md:border-t-0 border-white/10">
                     <div>
                       <span className="text-[10px] text-slate-400 font-bold block uppercase">ETA</span>
-                      <span className="text-2xl font-black text-red-600">{patient.eta_minutes} min</span>
+                      <span className="text-2xl font-black text-emerald-400 font-mono">{patient.eta_minutes} min</span>
                     </div>
                     <Button
-                      variant="outline"
+                      variant="primary"
                       size="sm"
                       onClick={() => navigate('/hospital/emergency')}
                       className="whitespace-nowrap"
@@ -211,37 +234,43 @@ export const HospitalDashboard: React.FC = () => {
       )}
 
       {/* Quick Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-6 lg:px-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
         <Card
           onClick={() => navigate('/hospital/resources')}
-          className="cursor-pointer hover-lift flex items-center gap-3 p-5"
+          className="cursor-pointer hover-lift flex items-center gap-4 p-5 bg-[#0B1B4F] border border-[#1E3A8A] text-white"
         >
-
-
+          <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-400/20 text-sky-400 flex items-center justify-center shrink-0">
+            <Building2 className="w-6 h-6" />
+          </div>
           <div>
-            <h4 className="text-sm font-bold text-slate-900">Bed & ICU Resources</h4>
-            <p className="text-xs text-slate-500">Manage ventilators, ward allocation</p>
+            <h4 className="text-sm font-extrabold text-white">Bed & ICU Resources</h4>
+            <p className="text-xs text-slate-300">Manage ventilators, ward allocation</p>
           </div>
         </Card>
 
         <Card
           onClick={() => navigate('/hospital/doctors')}
-          className="cursor-pointer hover-lift flex items-center gap-3 p-5"
+          className="cursor-pointer hover-lift flex items-center gap-4 p-5 bg-[#0B1B4F] border border-[#1E3A8A] text-white"
         >
+          <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-400/20 text-purple-400 flex items-center justify-center shrink-0">
+            <Users className="w-6 h-6" />
+          </div>
           <div>
-            <h4 className="text-sm font-bold text-slate-900">Doctors On-Call</h4>
-            <p className="text-xs text-slate-500">Medical specialist roster</p>
+            <h4 className="text-sm font-extrabold text-white">Doctors On-Call</h4>
+            <p className="text-xs text-slate-300">Medical specialist roster</p>
           </div>
         </Card>
 
         <Card
           onClick={() => navigate('/hospital/history')}
-          className="cursor-pointer hover-lift flex items-center gap-3 p-5"
+          className="cursor-pointer hover-lift flex items-center gap-4 p-5 bg-[#0B1B4F] border border-[#1E3A8A] text-white"
         >
-
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-400/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <Activity className="w-6 h-6" />
+          </div>
           <div>
-            <h4 className="text-sm font-bold text-slate-900">Emergency History</h4>
-            <p className="text-xs text-slate-500">Admissions & outcome logs</p>
+            <h4 className="text-sm font-extrabold text-white">Emergency History</h4>
+            <p className="text-xs text-slate-300">Admissions & outcome logs</p>
           </div>
         </Card>
       </div>

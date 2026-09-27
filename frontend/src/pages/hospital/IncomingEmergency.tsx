@@ -25,15 +25,14 @@ export const IncomingEmergency: React.FC = () => {
   return (
     <AppShell sidebarVariant='top'>
       <PageHeader
-        pillTag="DEMO / SIMULATION Medical Inbound Stream"
-        title="Live Inbound Patient Telemetry [SIMULATION]"
-        subtitle="Simulated cardiac waveform, oxygen saturation, and paramedic telemetry stream"
+        title="Live Inbound Patient Telemetry"
+        subtitle="Real-time cardiac waveform, oxygen saturation, and paramedic telemetry stream"
         actions={
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigate('/hospital')}
-            className="border-slate-300 text-slate-700 hover:bg-slate-100"
+            className="border-white/20 text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-4 h-4 mr-1.5" />
             Back to Intake Dashboard
@@ -43,49 +42,49 @@ export const IncomingEmergency: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
         {/* Left: Live Vitals Monitor */}
-        <div className="lg:col-span-8 bg-slate-950 text-white rounded-3xl p-6 border border-slate-800 shadow-2xl space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="lg:col-span-8 bg-[#0B1B4F] text-white rounded-3xl p-6 border border-[#1E3A8A] shadow-2xl space-y-6">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
             <div className="flex items-center gap-3">
               <div>
                 <h3 className="text-base font-extrabold text-white">Live Onboard ECG & Biometrics</h3>
-                <p className="text-xs text-slate-400">Streamed from AMB-104 via Socket.IO Real-time Mesh</p>
+                <p className="text-xs text-slate-300">Streamed from AMB-104 Telemetry Link</p>
               </div>
             </div>
-            <span className="px-3 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded-full text-xs font-mono font-bold">
+            <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-mono font-bold">
               SIGNAL SYNC 99.8%
             </span>
           </div>
 
           {/* 4 Biometric Gauges */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 text-center">
+            <div className="p-4 bg-slate-900/80 rounded-2xl border border-white/10 text-center">
               <span className="text-[10px] text-slate-400 font-bold uppercase block">HEART RATE</span>
-              <span className="text-3xl font-black text-red-500">142</span>
-              <span className="text-xs text-slate-400 ml-1">bpm (Tachycardia)</span>
+              <span className="text-3xl font-black text-rose-500">142</span>
+              <span className="text-xs text-slate-300 ml-1">bpm (Tachycardia)</span>
             </div>
 
-            <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 text-center">
+            <div className="p-4 bg-slate-900/80 rounded-2xl border border-white/10 text-center">
               <span className="text-[10px] text-slate-400 font-bold uppercase block">OXYGEN SpO2</span>
               <span className="text-3xl font-black text-amber-400">89%</span>
-              <span className="text-xs text-slate-400 ml-1">(On 15L O2)</span>
+              <span className="text-xs text-slate-300 ml-1">(On 15L O2)</span>
             </div>
 
-            <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 text-center">
+            <div className="p-4 bg-slate-900/80 rounded-2xl border border-white/10 text-center">
               <span className="text-[10px] text-slate-400 font-bold uppercase block">BLOOD PRESSURE</span>
-              <span className="text-3xl font-black text-blue-400">85/55</span>
-              <span className="text-xs text-slate-400 ml-1">mmHg</span>
+              <span className="text-3xl font-black text-sky-400">85/55</span>
+              <span className="text-xs text-slate-300 ml-1">mmHg</span>
             </div>
 
-            <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 text-center">
+            <div className="p-4 bg-slate-900/80 rounded-2xl border border-white/10 text-center">
               <span className="text-[10px] text-slate-400 font-bold uppercase block">GLASGOW COMA (GCS)</span>
               <span className="text-3xl font-black text-purple-400">E3V4M5</span>
-              <span className="text-xs text-slate-400 ml-1">Score: 12</span>
+              <span className="text-xs text-slate-300 ml-1">Score: 12</span>
             </div>
           </div>
 
           {/* Simulated Waveform Canvas */}
-          <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 relative h-32 flex items-center justify-center overflow-hidden">
-            <svg className="w-full h-full text-emerald-500">
+          <div className="bg-slate-900/90 p-4 rounded-2xl border border-white/10 relative h-32 flex items-center justify-center overflow-hidden">
+            <svg className="w-full h-full text-emerald-400">
               <path
                 d="M 0 60 L 80 60 L 95 10 L 110 110 L 125 60 L 190 60 L 205 10 L 220 110 L 235 60 L 300 60 L 315 10 L 330 110 L 345 60 L 410 60 L 425 10 L 440 110 L 455 60 L 520 60 L 535 10 L 550 110 L 565 60 L 630 60 L 645 10 L 660 110 L 675 60 L 740 60 L 755 10 L 770 110 L 785 60 L 850 60"
                 fill="none"
@@ -100,33 +99,32 @@ export const IncomingEmergency: React.FC = () => {
 
         {/* Right: Hospital Medical Team Readiness Controls */}
         <div className="lg:col-span-4 space-y-6">
-          <Card>
-            <h3 className="text-sm font-extrabold text-slate-900 mb-3">Medical Team Preparation</h3>
+          <Card className="bg-[#0B1B4F] border border-[#1E3A8A] shadow-xl text-white p-5">
+            <h3 className="text-sm font-extrabold text-white mb-3">Medical Team Preparation</h3>
             <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200/80">
-                <span className="font-bold text-slate-800">Cath-Lab Theater #2</span>
+              <div className="flex items-center justify-between p-3 bg-slate-900/60 rounded-xl border border-white/10">
+                <span className="font-bold text-slate-200">Cath-Lab Theater #2</span>
                 <Badge variant="success">CLEARED & READY</Badge>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200/80">
-                <span className="font-bold text-slate-800">Interventional Cardiologist</span>
-                <span className="font-bold text-blue-600">Dr. Ramesh Rao</span>
+              <div className="flex items-center justify-between p-3 bg-slate-900/60 rounded-xl border border-white/10">
+                <span className="font-bold text-slate-200">Interventional Cardiologist</span>
+                <span className="font-bold text-sky-400">Dr. Ramesh Rao</span>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200/80">
-                <span className="font-bold text-slate-800">Blood Bank (O Negative)</span>
-                <span className="font-bold text-emerald-600">4 Units Prepared</span>
+              <div className="flex items-center justify-between p-3 bg-slate-900/60 rounded-xl border border-white/10">
+                <span className="font-bold text-slate-200">Blood Bank (O Negative)</span>
+                <span className="font-bold text-emerald-400">4 Units Prepared</span>
               </div>
             </div>
 
-            <div className="pt-4 mt-4 border-t border-slate-100 space-y-2">
+            <div className="pt-4 mt-4 border-t border-white/10 space-y-2">
               <Button
                 variant={cathLabReady ? 'danger' : 'primary'}
                 fullWidth
                 size="sm"
                 onClick={() => setCathLabReady(!cathLabReady)}
               >
-
                 {cathLabReady ? 'Cath-Lab Team Standing By (Confirmed)' : 'Confirm Team Ready'}
               </Button>
 
@@ -135,8 +133,8 @@ export const IncomingEmergency: React.FC = () => {
                 fullWidth
                 size="sm"
                 onClick={() => alert('Audio patch established with AMB-104 Paramedic Unit.')}
+                className="border-white/20 text-white hover:bg-white/10"
               >
-
                 Patch Paramedic Audio Call
               </Button>
             </div>
