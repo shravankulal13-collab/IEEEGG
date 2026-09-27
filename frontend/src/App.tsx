@@ -15,6 +15,7 @@ import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { NotFound } from './pages/NotFound';
 
 // Citizen Portal Pages (Saishree Santhosh Shet)
+import { Community } from './pages/citizen/Community';
 import { EmergencyHome } from './pages/citizen/EmergencyHome';
 import { ReportEmergency } from './pages/citizen/ReportEmergency';
 import { IncidentConfirmation } from './pages/citizen/IncidentConfirmation';
@@ -115,6 +116,15 @@ function App() {
             </RoleGuard>
           }
         />
+        <Route
+          path="/citizen/community"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'system_admin']}>
+              <Community />
+            </RoleGuard>
+          }
+        />
+
         <Route
           path="/citizen/profile"
           element={

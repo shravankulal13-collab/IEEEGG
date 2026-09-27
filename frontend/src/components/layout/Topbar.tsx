@@ -5,6 +5,7 @@ import { useAuthStore } from '../../store/authStore';
 import {
   ShieldAlert,
   User,
+  UsersRound,
   LogOut,
   ChevronDown,
   Zap,
@@ -388,6 +389,7 @@ export const Topbar: React.FC = () => {
           >
             {[
               { label: 'Emergency Home', path: '/citizen' },
+              { label: 'Community', path: '/citizen/community' },
               { label: 'Report Incident', path: '/citizen/report' },
               { label: 'Live Tracking', path: '/citizen/tracking' },
               { label: 'Incident History', path: '/citizen/history' },
@@ -756,8 +758,7 @@ export const Topbar: React.FC = () => {
              OTHER PORTAL RIGHT SIDE
              ========================================================= */
 
-          <div className="relative shrink-0">
-
+          <div className="flex items-center gap-2 relative shrink-0">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="
@@ -785,10 +786,23 @@ export const Topbar: React.FC = () => {
                   text-white
                 "
               >
+
                 <User className="w-4.5 h-4.5" />
               </div>
 
               <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-1.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/citizen/community')}
+              className={`flex h-10 w-10 items-center justify-center rounded-full transition ${location.pathname.startsWith('/citizen/community')
+                ? 'bg-white/15 text-white'
+                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                }`}
+              title="Community"
+              aria-label="Community"
+            >
+              <UsersRound className="h-5 w-5" />
             </button>
 
             {/* Profile Dropdown */}

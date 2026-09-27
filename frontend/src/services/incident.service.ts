@@ -10,6 +10,7 @@ export interface IncidentRecord {
   id: string;
   incident_number?: number | string;
   emergency_type: string;
+  verification_status?: string;
   incident_type?: string;
   severity: number | 'low' | 'medium' | 'high' | 'critical';
   status: 'reported' | 'verifying' | 'verified' | 'dispatching' | 'dispatched' | 'en_route' | 'on_scene' | 'arrived' | 'transporting' | 'resolved' | 'cancelled';
