@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // PRIMARY OWNER: Anush KD
 // ROLE: Routing + Traffic + Resilience Engineer
 // MODULE: Routing Provider Abstraction Interface
@@ -52,7 +52,7 @@ export interface RouteResult {
   computedAt: string; // ISO timestamp
 }
 
-export type RoutingProviderName = 'tomtom' | 'waze' | 'osrm';
+export type RoutingProviderName = 'tomtom' | 'waze' | 'osrm' | 'fallback';
 
 export interface RouteRequest {
   origin: LatLng;

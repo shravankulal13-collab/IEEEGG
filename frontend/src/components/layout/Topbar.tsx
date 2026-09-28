@@ -137,11 +137,11 @@ export const Topbar: React.FC = () => {
 
     // Default: Citizen Portal
     return [
-      { label: 'Live Intel Feed', path: '/citizen', icon: <Radio className="w-4 h-4" /> },
+      { label: 'Emergency SOS', path: '/citizen', icon: <Radio className="w-4 h-4" /> },
+      { label: 'Live Feed', path: '/citizen/feed', icon: <Activity className="w-4 h-4" /> },
       { label: 'Report Emergency', path: '/citizen/report', icon: <Zap className="w-4 h-4" /> },
       { label: 'Live Tracking', path: '/citizen/tracking', icon: <MapPin className="w-4 h-4" /> },
       { label: 'Emergency History', path: '/citizen/history', icon: <History className="w-4 h-4" /> },
-      { label: 'Public Alerts', path: '/public', icon: <FileText className="w-4 h-4" /> },
     ];
   };
 

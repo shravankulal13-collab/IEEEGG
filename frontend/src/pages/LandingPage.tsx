@@ -833,13 +833,13 @@ export const LandingPage: React.FC = () => {
               </div>
 
               <div
-                onClick={() => navigate('/public')}
+                onClick={() => navigate('/citizen/feed')}
                 style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', cursor: 'pointer', padding: '16px', borderRadius: '16px', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0' }}
                 className="hover:border-blue-400 hover:shadow-md transition-all"
               >
                 <div>
-                  <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Public Emergency Alerts</h4>
-                  <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>Live public notifications, disaster warnings, and traffic advisory broadcasts.</p>
+                  <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A', margin: '0 0 4px 0' }}>Live Community Feed</h4>
+                  <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.4 }}>Live community incident intelligence, green corridor notices, and verified reports.</p>
                 </div>
               </div>
 

@@ -20,14 +20,14 @@ export interface GeolocationState {
 
 export function useGeolocation(autoWatch = true) {
   const [geoState, setGeoState] = useState<GeolocationState>({
-    latitude: 12.9716, // Default fallback (Bengaluru/High-Fidelity City center)
+    latitude: 12.9716, // Default fallback (Bengaluru center)
     longitude: 77.5946,
     accuracy: 3,
     speed: 0,
     heading: 0,
     status: 'idle',
     error: null,
-    address: '123 Medical Drive, High-Fidelity City',
+    address: 'Bengaluru Metro Area (GPS Pinpoint)',
   });
 
   const requestLocation = useCallback(() => {

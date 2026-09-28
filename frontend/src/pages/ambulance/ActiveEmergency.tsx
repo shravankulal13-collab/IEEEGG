@@ -10,6 +10,7 @@ import { useIncidentStore } from '../../store/incidentStore';
 import { useAmbulanceStore } from '../../store/ambulanceStore';
 import { hospitalService, type HospitalData } from '../../services/hospital.service';
 import { ambulanceService, type AmbulanceData } from '../../services/ambulance.service';
+import { tripHistoryService } from '../../services/tripHistory.service';
 import { type IncidentRecord } from '../../services/incident.service';
 import { AppShell } from '../../components/layout/AppShell';
 import { PageHeader } from '../../components/layout/PageHeader';
@@ -226,13 +227,34 @@ export const ActiveEmergency: React.FC = () => {
 
       // 3. Update local state & storage
       if (nextStage === 'completed') {
+        const completedTrip = {
+          id: `TRIP-${Math.floor(1000 + Math.random() * 9000)}`,
+          incidentId: incident.id,
+          incidentNumber: incident.incident_number
+            ? `ER-${incident.incident_number}`
+            : incident.id.length > 8
+              ? `ER-${incident.id.slice(0, 6).toUpperCase()}`
+              : incident.id,
+          type: incident.title || `${(incident.emergency_type || 'medical').toUpperCase()} Emergency`,
+          category: incident.emergency_type || 'medical',
+          date: `Today, ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+          timestamp: new Date().toISOString(),
+          pickup: incident.address || 'Bengaluru Metro Area (Patient Pickup)',
+          hospital: hospital?.name || incident.assigned_hospital_name || 'Victoria Hospital (BMCRI Trauma Care)',
+          duration: '14 mins',
+          status: 'COMPLETED' as const,
+          patientName: incident.reporter_name || 'Citizen Caller',
+          patientPhone: incident.reporter_phone || '+91 98765 43210',
+          severity: incident.severity || 5,
+        };
+        tripHistoryService.saveCompletedTrip(completedTrip);
+
         localStorage.removeItem('resqgrid_active_incident_id');
         localStorage.removeItem('resqgrid_active_incident_data');
         localStorage.removeItem('resqgrid_active_incident_timestamp');
         useIncidentStore.getState().setActiveIncident(null);
         setIsUpdating(false);
-        alert('Mission Completed! Patient successfully transferred and unit marked AVAILABLE.');
-        navigate('/ambulance');
+        navigate('/ambulance/history');
       } else {
         localStorage.setItem('resqgrid_active_incident_data', JSON.stringify(updatedInc));
         setIsUpdating(false);

@@ -44,8 +44,8 @@ export class PublicService {
   async uploadImage(file: { buffer: Buffer; mimetype: string; originalname: string }) {
     if (env.SUPABASE_URL && env.SUPABASE_SECRET_KEY) {
       const extension = file.originalname.split('.').pop()?.replace(/[^a-z0-9]/gi, '') || 'jpg';
-      const path = `public-reports/${crypto.randomUUID()}.${extension}`;
-      const response = await fetch(`${env.SUPABASE_URL}/storage/v1/object/public-reports/${path}`, {
+      const fileName = `${crypto.randomUUID()}.${extension}`;
+      const response = await fetch(`${env.SUPABASE_URL}/storage/v1/object/public-reports/${fileName}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
@@ -56,7 +56,7 @@ export class PublicService {
         body: file.buffer,
       });
       if (!response.ok) throw new Error(`Supabase Storage upload failed (${response.status})`);
-      return `${env.SUPABASE_URL}/storage/v1/object/public-reports/${path}`;
+      return `${env.SUPABASE_URL}/storage/v1/object/public/public-reports/${fileName}`;
     }
 
     // Local development fallback; production should configure Supabase Storage.

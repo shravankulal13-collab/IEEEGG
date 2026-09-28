@@ -10,7 +10,9 @@ import { useIncidentStore } from '../../store/incidentStore';
 import { useAmbulanceStore } from '../../store/ambulanceStore';
 import { hospitalService, type HospitalData } from '../../services/hospital.service';
 import { ambulanceService, type AmbulanceData } from '../../services/ambulance.service';
+import { tripHistoryService } from '../../services/tripHistory.service';
 import { type IncidentRecord } from '../../services/incident.service';
+import { apiRequest } from '../../services/api';
 import { EmergencyMap } from '../../components/maps/EmergencyMap';
 import { Spinner } from '../../components/ui/Spinner';
 import { 
@@ -78,7 +80,8 @@ export const Navigation: React.FC = () => {
   const [speed, setSpeed] = useState<number>(54);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [selectedDeviationId, setSelectedDeviationId] = useState<string>('route-primary');
-  const [showDetourAlert, setShowDetourAlert] = useState<boolean>(true);
+  const [showDetourAlert, setShowDetourAlert] = useState<boolean>(false);
+  const [simulatedTrafficEvent, setSimulatedTrafficEvent] = useState<any | null>(null);
   const [missionStage, setMissionStage] = useState<'en_route' | 'on_scene' | 'transporting' | 'completed'>('en_route');
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [statusToast, setStatusToast] = useState<string | null>(null);
@@ -89,18 +92,24 @@ export const Navigation: React.FC = () => {
   const defaultAmbCoord = { lat: 12.9340, lng: 77.6100 };
   const defaultHospCoord = { lat: 12.9634, lng: 77.5755 };
 
-  // 3 Dynamic Route Deviations & Detour Presets
+  // Dynamic Route Deviations & Detour Presets (degraded dynamically on traffic events)
+  const isTrafficDegraded = !!simulatedTrafficEvent;
+  const primaryDelay = simulatedTrafficEvent?.addedDelayMinutes || 3;
+  const primaryDuration = isTrafficDegraded ? 4 + primaryDelay : 4;
+
   const routeDeviations: RouteDeviationOption[] = [
     {
       id: 'route-primary',
       name: 'Primary Green Wave Corridor',
-      tag: 'FASTEST (AI PREEMPTED)',
+      tag: isTrafficDegraded ? `DEGRADED (+${primaryDelay} MIN)` : 'FASTEST (AI PREEMPTED)',
       distanceKm: 2.8,
-      durationMinutes: 4,
-      timeDeltaText: 'Fastest Route',
-      trafficLevel: 'low',
+      durationMinutes: primaryDuration,
+      timeDeltaText: isTrafficDegraded ? `+${primaryDelay} min delay` : 'Fastest Route',
+      trafficLevel: isTrafficDegraded ? 'heavy' : 'low',
       signalsCount: 3,
-      description: 'Direct arterial route with synchronized green-wave signal preemption.',
+      description: isTrafficDegraded
+        ? `Degraded due to ${simulatedTrafficEvent.description} - Switch recommended.`
+        : 'Direct arterial route with synchronized green-wave signal preemption.',
       polyline: [
         [defaultAmbCoord.lat, defaultAmbCoord.lng],
         [defaultAmbCoord.lat + 0.012, defaultAmbCoord.lng - 0.005],
@@ -109,9 +118,11 @@ export const Navigation: React.FC = () => {
       ],
       steps: [
         {
-          instruction: 'Head North on Hosur Arterial Road toward Richmond Circle (Green Corridor Active ⚡)',
+          instruction: isTrafficDegraded
+            ? 'Head North on Hosur Arterial Road toward Richmond Circle (CONGESTION AHEAD ⚠️)'
+            : 'Head North on Hosur Arterial Road toward Richmond Circle (Green Corridor Active ⚡)',
           distance: '1.2 km',
-          duration: '1.5 min',
+          duration: isTrafficDegraded ? `${1.5 + primaryDelay} min` : '1.5 min',
           maneuver: 'straight',
         },
         {
@@ -129,17 +140,17 @@ export const Navigation: React.FC = () => {
       ],
       signals: [
         { id: 'sig-1', name: 'Hosur Main Road / St. John Crossing', lat: defaultAmbCoord.lat + 0.008, lng: defaultAmbCoord.lng - 0.003, etaSeconds: 50, status: 'preempted' },
-        { id: 'sig-2', name: 'Richmond Circle Signal Junction', lat: defaultAmbCoord.lat + 0.022, lng: defaultAmbCoord.lng - 0.011, etaSeconds: 120, status: 'preempted' },
+        { id: 'sig-2', name: 'Richmond Circle Signal Junction', lat: defaultAmbCoord.lat + 0.022, lng: defaultAmbCoord.lng - 0.011, etaSeconds: 120, status: isTrafficDegraded ? 'queued' : 'preempted' },
         { id: 'sig-3', name: 'Medical Concourse East Gate', lat: defaultIncidentCoord.lat - 0.004, lng: defaultIncidentCoord.lng + 0.002, etaSeconds: 190, status: 'preempted' },
       ],
     },
     {
       id: 'route-elevated-bypass',
       name: 'Elevated Flyover Bypass Deviation',
-      tag: 'BOTTLENECK DETOUR',
+      tag: isTrafficDegraded ? 'RECOMMENDED DETOUR (-2 MIN)' : 'BOTTLENECK DETOUR',
       distanceKm: 3.4,
       durationMinutes: 5,
-      timeDeltaText: '+1 min (+0.6 km)',
+      timeDeltaText: isTrafficDegraded ? 'Saves 2 min' : '+1 min (+0.6 km)',
       trafficLevel: 'low',
       signalsCount: 2,
       description: 'Elevated bypass avoiding surface intersection bottlenecks and construction zones.',
@@ -349,6 +360,57 @@ export const Navigation: React.FC = () => {
     loadData();
   }, [loadData]);
 
+  // Real-time Traffic Event Polling from Backend Route Monitoring Service
+  useEffect(() => {
+    let isMounted = true;
+    const pollTrafficEvents = async () => {
+      try {
+        const res = await apiRequest<{ success: boolean; data: any[] }>('/demo/traffic-events');
+        if (isMounted && res && res.data) {
+          const active = res.data.find(
+            (e: any) => e.eventType !== 'NORMAL' && new Date(e.expiresAt).getTime() > Date.now()
+          );
+          if (active) {
+            setSimulatedTrafficEvent(active);
+            setShowDetourAlert(true);
+          } else {
+            setSimulatedTrafficEvent(null);
+            setShowDetourAlert(false);
+          }
+        }
+      } catch {
+        // quiet fallback
+      }
+    };
+
+    pollTrafficEvents();
+    const interval = setInterval(pollTrafficEvents, 3000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Handle Switch to Elevated Flyover Bypass
+  const handleSwitchToBypass = async () => {
+    setSelectedDeviationId('route-elevated-bypass');
+    setCurrentStepIndex(0);
+    setStatusToast('🚦 REROUTED: Switched to Elevated Flyover Bypass (+2 min savings) [SIMULATION]');
+    setTimeout(() => setStatusToast(null), 4000);
+
+    try {
+      await apiRequest('/demo/route-change', 'POST', {
+        incidentId: incident?.id || incidentId || 'ER-77',
+        previousRoute: 'Primary Green Wave Corridor (7 min)',
+        newRoute: 'Elevated Flyover Bypass (5 min)',
+        reason: simulatedTrafficEvent?.description || 'Road blockage detected on primary route',
+        source: 'SIMULATION',
+      });
+    } catch {
+      // quiet fallback
+    }
+  };
+
   // Handle direct in-navigation mission stage transitions
   const handleAdvanceMissionStage = async () => {
     if (!incident) return;
@@ -414,6 +476,28 @@ export const Navigation: React.FC = () => {
 
       // 3. Update local state & storage
       if (nextStage === 'completed') {
+        const completedTrip = {
+          id: `TRIP-${Math.floor(1000 + Math.random() * 9000)}`,
+          incidentId: incident.id,
+          incidentNumber: incident.incident_number
+            ? `ER-${incident.incident_number}`
+            : incident.id.length > 8
+              ? `ER-${incident.id.slice(0, 6).toUpperCase()}`
+              : incident.id,
+          type: incident.title || `${(incident.emergency_type || 'medical').toUpperCase()} Emergency`,
+          category: incident.emergency_type || 'medical',
+          date: `Today, ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+          timestamp: new Date().toISOString(),
+          pickup: incident.address || 'Bengaluru Metro Area (Patient Pickup)',
+          hospital: hospital?.name || incident.assigned_hospital_name || 'Victoria Hospital (BMCRI Trauma Care)',
+          duration: '14 mins',
+          status: 'COMPLETED' as const,
+          patientName: incident.reporter_name || 'Citizen Caller',
+          patientPhone: incident.reporter_phone || '+91 98765 43210',
+          severity: incident.severity || 5,
+        };
+        tripHistoryService.saveCompletedTrip(completedTrip);
+
         localStorage.removeItem('resqgrid_active_incident_id');
         localStorage.removeItem('resqgrid_active_incident_data');
         localStorage.removeItem('resqgrid_active_incident_timestamp');
@@ -430,7 +514,7 @@ export const Navigation: React.FC = () => {
 
       if (nextStage === 'completed') {
         setTimeout(() => {
-          navigate('/ambulance');
+          navigate('/ambulance/history');
         }, 1200);
       }
     } catch {
@@ -613,31 +697,38 @@ export const Navigation: React.FC = () => {
         </button>
       </div>
 
-      {/* Detour Alert Banner (If Primary has congestion or detour recommended) */}
+      {/* Detour Alert Banner (If Primary has congestion or simulated detour recommended) */}
       {showDetourAlert && (
-        <div className="bg-gradient-to-r from-amber-950/90 via-[#0B1B4F] to-amber-950/90 border-b border-amber-500/40 px-4 py-2 flex items-center justify-between gap-3 text-xs z-20">
+        <div className="bg-gradient-to-r from-red-950/95 via-[#0B1B4F] to-amber-950/95 border-b-2 border-amber-500/80 px-4 py-2.5 flex items-center justify-between gap-3 text-xs z-20 shadow-2xl">
           <div className="flex items-center gap-2.5 min-w-0">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 animate-bounce" />
-            <span className="text-amber-200 font-bold truncate">
-              <strong>Traffic Advisory:</strong> Heavy surface congestion reported near Richmond Circle (+3 min). 
-              Elevated Bypass Deviation available.
-            </span>
+            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 animate-bounce" />
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                  TRAFFIC ADVISORY
+                </span>
+                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40">
+                  {simulatedTrafficEvent?.eventType || 'ROAD_BLOCKAGE'}
+                </span>
+              </div>
+              <p className="text-amber-100 font-bold mt-0.5 truncate">
+                {simulatedTrafficEvent?.description || 'Heavy surface congestion reported (+3 min delay).'} Primary ETA degraded to {primaryDuration} min. Elevated Bypass is 5 min (Saves 2 min).
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {selectedDeviationId !== 'route-elevated-bypass' && (
               <button
-                onClick={() => {
-                  setSelectedDeviationId('route-elevated-bypass');
-                  setCurrentStepIndex(0);
-                }}
-                className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-lg text-[11px] transition shadow cursor-pointer"
+                onClick={handleSwitchToBypass}
+                className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black rounded-xl text-xs transition shadow-lg shadow-amber-500/30 cursor-pointer active:scale-95 flex items-center gap-1.5"
               >
-                Switch to Elevated Bypass
+                <span>SWITCH TO ELEVATED BYPASS</span>
+                <span className="text-[10px] bg-slate-950/20 px-1.5 py-0.5 rounded font-mono">5 MIN</span>
               </button>
             )}
             <button
               onClick={() => setShowDetourAlert(false)}
-              className="text-slate-400 hover:text-white text-xs px-1.5 py-0.5 rounded cursor-pointer"
+              className="text-slate-400 hover:text-white text-xs px-2 py-1 rounded cursor-pointer"
             >
               Dismiss
             </button>

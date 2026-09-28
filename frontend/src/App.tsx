@@ -16,10 +16,10 @@ import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { ResetPassword } from './pages/auth/ResetPassword';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { NotFound } from './pages/NotFound';
-import { PublicReports } from './pages/PublicReports';
 
 // Citizen Portal Pages (Saishree Santhosh Shet)
 import { EmergencyHome } from './pages/citizen/EmergencyHome';
+import { LiveFeed } from './pages/citizen/LiveFeed';
 import { ReportEmergency } from './pages/citizen/ReportEmergency';
 import { IncidentConfirmation } from './pages/citizen/IncidentConfirmation';
 import { LiveIncidentTracking } from './pages/citizen/LiveIncidentTracking';
@@ -96,14 +96,36 @@ function App() {
             </RoleGuard>
           }
         />
-        <Route path="/public" element={<PublicReports />} />
-
         {/* 1. Citizen Portal Routes — accessible by all authenticated users */}
         <Route
           path="/citizen"
           element={
             <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'hospital_staff', 'system_admin']}>
               <EmergencyHome />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/citizen/home"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'hospital_staff', 'system_admin']}>
+              <EmergencyHome />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/citizen/feed"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'hospital_staff', 'system_admin']}>
+              <LiveFeed />
+            </RoleGuard>
+          }
+        />
+        <Route
+          path="/feed"
+          element={
+            <RoleGuard allowedRoles={['citizen', 'ambulance_driver', 'dispatcher', 'hospital_admin', 'hospital_staff', 'system_admin']}>
+              <LiveFeed />
             </RoleGuard>
           }
         />

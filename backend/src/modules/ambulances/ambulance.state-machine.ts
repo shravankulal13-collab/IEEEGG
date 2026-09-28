@@ -4,6 +4,8 @@
 // MODULE: Ambulance Trip State Machine
 // ============================================================
 
+import { ValidationError } from '../../middleware/error.middleware.js';
+
 export type AmbulanceBackendStatus =
   | 'available'
   | 'reserved'
@@ -25,16 +27,84 @@ export type AmbulanceUIState =
   | 'OFFLINE';
 
 const ALLOWED_TRANSITIONS: Record<AmbulanceBackendStatus, AmbulanceBackendStatus[]> = {
-  available: ['reserved', 'dispatched', 'en_route_to_incident', 'maintenance', 'offline'],
-  reserved: ['dispatched', 'en_route_to_incident', 'available', 'offline'],
-  dispatched: ['en_route_to_incident', 'on_scene', 'transporting', 'available', 'offline'],
-  en_route_to_incident: ['on_scene', 'transporting', 'at_hospital', 'available', 'dispatched'],
-  on_scene: ['transporting', 'at_hospital', 'available', 'returning', 'en_route_to_incident'],
-  transporting: ['at_hospital', 'on_scene', 'available', 'returning'],
-  at_hospital: ['returning', 'available', 'transporting', 'offline'],
-  returning: ['available', 'offline'],
-  maintenance: ['available', 'offline'],
-  offline: ['available', 'maintenance'],
+  available: [
+    'reserved',
+    'dispatched',
+    'en_route_to_incident',
+    'on_scene',
+    'transporting',
+    'at_hospital',
+    'returning',
+    'maintenance',
+    'offline',
+  ],
+  reserved: [
+    'dispatched',
+    'en_route_to_incident',
+    'on_scene',
+    'transporting',
+    'at_hospital',
+    'returning',
+    'available',
+    'offline',
+  ],
+  dispatched: [
+    'en_route_to_incident',
+    'on_scene',
+    'transporting',
+    'at_hospital',
+    'returning',
+    'available',
+    'offline',
+  ],
+  en_route_to_incident: [
+    'on_scene',
+    'transporting',
+    'at_hospital',
+    'returning',
+    'available',
+    'dispatched',
+    'offline',
+  ],
+  on_scene: [
+    'transporting',
+    'at_hospital',
+    'returning',
+    'available',
+    'en_route_to_incident',
+    'offline',
+  ],
+  transporting: [
+    'at_hospital',
+    'on_scene',
+    'returning',
+    'available',
+    'offline',
+  ],
+  at_hospital: [
+    'returning',
+    'available',
+    'transporting',
+    'on_scene',
+    'offline',
+  ],
+  returning: [
+    'available',
+    'dispatched',
+    'en_route_to_incident',
+    'offline',
+  ],
+  maintenance: [
+    'available',
+    'offline',
+  ],
+  offline: [
+    'available',
+    'maintenance',
+    'dispatched',
+    'en_route_to_incident',
+    'on_scene',
+  ],
 };
 
 export function isValidStateTransition(
@@ -42,7 +112,10 @@ export function isValidStateTransition(
   nextStatus: AmbulanceBackendStatus
 ): boolean {
   if (currentStatus === nextStatus) return true;
-  const allowed = ALLOWED_TRANSITIONS[currentStatus] || [];
+  const allowed = ALLOWED_TRANSITIONS[currentStatus];
+  if (!allowed) {
+    return Object.keys(ALLOWED_TRANSITIONS).includes(nextStatus);
+  }
   return allowed.includes(nextStatus);
 }
 
@@ -51,7 +124,7 @@ export function assertValidTransition(
   nextStatus: AmbulanceBackendStatus
 ): void {
   if (!isValidStateTransition(currentStatus, nextStatus)) {
-    throw new Error(
+    throw new ValidationError(
       `Invalid ambulance state transition from '${currentStatus}' to '${nextStatus}'`
     );
   }

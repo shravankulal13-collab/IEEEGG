@@ -82,20 +82,21 @@ interface FeedState {
   setActiveCategory: (cat: string) => void;
   setSearchQuery: (query: string) => void;
   getLeaderboard: () => LeaderboardUser[];
+  resetToDefaults: () => void;
 }
 
-const INITIAL_POSTS: FeedPost[] = [
+export const INITIAL_POSTS: FeedPost[] = [
   {
     id: 'post-1',
     authorName: 'Rajesh Kumar',
-    authorAvatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
+    authorAvatar: 'https://www.shutterstock.com/image-photo/young-indian-male-project-leader-260nw-2598795897.jpg',
     authorRole: 'citizen',
     authorStars: 48,
     authorLivesSaved: 3,
     isVerifiedReporter: true,
     title: 'Two vehicle collision on Hosur Road near Silk Board flyover',
     content: 'Collision blocking two right lanes towards Electronic City. Paramedic unit dispatched from St. Johns Hospital. Green Corridor cleared by traffic police. Please keep the right-most lane clear for inbound emergency unit.',
-    image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://cf-images.assettype.com/newindianexpress%2F2025-10-12%2Fqwal4hr8%2FWhatsApp-Image-2025-10-12-at-15.11.17.jpeg',
     category: 'accident',
     location: 'Silk Board Flyover, Bengaluru',
     coordinates: { lat: 12.9176, lng: 77.6238 },
@@ -113,6 +114,7 @@ const INITIAL_POSTS: FeedPost[] = [
       {
         id: 'c-1',
         authorName: 'Paramedic Ananya',
+        authorAvatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbboQP6Mp1TVio-h8t9177WFi6MUbgeIrRQ7qqtAfshSkYoOqb5MCGtSk8&s=10',
         authorRole: 'paramedic',
         authorStars: 62,
         text: 'Unit AMB-104 is on scene. Patient stabilized with IV support and en route to Trauma ICU.',
@@ -121,6 +123,7 @@ const INITIAL_POSTS: FeedPost[] = [
       {
         id: 'c-2',
         authorName: 'Vikram Singh',
+        authorAvatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ27ZyhrcJIC46xAMPOliU0Mfdh8oCMqwxnv6T6RsT0cATTHw9cQ5WJRac&s=10',
         authorRole: 'citizen',
         authorStars: 15,
         text: 'Green corridor is clear till Forum signal. Good work team.',
@@ -131,14 +134,14 @@ const INITIAL_POSTS: FeedPost[] = [
   {
     id: 'post-2',
     authorName: 'Dr. Priya Hegde',
-    authorAvatar: 'https://images.unsplash.com/photo-1594824813598-a28a30e8c891?auto=format&fit=crop&w=200&q=80',
+    authorAvatar: 'https://media.istockphoto.com/id/519361223/photo/young-indian-woman.jpg?s=170667a&w=0&k=20&c=Z5yzzlD7kVqP7UhIe8Qb7VGQoXBbNS4NoQMIHBzjWGI=',
     authorRole: 'hospital_staff',
     authorStars: 85,
     authorLivesSaved: 12,
     isVerifiedReporter: true,
     title: 'Emergency Cath-Lab resuscitation completed in 18 minutes',
     content: 'Patient transferred via ResQGrid dynamic corridor from Indiranagar with acute STEMI cardiac condition. Pre-arrival ECG telemetry streamed while ambulance was 6 mins away. Cath-lab prepared and stent placed successfully.',
-    image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://st5.depositphotos.com/16337376/67848/i/450/depositphotos_678487976-stock-photo-shoulder-shot-friendly-indian-doctor.jpg',
     category: 'life_saved',
     location: 'Manipal Hospital Trauma Center, Old Airport Road',
     coordinates: { lat: 12.9592, lng: 77.6534 },
@@ -156,6 +159,7 @@ const INITIAL_POSTS: FeedPost[] = [
       {
         id: 'c-3',
         authorName: 'Suresh Patil',
+        authorAvatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSv_cWTTwle8pT_RNcndh9r44sCZM_XQAKoRHJF_9u3_bj_vhh9oSEjm2A&s=10',
         authorRole: 'citizen',
         authorStars: 22,
         text: 'Fast emergency coordination. Glad the patient is stable.',
@@ -166,14 +170,14 @@ const INITIAL_POSTS: FeedPost[] = [
   {
     id: 'post-3',
     authorName: 'Traffic Warden Suresh B.',
-    authorAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+    authorAvatar: 'https://st.depositphotos.com/1093689/1376/i/450/depositphotos_13767307-stock-photo-close-up-profile-photo-of.jpg',
     authorRole: 'traffic_warden',
     authorStars: 34,
     authorLivesSaved: 2,
     isVerifiedReporter: true,
     title: 'Waterlogging and heavy traffic congestion at Sony World Junction',
     content: 'Water stagnation following evening rains. Traffic moving at slow speed. Ambulances bound for St. Johns are being dynamically rerouted via 80 Feet Road corridor to avoid the intersection delay.',
-    image: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://akm-img-a-in.tosshub.com/indiatoday/images/story/202207/mumbai_rain_traffic_PTI_1200x768.jpeg?VersionId=zffODVP0pFt5K9n7SJa9YxScvBQ.9NLm',
     category: 'traffic',
     location: 'Sony World Junction, Koramangala',
     coordinates: { lat: 12.9352, lng: 77.6245 },
@@ -191,6 +195,7 @@ const INITIAL_POSTS: FeedPost[] = [
       {
         id: 'c-4',
         authorName: 'Dispatcher Naveen',
+        authorAvatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ27ZyhrcJIC46xAMPOliU0Mfdh8oCMqwxnv6T6RsT0cATTHw9cQ5WJRac&s=10',
         authorRole: 'dispatcher',
         authorStars: 50,
         text: 'Automated dynamic rerouting active for fleet units in Zone 3.',
@@ -201,14 +206,14 @@ const INITIAL_POSTS: FeedPost[] = [
   {
     id: 'post-4',
     authorName: 'Meera Nambiar',
-    authorAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+    authorAvatar: 'https://img.magnific.com/free-photo/indian-woman-posing-cute-stylish-outfit-camera-smiling_482257-122351.jpg',
     authorRole: 'citizen',
     authorStars: 29,
     authorLivesSaved: 1,
     isVerifiedReporter: false,
     title: 'Urgent: O-Negative blood units required at Victoria Hospital ER',
     content: 'Trauma admissions admitted from expressway road incident. Blood bank inventory requires urgent replenishment of O-Negative units. Donors in the area please report to Victoria Hospital blood bank.',
-    image: 'https://images.unsplash.com/photo-1615461066841-6116e61058f4?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://media.istockphoto.com/id/1757613775/photo/close-up-shot-of-hand-of-male-blood-donor-with-an-attached-catheter-black-man-holding-heart.jpg?s=612x612&w=0&k=20&c=IgdTBRdl8knok_-2jH0xczy1BFEfnyS3iXeCx_XvKDg=',
     category: 'blood_donor',
     location: 'Victoria Hospital Emergency Ward, City Market',
     coordinates: { lat: 12.9628, lng: 77.5746 },
@@ -226,6 +231,7 @@ const INITIAL_POSTS: FeedPost[] = [
       {
         id: 'c-5',
         authorName: 'Arjun Verma',
+        authorAvatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSv_cWTTwle8pT_RNcndh9r44sCZM_XQAKoRHJF_9u3_bj_vhh9oSEjm2A&s=10',
         authorRole: 'citizen',
         authorStars: 19,
         text: 'On my way to Victoria Hospital blood bank now.',
@@ -236,14 +242,14 @@ const INITIAL_POSTS: FeedPost[] = [
   {
     id: 'post-5',
     authorName: 'Amit Shah',
-    authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+    authorAvatar: 'https://images.pexels.com/photos/36876208/pexels-photo-36876208/free-photo-of-portrait-of-an-indian-man-outdoors.jpeg?cs=tinysrgb&dpr=1&w=500',
     authorRole: 'citizen',
     authorStars: 19,
     authorLivesSaved: 1,
     isVerifiedReporter: false,
     title: 'Emergency Green Corridor cleared from MG Road to Airport Road',
     content: 'Critical medical transport corridor enabled across 6 traffic junctions. Signal preemptive timing enabled clear transit in 14 minutes, preventing route delay.',
-    image: 'https://images.unsplash.com/photo-1587745416684-47953f16f02f?auto=format&fit=crop&w=1200&q=80',
+    image: 'https://cf-images.assettype.com/newindianexpress%2F2026-09-18%2Fyzf573px%2F5355b0cc-641c-438e-9b04-d97743f7ba81.jpg?w=480&auto=format%2Ccompress',
     category: 'corridor',
     location: 'MG Road Trinity Circle to Domlur',
     coordinates: { lat: 12.9738, lng: 77.6186 },
@@ -275,27 +281,27 @@ export const useFeedStore = create<FeedState>()(
       },
 
       createPost: (postData) => {
+        const categoryImages: Record<FeedPost['category'], string> = {
+          accident: 'https://cf-images.assettype.com/newindianexpress%2F2025-10-12%2Fqwal4hr8%2FWhatsApp-Image-2025-10-12-at-15.11.17.jpeg',
+          traffic: 'https://akm-img-a-in.tosshub.com/indiatoday/images/story/202207/mumbai_rain_traffic_PTI_1200x768.jpeg?VersionId=zffODVP0pFt5K9n7SJa9YxScvBQ.9NLm',
+          medical: 'https://st5.depositphotos.com/16337376/67848/i/450/depositphotos_678487976-stock-photo-shoulder-shot-friendly-indian-doctor.jpg',
+          corridor: 'https://cf-images.assettype.com/newindianexpress%2F2026-09-18%2Fyzf573px%2F5355b0cc-641c-438e-9b04-d97743f7ba81.jpg?w=480&auto=format%2Ccompress',
+          blood_donor: 'https://media.istockphoto.com/id/1757613775/photo/close-up-shot-of-hand-of-male-blood-donor-with-an-attached-catheter-black-man-holding-heart.jpg?s=612x612&w=0&k=20&c=IgdTBRdl8knok_-2jH0xczy1BFEfnyS3iXeCx_XvKDg=',
+          life_saved: 'https://st5.depositphotos.com/16337376/67848/i/450/depositphotos_678487976-stock-photo-shoulder-shot-friendly-indian-doctor.jpg',
+          hazard: 'https://akm-img-a-in.tosshub.com/indiatoday/images/story/202207/mumbai_rain_traffic_PTI_1200x768.jpeg?VersionId=zffODVP0pFt5K9n7SJa9YxScvBQ.9NLm',
+        };
+
         const newPost: FeedPost = {
           id: `post-${Date.now()}`,
           authorName: postData.authorName || 'Current User',
-          authorAvatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
+          authorAvatar: 'https://www.shutterstock.com/image-photo/portrait-confident-young-indian-business-260nw-2695542473.jpg',
           authorRole: 'citizen',
           authorStars: get().userStats.stars + 1,
           authorLivesSaved: get().userStats.livesSaved,
           isVerifiedReporter: true,
           title: postData.title,
           content: postData.content,
-          image:
-            postData.image ||
-            (postData.category === 'accident'
-              ? 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Bangalore_India_traffic.jpg'
-              : postData.category === 'traffic'
-              ? 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1000&q=80'
-              : postData.category === 'medical'
-              ? 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1000&q=80'
-              : postData.category === 'blood_donor'
-              ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Blood_Donation_Camp_organized_by_the_Indian_Navy.jpg/800px-Blood_Donation_Camp_organized_by_the_Indian_Navy.jpg'
-              : 'https://upload.wikimedia.org/wikipedia/commons/c/ca/108_Ambulance.jpg'),
+          image: postData.image || categoryImages[postData.category] || categoryImages.accident,
           category: postData.category,
           location: postData.location || 'Bengaluru City (GPS Verified)',
           timestamp: 'Just now',
@@ -377,6 +383,7 @@ export const useFeedStore = create<FeedState>()(
         const newComment: FeedComment = {
           id: `comment-${Date.now()}`,
           authorName,
+          authorAvatar: 'https://www.shutterstock.com/image-photo/portrait-confident-young-indian-business-260nw-2695542473.jpg',
           authorRole: 'citizen',
           authorStars: get().userStats.stars,
           text,
@@ -399,12 +406,20 @@ export const useFeedStore = create<FeedState>()(
       setActiveCategory: (cat) => set({ activeCategory: cat }),
       setSearchQuery: (query) => set({ searchQuery: query }),
 
+      resetToDefaults: () => {
+        set({
+          posts: INITIAL_POSTS,
+          activeCategory: 'all',
+          searchQuery: '',
+        });
+      },
+
       getLeaderboard: () => {
         return [
           {
             id: 'u-1',
             name: 'Dr. Priya Hegde',
-            avatar: 'https://images.unsplash.com/photo-1594824813598-a28a30e8c891?auto=format&fit=crop&w=200&q=80',
+            avatar: 'https://media.istockphoto.com/id/519361223/photo/young-indian-woman.jpg?s=170667a&w=0&k=20&c=Z5yzzlD7kVqP7UhIe8Qb7VGQoXBbNS4NoQMIHBzjWGI=',
             role: 'Hospital Surgeon',
             stars: 85,
             livesSaved: 12,
@@ -414,7 +429,7 @@ export const useFeedStore = create<FeedState>()(
           {
             id: 'u-2',
             name: 'Paramedic Ananya',
-            avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+            avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbboQP6Mp1TVio-h8t9177WFi6MUbgeIrRQ7qqtAfshSkYoOqb5MCGtSk8&s=10',
             role: 'ALS Paramedic Lead',
             stars: 62,
             livesSaved: 8,
@@ -424,7 +439,7 @@ export const useFeedStore = create<FeedState>()(
           {
             id: 'u-3',
             name: 'Rajesh Kumar',
-            avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
+            avatar: 'https://www.shutterstock.com/image-photo/young-indian-male-project-leader-260nw-2598795897.jpg',
             role: 'Citizen First Responder',
             stars: 48,
             livesSaved: 3,
@@ -434,7 +449,7 @@ export const useFeedStore = create<FeedState>()(
           {
             id: 'u-4',
             name: 'Traffic Warden Suresh',
-            avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+            avatar: 'https://st.depositphotos.com/1093689/1376/i/450/depositphotos_13767307-stock-photo-close-up-profile-photo-of.jpg',
             role: 'Traffic Command',
             stars: 34,
             livesSaved: 2,
@@ -444,7 +459,7 @@ export const useFeedStore = create<FeedState>()(
           {
             id: 'u-5',
             name: 'Meera Nambiar',
-            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+            avatar: 'https://img.magnific.com/free-photo/indian-woman-posing-cute-stylish-outfit-camera-smiling_482257-122351.jpg',
             role: 'Blood Donor Coordinator',
             stars: 29,
             livesSaved: 1,
@@ -455,7 +470,7 @@ export const useFeedStore = create<FeedState>()(
       },
     }),
     {
-      name: 'resqgrid_social_feed_storage_v4',
+      name: 'resqgrid_social_feed_storage_v7',
     }
   )
 );

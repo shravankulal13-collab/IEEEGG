@@ -18,6 +18,8 @@ import incidentRoutes from './incidents.routes.js';
 import routesRouter from './routes.routes.js';
 import trafficRoutes from './traffic.routes.js';
 import publicRoutes from './public.routes.js';
+import decisionsRoutes from './decisions.routes.js';
+import demoRoutes from './demo.routes.js';
 
 const router = Router();
 
@@ -54,6 +56,9 @@ router.use('/hospitals', hospitalRoutes);
 router.use('/dispatch', dispatchRoutes);
 router.use('/traffic', trafficRoutes);
 router.use('/public', publicRoutes);
+router.use('/decisions', decisionsRoutes);
+router.use('/demo', demoRoutes);
+router.use('/audit', demoRoutes);
 
 // Mount operational routes owned by team members
 router.use('/ambulances', ambulanceRoutes);

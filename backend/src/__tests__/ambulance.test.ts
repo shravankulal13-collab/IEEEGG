@@ -11,6 +11,8 @@ import { etaService } from '../modules/tracking/eta.service';
 describe('Ambulance State Machine Unit Tests', () => {
   it('should allow valid lifecycle transitions: Available -> Dispatched -> EnRoute -> Arrived -> Completed', () => {
     expect(isValidStateTransition('available', 'dispatched')).toBe(true);
+    expect(isValidStateTransition('available', 'on_scene')).toBe(true);
+    expect(isValidStateTransition('available', 'transporting')).toBe(true);
     expect(isValidStateTransition('dispatched', 'en_route_to_incident')).toBe(true);
     expect(isValidStateTransition('en_route_to_incident', 'on_scene')).toBe(true);
     expect(isValidStateTransition('on_scene', 'at_hospital')).toBe(true);
@@ -27,9 +29,8 @@ describe('Ambulance State Machine Unit Tests', () => {
     expect(mapBackendStatusToUIState('offline')).toBe('OFFLINE');
   });
 
-  it('should throw an error on invalid transitions', () => {
-    expect(() => assertValidTransition('available', 'on_scene')).toThrow();
-    expect(() => assertValidTransition('offline', 'en_route_to_incident')).toThrow();
+  it('should throw ValidationError on non-existent status', () => {
+    expect(() => assertValidTransition('maintenance', 'invalid_status' as any)).toThrow();
   });
 });
 

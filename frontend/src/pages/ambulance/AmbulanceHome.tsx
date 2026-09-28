@@ -31,58 +31,75 @@ export const AmbulanceHome: React.FC = () => {
   const [dutyStatus, setDutyStatus] = useState<'available' | 'offline'>('available');
   const [activeIncident, setActiveIncident] = useState<IncidentRecord | null>(null);
 
-  useEffect(() => {
+  const syncActiveIncident = React.useCallback(async () => {
     // 1. Check local storage / session for the most recent citizen emergency request
     const storedData = localStorage.getItem('resqgrid_active_incident_data');
     const storedId = localStorage.getItem('resqgrid_active_incident_id');
-    const storeActive = useIncidentStore.getState().activeIncident;
 
-    let initialActive: IncidentRecord | null = null;
+    let currentCandidate: IncidentRecord | null = null;
     if (storedData) {
       try {
         const parsed = JSON.parse(storedData);
         if (parsed && !['resolved', 'cancelled', 'false_report'].includes(parsed.status)) {
-          initialActive = parsed;
+          currentCandidate = parsed;
         }
       } catch {
         // ignore parse failure
       }
-    } else if (storeActive && !['resolved', 'cancelled', 'false_report'].includes(storeActive.status)) {
-      initialActive = storeActive;
-    }
-
-    if (initialActive) {
-      setActiveIncident(initialActive);
     }
 
     // 2. Fetch fresh list from backend API
-    useIncidentStore
-      .getState()
-      .fetchIncidents()
-      .then(() => {
-        const list = useIncidentStore.getState().incidents;
-        const validList = list.filter((i) =>
-          !['resolved', 'cancelled', 'false_report'].includes(i.status) &&
-          !(i.title && i.title.toLowerCase().includes('robbery')) &&
-          !(i.title && i.title.toLowerCase().includes('test'))
-        );
+    try {
+      await useIncidentStore.getState().fetchIncidents();
+      const list = useIncidentStore.getState().incidents;
+      const validList = list.filter((i) =>
+        !['resolved', 'cancelled', 'false_report'].includes(i.status) &&
+        !(i.title && i.title.toLowerCase().includes('robbery')) &&
+        !(i.title && i.title.toLowerCase().includes('test'))
+      );
 
-        // If a specific stored incident ID exists, find it
-        const matched = storedId ? validList.find((i) => i.id === storedId) : null;
-        const active = matched || (storedData ? initialActive : (validList.length > 0 ? validList[0] : null));
+      // If a specific stored incident ID exists, find it in DB
+      let matched: IncidentRecord | null = null;
+      if (storedId) {
+        matched = validList.find((i) => i.id === storedId) || null;
+      }
 
-        if (active && !['resolved', 'cancelled', 'false_report'].includes(active.status)) {
-          setActiveIncident(active);
-        } else {
-          setActiveIncident(null);
-        }
-      })
-      .catch(() => {
-        if (!initialActive) {
-          setActiveIncident(null);
-        }
-      });
+      const selected = matched || currentCandidate || (validList.length > 0 ? validList[0] : null);
+
+      if (selected && !['resolved', 'cancelled', 'false_report'].includes(selected.status)) {
+        setActiveIncident(selected);
+      } else {
+        setActiveIncident(null);
+      }
+    } catch {
+      if (currentCandidate) {
+        setActiveIncident(currentCandidate);
+      } else {
+        setActiveIncident(null);
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    syncActiveIncident();
+
+    // Live poller every 3 seconds to catch instant citizen SOS dispatches
+    const pollInterval = setInterval(() => {
+      syncActiveIncident();
+    }, 3000);
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'resqgrid_active_incident_id' || e.key === 'resqgrid_active_incident_data') {
+        syncActiveIncident();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [syncActiveIncident]);
 
   const incidentId = activeIncident?.id || '';
   const incidentTitle = activeIncident?.title || 'Emergency Medical Dispatch Response';

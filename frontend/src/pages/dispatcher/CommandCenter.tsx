@@ -21,12 +21,17 @@ import {
   Ambulance,
   Building2,
   Zap,
+  Brain,
 } from 'lucide-react';
 import { EmergencyMap } from '../../components/maps/EmergencyMap';
+import { DecisionTraceModal } from '../../components/dispatcher/DecisionTraceModal';
+import { DemoScenarioPanel } from '../../components/dispatcher/DemoScenarioPanel';
 
 export const CommandCenter: React.FC = () => {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<'all' | 'critical' | 'dispatched' | 'en_route'>('all');
+  const [isDecisionTraceOpen, setIsDecisionTraceOpen] = useState(false);
+  const [selectedIncidentId, setSelectedIncidentId] = useState<string>('ER-77');
   const { incidents, isLoading: isIncidentsLoading, error: incidentsError, fetchIncidents } = useIncidentStore();
   const { hospitals, fetchHospitals } = useHospitalStore();
   const [ambulances, setAmbulances] = useState<AmbulanceData[]>([]);
@@ -182,16 +187,40 @@ export const CommandCenter: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-white/10 flex items-center gap-3">
+          <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center gap-3">
+            <button
+              onClick={() => {
+                setSelectedIncidentId(safeIncidents[0]?.id || 'ER-77');
+                setIsDecisionTraceOpen(true);
+              }}
+              className="w-full sm:flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs rounded-2xl shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 transition cursor-pointer"
+            >
+              <Brain className="w-4 h-4 text-sky-300" />
+              <span>VIEW DECISION TRACE</span>
+            </button>
             <Button
               variant="danger"
-              fullWidth
               onClick={() => navigate('/citizen/report')}
+              className="w-full sm:w-auto"
             >
-              Manual Emergency Intake
+              Manual Intake
             </Button>
           </div>
         </div>
+      </div>
+
+      {/* Controlled Judge Demo & Simulation Controls */}
+      <div className="mb-8">
+        <DemoScenarioPanel
+          activeIncidentId={safeIncidents[0]?.incident_number ? `ER-${safeIncidents[0].incident_number}` : (safeIncidents[0]?.id || 'ER-77')}
+          onScenarioInjected={() => {
+            fetchIncidents();
+          }}
+          onResetCompleted={() => {
+            fetchIncidents();
+            fetchHospitals();
+          }}
+        />
       </div>
 
       {/* Incident Queue Table */}
@@ -298,12 +327,25 @@ export const CommandCenter: React.FC = () => {
                     <td className="py-3.5 px-4 font-bold text-sky-400">{inc.assigned_ambulance_number || inc.assigned_ambulance_id || 'Pending Unit'}</td>
                     <td className="py-3.5 px-4 text-slate-200">{inc.assigned_hospital_name || 'Pending Hospital'}</td>
                     <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={() => navigate(`/dispatcher/incidents/${inc.id}`)}
-                        className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition-colors cursor-pointer"
-                      >
-                        Inspect
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedIncidentId(inc.id);
+                            setIsDecisionTraceOpen(true);
+                          }}
+                          className="px-3 py-1.5 bg-sky-950/90 hover:bg-sky-900 text-sky-300 border border-sky-500/40 rounded-xl font-bold text-xs transition cursor-pointer flex items-center gap-1"
+                          title="View GeoAgent Hospital Decision Trace"
+                        >
+                          <Brain className="w-3.5 h-3.5" />
+                          <span>Trace</span>
+                        </button>
+                        <button
+                          onClick={() => navigate(`/dispatcher/incidents/${inc.id}`)}
+                          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-xs transition-colors cursor-pointer"
+                        >
+                          Inspect
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -312,6 +354,13 @@ export const CommandCenter: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Decision Trace Modal */}
+      <DecisionTraceModal
+        incidentId={selectedIncidentId}
+        isOpen={isDecisionTraceOpen}
+        onClose={() => setIsDecisionTraceOpen(false)}
+      />
     </AppShell>
   );
 };
